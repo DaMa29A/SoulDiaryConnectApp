@@ -11,7 +11,7 @@ from django.shortcuts import get_object_or_404
 
 
 logger = logging.getLogger(__name__)
-model_path = "./models/mistral/mistral-7b-openorca.Q8_0.gguf"
+model_path = "SoulDiaryConnectApp/models/mistral/mistral-7b-openorca.Q8_0.gguf"
 llama_model = Llama(model_path=model_path, n_ctx=2048)
 
 

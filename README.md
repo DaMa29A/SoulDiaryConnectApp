@@ -90,8 +90,9 @@ python manage.py migrate
 Download the [Mistral-7B (quantized GGUF)](https://huggingface.co/TheBloke/Mistral-7B-v0.1-GGUF) model and place it in the 'models/mistral/' directory.
 
 Update the model path in **views.py** and edit the *context size* (**n_ctx** value):
+
 ```python
-model_path = "./models/mistral/your_mistral-7b-openorca.Q8_0.gguf"
+model_path = "SoulDiaryConnectApp/models/mistral/your_mistral-7b-openorca.Q8_0.gguf"
 llama_model = Llama(model_path=model_path, n_ctx=2048)
 ```
 

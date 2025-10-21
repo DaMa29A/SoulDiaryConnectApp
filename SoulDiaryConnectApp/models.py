@@ -41,3 +41,5 @@ class Messaggio(models.Model):
     testo = models.TextField()
     data_messaggio = models.DateField()
     mittente = models.CharField(max_length=12)
+
+
