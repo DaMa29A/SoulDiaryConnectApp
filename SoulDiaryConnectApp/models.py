@@ -30,7 +30,7 @@ class NotaDiario(models.Model):
     paz = models.ForeignKey(Paziente, on_delete=models.CASCADE)
     testo_paziente = models.TextField()
     testo_supporto = models.TextField(null=True, blank=True)
-    testo_clico = models.TextField()
+    testo_clinico = models.TextField()
     testo_medico = models.TextField(null=True, blank=True)
     data_nota = models.DateField()
 

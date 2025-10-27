@@ -215,7 +215,7 @@
                                 <div class='separator'></div>
                                 <p><strong>Supporto:</strong> {{ nota.testo_supporto }}</p>
                                 <div class='separator'></div>
-                                <p><strong>Testo per il medico:</strong> {{ nota.testo_clico }}</p>
+                                <p><strong>Testo per il medico:</strong> {{ nota.testo_clinico }}</p>
                                 <form method="POST" action="{% url 'modifica_testo_medico' nota.id %}">
                                     {% csrf_token %}
                                     <label><strong>Cosa ne pensa il medico:</strong></label><br>

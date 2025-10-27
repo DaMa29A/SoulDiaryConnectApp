@@ -12,7 +12,12 @@ from django.shortcuts import get_object_or_404
 
 logger = logging.getLogger(__name__)
 model_path = "SoulDiaryConnectApp/models/mistral/mistral-7b-openorca.Q8_0.gguf"
-llama_model = Llama(model_path=model_path, n_ctx=2048)
+llama_model = Llama(
+    model_path=model_path,
+    n_ctx=2048,
+    n_gpu_layers=-1,
+    chat_format="chatml"
+)
 
 
 
@@ -247,7 +252,7 @@ def paziente_home(request):
                 paz=paziente,
                 testo_paziente=testo_paziente,
                 testo_supporto=testo_supporto,
-                testo_clico=testo_clinico,
+                testo_clinico=testo_clinico,
                 data_nota=date.today()
             )
 

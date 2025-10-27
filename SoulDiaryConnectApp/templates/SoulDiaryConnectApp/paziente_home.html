@@ -136,8 +136,17 @@
             <p><strong>Numero Cellulare:</strong> {{ medico.numero_telefono_cellulare }}</p>
             <div class='separator'></div>
             <h2>Aggiungi una nuova nota</h2>
-            <textarea placeholder="Scrivi la tua nota..." rows="10"></textarea>
-            <button>Aggiungi Nota</button>
+            <form method="POST">
+                {% csrf_token %}
+                <textarea name="desc" placeholder="Scrivi la tua nota..." rows="10"></textarea>
+                <div style="margin-top:10px;">
+                    <label>
+                        <input type="checkbox" name="generateResponse">
+                        Genera automaticamente frasi di supporto
+                    </label>
+                </div>
+                <button type="submit">Aggiungi Nota</button>
+            </form>
         </div>
         <div class="col-right">
             <div class="notes">

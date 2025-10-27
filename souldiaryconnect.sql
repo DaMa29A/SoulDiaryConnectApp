@@ -41,7 +41,7 @@ CREATE TABLE nota_diario (
     paz char(16) NOT NULL,
     testo_paziente varchar(1000) NOT NULL,
     testo_supporto varchar(1000),
-    testo_clico varchar(1000) NOT NULL,
+    testo_clinico varchar(1000) NOT NULL,
     testo_medico varchar(1000),
     data_nota date NOT NULL,
 
