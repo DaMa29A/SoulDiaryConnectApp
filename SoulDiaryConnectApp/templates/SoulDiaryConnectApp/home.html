@@ -5,103 +5,202 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home - SoulDiaryConnect</title>
     <style>
-        body {
-            font-family: Verdana, sans-serif;
+        * {
             margin: 0;
             padding: 0;
-            color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            overflow: hidden;
             height: 100vh;
-            text-align: center;
-            flex-direction: column;
-            overflow: hidden; /* Evita scrolling indesiderato */
         }
-        .header {
-            width: 100%;
-            background-color: rgba(21, 101, 192, 1); /* Sfondo semi-trasparente */
-            color: white;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: fixed;
-            top: 0;
-            left: 0;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            z-index: 2; /* Metti sopra il video */
-        }
-        .container {
-            position: relative;
-            z-index: 2; /* Metti sopra il video */
-            margin-top: 100px; /* Spazio per evitare sovrapposizione con l'header */
-        }
-        h1 {
-            font-size: 28px;
-            color: white;
-            margin-bottom: 20px;
-            text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        p {
-            font-size: 22px;
-            color: white;
-            margin-bottom: 20px;
-            text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.8);
-        }
-        pp {
-            font-size: 32px;
-            color: white;
-            margin-bottom: 20px;
-            text-shadow: 0px 2px 4px rgba(0, 0, 0, 0.8);
-        }
+
         .background-video {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Adatta il video allo schermo */
-            z-index: 1; /* Metti il video dietro tutti gli elementi */
+            object-fit: cover;
+            z-index: 0;
         }
-        .personalize-button {
-            font-family: Verdana, sans-serif;
-            background-color: #FFFFFF;
+
+        .overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(13, 71, 161, 0.85), rgba(21, 101, 192, 0.75));
+            z-index: 1;
+        }
+
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .logo-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .logo-container img {
+            height: 50px;
+            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+        }
+
+        .login-btn {
+            padding: 12px 32px;
+            background: rgba(255, 255, 255, 0.95);
             color: #1565c0;
-            border: none;
-            padding: 8px 12px;
-            cursor: pointer;
-            font-size: 16px;
-            border-radius: 5px;
             text-decoration: none;
-            margin-right: 50px;
-            transition: 0.3s;
+            border-radius: 25px;
+            font-weight: 600;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
-        .personalize-button:hover {
-            background-color: #e3f2fd;
+
+        .login-btn:hover {
+            background: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .login-btn img {
+            height: 16px;
+        }
+
+        .hero-section {
+            position: relative;
+            z-index: 10;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 0 20px;
+        }
+
+        .hero-content {
+            max-width: 800px;
+        }
+
+        .hero-logo {
+            margin-bottom: 30px;
+            animation: fadeInDown 1s ease;
+        }
+
+        .hero-logo img {
+            height: 180px;
+            filter: drop-shadow(0 8px 20px rgba(0, 0, 0, 0.4));
+        }
+
+        .hero-title {
+            font-size: 56px;
+            color: white;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            animation: fadeInUp 1s ease 0.2s both;
+        }
+
+        .hero-subtitle {
+            font-size: 24px;
+            color: rgba(255, 255, 255, 0.95);
+            font-weight: 300;
+            line-height: 1.6;
+            text-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+            animation: fadeInUp 1s ease 0.4s both;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 36px;
+            }
+
+            .hero-subtitle {
+                font-size: 18px;
+            }
+
+            .hero-logo img {
+                height: 120px;
+            }
+
+            .header {
+                padding: 15px 20px;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Video di sfondo -->
     <video class="background-video" autoplay loop muted playsinline>
         <source src="/media/wallpaper.mp4" type="video/mp4">
-        Il tuo browser non supporta i video HTML5.
     </video>
 
-    <!-- Header con link per navigazione -->
+    <div class="overlay"></div>
+
     <div class="header">
-        <a href="{% url 'home' %}" style="font-size: 20px;"><img src="/media/logo.png" alt="SoulDiaryConnect" height="60px" style="margin-left:30px;"></a>
-        <a href="{% url 'login' %}" class="personalize-button">Login<img src="/media/enter.png" height="14px" style="margin-left:2px;"></a>
+        <div class="logo-container">
+            <a href="{% url 'home' %}">
+                <img src="/media/logo.png" alt="SoulDiaryConnect">
+            </a>
+        </div>
+        <a href="{% url 'login' %}" class="login-btn">
+            Login
+            <img src="/media/enter.png" alt="">
+        </a>
     </div>
 
-    <!-- Contenuto principale -->
-    <div class="container">
-        <h1><pp>Benvenuto su</pp><a href="{% url 'home' %}" style="font-size: 20px;"><img src="/media/logo.png" alt="SoulDiaryConnect" height="185px" style="margin-left: -5px; filter: drop-shadow(5px 5px 4px rgba(0, 0, 0, 0.8));"></a></h1>
-        <p>Il tuo diario digitale, sempre al tuo fianco.</p>
+    <div class="hero-section">
+        <div class="hero-content">
+            <div class="hero-logo">
+                <a href="{% url 'home' %}">
+                    <img src="/media/logo.png" alt="SoulDiaryConnect">
+                </a>
+            </div>
+            <h1 class="hero-title">Benvenuto su SoulDiaryConnect</h1>
+            <p class="hero-subtitle">Il tuo diario digitale, sempre al tuo fianco.</p>
+        </div>
     </div>
 </body>
 </html>

@@ -145,7 +145,7 @@ def medico_home(request):
     paziente_selezionato = Paziente.objects.filter(codice_fiscale=paziente_id).first()
 
     # Note del paziente selezionato
-    note_diario = NotaDiario.objects.filter(paz=paziente_selezionato) if paziente_selezionato else None
+    note_diario = NotaDiario.objects.filter(paz=paziente_selezionato).order_by('-data_nota') if paziente_selezionato else None
 
     return render(request, 'SoulDiaryConnectApp/medico_home.html', {
         'medico': medico,
@@ -271,7 +271,7 @@ def paziente_home(request):
                 data_nota=date.today()
             )
 
-    note_diario = NotaDiario.objects.filter(paz=paziente)
+    note_diario = NotaDiario.objects.filter(paz=paziente).order_by('-data_nota')
 
     return render(request, 'SoulDiaryConnectApp/paziente_home.html', {
         'paziente': paziente,

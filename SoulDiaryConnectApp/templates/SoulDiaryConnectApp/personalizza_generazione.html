@@ -2,290 +2,445 @@
 <html lang="it">
 <head>
     <meta charset="UTF-8">
-    <title>Personalizza Generazione</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personalizza Generazione - SoulDiaryConnect</title>
     <style>
-        body {
-            font-family: Verdana, sans-serif;
+        * {
             margin: 0;
             padding: 0;
-            background-color: #e3f2fd;
+            box-sizing: border-box;
         }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f0f4f8;
+            min-height: 100vh;
+        }
+
         .header {
+            background: linear-gradient(135deg, #1976d2 0%, #0d47a1 100%);
+            color: white;
+            padding: 20px 40px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background-color: #1565c0;
-            color: white;
-            padding: 10px 20px;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            left: 0;
-            z-index: 1000;
-            height: 50px;
-        }
-        .logout-button {
-            background-color: #dc3545;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            cursor: pointer;
-            font-size: 20px;
-            border-radius: 5px;
-            text-decoration: none;
-            margin-right: 40px;
-            transition: 0.3s;
-        }
-        .logout-button:hover {
-            background-color: #c82333;
-        }
-        .personalize-button {
-            background-color: #FFFFFF;
-            color: #1565c0;
-            border: none;
-            padding: 8px 12px;
-            cursor: pointer;
-            font-size: 20px;
-            border-radius: 5px;
-            text-decoration: none;
-            margin-right: 20px;
-            transition: 0.3s;
-        }
-        .personalize-button:hover {
-            background-color: #e3f2fd;
-        }
-        .header h1 {
-            font-size: 22px;
-            margin: 0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
 
-        .top-buttons {
+        .header-left {
             display: flex;
-            gap: 10px;
+            align-items: center;
+            gap: 20px;
         }
-        .top-buttons .back, .top-buttons button {
-            background-color: #007bff;
+
+        .header img {
+            height: 45px;
+        }
+
+        .header h1 {
+            font-size: 22px;
+            font-weight: 600;
+        }
+
+        .header-actions {
+            display: flex;
+            gap: 12px;
+        }
+
+        .back-btn {
+            background: rgba(255, 255, 255, 0.2);
             color: white;
             border: none;
-            padding: 10px 15px;
-            text-decoration: none;
-            font-size: 14px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        .top-buttons .back:hover, .top-buttons button:hover {
-            background-color: #0056b3;
-        }
-        form {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-            background-color: white;
-            border: 1px solid #ddd;
+            padding: 10px 20px;
             border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            margin-top: 120px;
-        }
-        .flex-container {
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
             display: flex;
-            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .logout-btn {
+            background: rgba(220, 53, 69, 0.9);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(200, 35, 51, 1);
+        }
+
+        .logout-btn img {
+            height: 16px;
+        }
+
+        .main-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .settings-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        .settings-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 32px;
+            margin-bottom: 32px;
+        }
+
+        .setting-section h2 {
+            font-size: 20px;
+            color: #1a1a2e;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px;
+            background: #f8fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .radio-option:hover {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+        }
+
+        .radio-option input[type="radio"] {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+
+        .radio-option input[type="radio"]:checked + label {
+            color: #1976d2;
+            font-weight: 600;
+        }
+
+        .radio-option label {
+            font-size: 15px;
+            color: #475569;
+            cursor: pointer;
+            flex: 1;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+            border: 2px solid #fca5a5;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 32px;
+        }
+
+        .warning-box h3 {
+            color: #dc2626;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .warning-box p {
+            color: #991b1b;
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        .parameters-section {
+            margin-top: 32px;
+        }
+
+        .parameters-section h2 {
+            font-size: 22px;
+            color: #1a1a2e;
             margin-bottom: 20px;
         }
-        .flex-item {
-            width: 48%;
+
+        .example-box {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 2px solid #bae6fd;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
         }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
+
+        .example-box h3 {
+            color: #0369a1;
+            font-size: 15px;
+            margin-bottom: 12px;
         }
-        table, th, td {
-            border: 1px solid #ddd;
-        }
-        th, td {
-            padding: 10px;
-            text-align: left;
-        }
-        th {
-            background-color: #1565c0;
-            color: white;
-        }
-        .remove-button {
-            color: white;
-            background-color: red;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        .remove-button:hover {
-            background-color: #c82333;
-        }
-        .add-button {
-            background-color: #28a745;
-            color: white;
-            border: none;
-            padding: 10px 15px;
+
+        .example-box p {
+            color: #0c4a6e;
+            font-style: italic;
             font-size: 14px;
-            cursor: pointer;
-            border-radius: 5px;
         }
-        .add-button:hover {
-            background-color: #218838;
+
+        .parameters-table {
+            margin-top: 24px;
         }
-        .submit-button {
-            background-color: #1565c0;
+
+        .parameter-row {
+            display: grid;
+            grid-template-columns: 1fr 2fr auto;
+            gap: 16px;
+            margin-bottom: 16px;
+            align-items: start;
+        }
+
+        .parameter-row input,
+        .parameter-row textarea {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.3s ease;
+            background: #f9fafb;
+        }
+
+        .parameter-row input:focus,
+        .parameter-row textarea:focus {
+            outline: none;
+            border-color: #1976d2;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(25, 118, 210, 0.15);
+        }
+
+        .parameter-row textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .remove-btn {
+            padding: 14px 20px;
+            background: #ef4444;
             color: white;
             border: none;
-            padding: 10px 15px;
-            font-size: 16px;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 600;
             cursor: pointer;
-            border-radius: 5px;
+            transition: all 0.3s ease;
+            white-space: nowrap;
         }
-        .submit-button:hover {
-            background-color: #0f4a8d;
+
+        .remove-btn:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
         }
+
+        .add-btn {
+            padding: 14px 28px;
+            background: #10b981;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 16px;
+        }
+
+        .add-btn:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(16, 185, 129, 0.3);
+        }
+
+        .submit-section {
+            margin-top: 40px;
+            padding-top: 32px;
+            border-top: 2px solid #e2e8f0;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 18px;
+            background: linear-gradient(135deg, #1976d2 0%, #0d47a1 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(25, 118, 210, 0.4);
+        }
+
         .hidden {
             display: none;
         }
-        label {
-            display: block;
-            margin: 10px 0;
-            font-weight: bold;
+
+        @media (max-width: 768px) {
+            .settings-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .parameter-row {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 16px;
+            }
         }
-
-        .input {
-            padding: 5px 10px;
-            width: 100%;
-            outline: none;
-            background: #FFFFFF;
-            color: #000000;
-            border: 0px solid #C4D1EB;
-            border-radius: 5px;
-            box-shadow: 3px 3px 2px 0px #E2E2E2;
-            transition: .3s ease;
-            font-family: Verdana, sans-serif;
-            width: 90%;
-
-        }
-
-        .input:focus {
-            background: #FCFCFC;
-            border: 0px solid #5A7EC7;
-            border-radius: 10px;
-        }
-
-        .input::placeholder {
-            color: #DDDDDD;
-        }
-
     </style>
     <script>
-        // Mostra o nasconde la tabella in base alla selezione del tipo di nota
         function toggleParametriTable() {
             const isStrutturato = document.querySelector('input[name="tipo_nota"]:checked').value === 'strutturato';
-            const parametriTable = document.getElementById('parametriContainer');
-            parametriTable.style.display = isStrutturato ? 'block' : 'none';
-            const testo = document.getElementById('testoContainer');
-            testo.style.display = isStrutturato ? 'none' : 'block';
+            const parametriContainer = document.getElementById('parametriContainer');
+            const testoContainer = document.getElementById('testoContainer');
+
+            parametriContainer.classList.toggle('hidden', !isStrutturato);
+            testoContainer.classList.toggle('hidden', isStrutturato);
         }
 
-        // Funzione per aggiungere una nuova riga
         function aggiungiRiga() {
-            const table = document.getElementById('parametriTable');
-            const row = table.insertRow();
-            const tipoCell = row.insertCell(0);
-            const testoCell = row.insertCell(1);
-            const removeCell = row.insertCell(2);
-
-
-            tipoCell.style.border = "0px";
-            testoCell.style.border = "0px";
-            removeCell.style.border = "0px";
-
-            tipoCell.innerHTML = '<input class="input" type="text" name="tipo_parametri" >';
-            testoCell.innerHTML = '<textarea class="input" name="testo_parametri" rows="4" ></textarea>';
-            removeCell.innerHTML = '<button type="button" class="remove-button" onclick="rimuoviRiga(this)">Rimuovi</button>';
+            const container = document.querySelector('.parameters-table');
+            const row = document.createElement('div');
+            row.className = 'parameter-row';
+            row.innerHTML = `
+                <input type="text" name="tipo_parametri" placeholder="Es: Emozione, Consiglio...">
+                <textarea name="testo_parametri" rows="3" placeholder="Inserisci il testo del parametro..."></textarea>
+                <button type="button" class="remove-btn" onclick="rimuoviRiga(this)">Rimuovi</button>
+            `;
+            container.appendChild(row);
         }
 
-        // Funzione per rimuovere una riga
         function rimuoviRiga(button) {
-            const row = button.parentNode.parentNode;
-            row.parentNode.removeChild(row);
+            button.parentElement.remove();
         }
 
-        // Assicurati che la tabella sia correttamente mostrata o nascosta al caricamento della pagina
         window.onload = toggleParametriTable;
     </script>
 </head>
 <body>
     <div class="header">
-        <img src="/media/logo.png" alt="SoulDiaryConnect" height="60px" style="margin-left: 30px;">
-        <h1>Personalizza Generazione</h1>
-        <div class="top-buttons">
-            <a href="{% url 'medico_home' %}" class="personalize-button">Torna Indietro</a>
-            <a href="{% url 'logout' %}" class="logout-button">Logout <img src="/media/logout_white.png" height="17px" style="margin-left:2px;"></a>
+        <div class="header-left">
+            <img src="/media/logo.png" alt="SoulDiaryConnect">
+            <h1>Personalizza Generazione</h1>
+        </div>
+        <div class="header-actions">
+            <a href="{% url 'medico_home' %}" class="back-btn">Torna Indietro</a>
+            <a href="{% url 'logout' %}" class="logout-btn">
+                Logout
+                <img src="/media/logout_white.png" alt="">
+            </a>
         </div>
     </div>
-    <form method="POST">
-        {% csrf_token %}
 
-        <div class="flex-container">
-            <!-- Tipo di Nota -->
-            <div class="flex-item">
-                <h2>Tipo di Nota</h2>
-                <label>
-                    <input type="radio" name="tipo_nota" value="strutturato" {% if medico.tipo_nota %}checked{% endif %} onchange="toggleParametriTable()">
-                    Commento Strutturato
-                </label>
-                <label>
-                    <input type="radio" name="tipo_nota" value="non_strutturato" {% if medico.tipo_nota is not None and not medico.tipo_nota %}checked{% endif %} onchange="toggleParametriTable()">
-                    Commento Non Strutturato
-                </label>
+    <div class="main-container">
+        <form method="POST">
+            {% csrf_token %}
+
+            <div class="settings-card">
+                <div class="settings-grid">
+                    <div class="setting-section">
+                        <h2>Tipo di Nota</h2>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" name="tipo_nota" value="strutturato" id="strutturato"
+                                    {% if medico.tipo_nota %}checked{% endif %} onchange="toggleParametriTable()">
+                                <label for="strutturato">Commento Strutturato</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="tipo_nota" value="non_strutturato" id="non_strutturato"
+                                    {% if medico.tipo_nota is not None and not medico.tipo_nota %}checked{% endif %}
+                                    onchange="toggleParametriTable()">
+                                <label for="non_strutturato">Commento Non Strutturato</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="setting-section">
+                        <h2>Lunghezza della Nota</h2>
+                        <div class="radio-group">
+                            <div class="radio-option">
+                                <input type="radio" name="lunghezza_nota" value="lungo" id="lungo"
+                                    {% if medico.lunghezza_nota %}checked{% endif %}>
+                                <label for="lungo">Commento Lungo</label>
+                            </div>
+                            <div class="radio-option">
+                                <input type="radio" name="lunghezza_nota" value="breve" id="breve"
+                                    {% if medico.lunghezza_nota is not None and not medico.lunghezza_nota %}checked{% endif %}>
+                                <label for="breve">Commento Breve</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="testoContainer" class="warning-box hidden">
+                    <h3>⚠️ Attenzione</h3>
+                    <p>Scegliendo l'opzione "Commento Non Strutturato", il commento generato potrebbe risultare meno affidabile e preciso rispetto alla versione strutturata.</p>
+                </div>
+
+                <div id="parametriContainer" class="parameters-section hidden">
+                    <h2>Parametri Personalizzati</h2>
+
+                    <div class="example-box">
+                        <h3>📋 Esempio di utilizzo</h3>
+                        <p>Rispondi in modo parametrizzato al seguente testo: "Today I failed my exam and feel like giving up."</p>
+                    </div>
+
+                    <div class="parameters-table">
+                        {% for tipo, testo in tipo_parametri %}
+                            <div class="parameter-row">
+                                <input type="text" name="tipo_parametri" value="{{ tipo }}" placeholder="Es: Emozione, Consiglio...">
+                                <textarea name="testo_parametri" rows="3" placeholder="Inserisci il testo del parametro...">{{ testo }}</textarea>
+                                <button type="button" class="remove-btn" onclick="rimuoviRiga(this)">Rimuovi</button>
+                            </div>
+                        {% endfor %}
+                    </div>
+
+                    <button type="button" class="add-btn" onclick="aggiungiRiga()">+ Aggiungi Parametro</button>
+                </div>
+
+                <div class="submit-section">
+                    <button type="submit" class="submit-btn">Salva Configurazione</button>
+                </div>
             </div>
-
-            <!-- Lunghezza della Nota -->
-            <div class="flex-item">
-                <h2>Lunghezza della Nota</h2>
-                <label>
-                    <input type="radio" name="lunghezza_nota" value="lungo" {% if medico.lunghezza_nota %}checked{% endif %}>
-                    Commento Lungo
-                </label>
-                <label>
-                    <input type="radio" name="lunghezza_nota" value="breve" {% if medico.lunghezza_nota is not None and not medico.lunghezza_nota %}checked{% endif %}>
-                    Commento Breve
-                </label>
-            </div>
-        </div>
-
-        <div id="testoContainer" class="hidden">
-            <h3 style="color : red;">Attenzione! Scegliendo questa opzione il commento generato potrebbe risultare meno affidabile</h3>
-        </div>
-
-        <!-- Contenitore per la tabella dei parametri personalizzati -->
-        <div id="parametriContainer" class="hidden">
-            <h2>Parametri Personalizzati</h2>
-            <h3>Rispondi in modo parametrizzato al seguente testo:</h3>
-            <h3><i>Today I failed my exam and feel like giving up.</i></h3>
-            <table id="parametriTable" style="border: 0px;">
-                <tr style="border: 0px;">
-                    <th style="border: 0px;">Tipo Parametro</th>
-                    <th style="border: 0px;">Testo Parametro</th>
-                    <th style="border: 0px;"> </th>
-                </tr>
-                {% for tipo, testo in tipo_parametri %}
-                    <tr>
-                        <td style="border: 0px;"><input class="input" type="text" name="tipo_parametri" value="{{ tipo }}" style="width: 90%;"></td>
-                        <td style="border: 0px;"><textarea class="input" name="testo_parametri" rows="4" style="width: 90%; font-family: Verdana, sans-serif;">{{ testo }}</textarea></td>
-                        <td style="border: 0px;"><button type="button" class="remove-button" onclick="rimuoviRiga(this)">Rimuovi</button></td>
-                    </tr>
-                {% endfor %}
-            </table>
-            <button type="button" class="add-button" onclick="aggiungiRiga()">Aggiungi Parametro</button>
-        </div>
-
-        <br>
-        <button type="submit" class="submit-button">Conferma</button>
-    </form>
+        </form>
+    </div>
 </body>
 </html>

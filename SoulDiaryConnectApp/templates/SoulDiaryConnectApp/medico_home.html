@@ -1,235 +1,233 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Home Medico</title>
-    <style>
-        body {
-            font-family: 'Verdana', sans-serif;
-            background-color: #e3f2fd;
-            margin: 0;
-            padding: 0;
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background-color: #1565c0;
-            color: white;
-            padding: 10px 20px;
-            position: fixed;
-            width: 100%;
-            top: 0;
-            left: 0;
-            z-index: 1000;
-            height: 50px;
-        }
-        .header h1 {
-            font-size: 22px;
-            margin: 0;
-        }
-        .separator {
-            border-top: 2px solid #1565c0;
-            margin: 8px 0;
-        }
-        .logout-button {
-            background-color: #dc3545;
-            color: white;
-            border: none;
-            padding: 8px 12px;
-            cursor: pointer;
-            font-size: 20px;
-            border-radius: 5px;
-            text-decoration: none;
-            margin-right: 60px;
-            transition: 0.3s;
-        }
-        .logout-button:hover {
-            background-color: #c82333;
-        }
-        .personalize-button {
-            background-color: #FFFFFF;
-            color: #1565c0;
-            border: none;
-            padding: 8px 12px;
-            cursor: pointer;
-            font-size: 20px;
-            border-radius: 5px;
-            text-decoration: none;
-            margin-right: 20px;
-            transition: 0.3s;
-        }
-        .personalize-button:hover {
-            background-color: #e3f2fd;
-        }
-        .container {
-            display: flex;
-            flex-direction: row;
-            width: 100%;
-            height: calc(100vh - 50px);
-            overflow: hidden;
-            margin-top: 50px;
-        }
-        .col-left {
-            width: 25%;
-            background-color: #FFF;
-            padding: 15px;
-            overflow-y: auto;
-        }
-        .col-left ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        .col-left li {
-            margin-bottom: 15px;
-        }
-        .col-left button {
-            width: 100%;
-            padding: 10px;
-            border: none;
-            border-radius: 5px;
-            background: #e3f2fd;
-            color: #1565c0;
-            font-weight: bold;
-            font-size: 20px;
-            cursor: pointer;
-            transition: 0.3s;
-        }
-        .col-left button:hover {
-            background: #bbdefb;
-        }
-        .col-left button.selected {
-            background: #1565c0;
-            color: white;
-        }
-        .col-right {
-            width: 75%;
-            padding: 20px;
-            background-color: #FAFAFA;
-            overflow-y: auto;
-            box-shadow: inset 4px 4px 8px rgba(0, 0, 0, 0.1);
-        }
-        .notes ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        .notes li {
-            background: #bbdefb;
-            padding: 12px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            font-size: 14px;
-            border-left: 4px solid #1565c0;
-            padding-left: 10px;
-        }
-        .notes li p {
-            margin: 5px 0;
-        }
-        textarea {
-            width: 95%;
-            padding: 12px;
-            border-radius: 10px;
-            border: 2px solid #1565c0;
-            font-size: 14px;
-            background: #FFF;
-            transition: 0.3s ease-in-out;
-            box-shadow: inset 2px 2px 5px rgba(0, 0, 0, 0.1);
-            font-family: 'Verdana', sans-serif;
-            resize: none;
-        }
-        textarea:focus {
-            outline: none;
-            border-color: #0d47a1;
-            box-shadow: inset 2px 2px 8px rgba(13, 71, 161, 0.2);
-            background: #E3F3F5;
-        }
-        button {
-            background-color: #1565c0;
-            color: white;
-            border: none;
-            padding: 10px;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0d47a1;
-        }
-        .patient-data {
-            background: #ffffff;
-            padding: 15px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            border-left: 4px solid #1565c0;
-            position: sticky;
-            top: 0px;
-            z-index: 900;
-        }
-    </style>
-    <script>
-        function selectPatient(selectedButton) {
-            const buttons = document.querySelectorAll('.col-left button');
-            buttons.forEach(button => button.classList.remove('selected'));
-            selectedButton.classList.add('selected');
-        }
-    </script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Home Medico - SoulDiaryConnect</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{
+      font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background:#f0f4f8; overflow:hidden;
+    }
+
+    /* HEADER blu/celeste */
+    .header{
+      background: linear-gradient(135deg, #1976d2 0%, #0d47a1 100%);
+      color:#fff;
+      padding: 20px 40px;
+      display:flex; justify-content:space-between; align-items:center;
+      box-shadow: 0 4px 12px rgba(0,0,0,.1);
+      position:fixed; top:0; left:0; right:0; z-index:100;
+    }
+    .header-left{display:flex; align-items:center; gap:20px}
+    .header img{height:45px}
+    .header h1{font-size:20px; font-weight:600}
+    .header-actions{display:flex; gap:12px}
+    .settings-btn, .logout-btn{
+      border:none; border-radius:10px; cursor:pointer; font-size:14px; font-weight:600;
+      text-decoration:none; display:flex; align-items:center; gap:8px; transition:all .3s ease;
+      padding:10px 20px; color:#fff;
+    }
+    .settings-btn{ background: rgba(255,255,255,.2) }
+    .settings-btn:hover{ background: rgba(255,255,255,.3) }
+    .logout-btn{ background: rgba(220,53,69,.9) }
+    .logout-btn:hover{ background: rgba(200,35,51,1) }
+    .settings-btn img, .logout-btn img{height:16px}
+
+    /* LAYOUT */
+    .main-container{
+      display:flex; height:calc(100vh - 85px); margin-top:85px; gap:24px; padding:24px;
+    }
+
+    /* SIDEBAR SINISTRA */
+    .patients-sidebar{
+      width:360px; background:#fff; border-radius:20px; padding:24px;
+      box-shadow:0 4px 20px rgba(0,0,0,.08); overflow-y:auto;
+    }
+    .patients-sidebar h2{font-size:20px; color:#1a1a2e; margin-bottom:16px}
+    .patients-list{ display:flex; flex-direction:column; gap:10px; margin-bottom:16px }
+
+    .patient-btn{
+      width:100%; padding:16px; background:#f8fafc; border:2px solid #e2e8f0; border-radius:12px;
+      color:#475569; font-size:15px; font-weight:600; cursor:pointer; text-align:left; transition:all .3s ease;
+    }
+    .patient-btn:hover{ background:#f1f5f9; border-color:#cbd5e1; transform: translateX(4px) }
+    .patient-btn.selected{
+      background: linear-gradient(135deg, #1976d2 0%, #0d47a1 100%);
+      color:#fff; border-color:transparent; box-shadow:0 4px 12px rgba(25,118,210,.3);
+    }
+
+    /* MINI CARD DATI PAZIENTE (NUOVA POSIZIONE NELLA SIDEBAR) */
+    .patient-mini-card{
+      background: #e3f2fd;
+      border: 1px solid #bbdefb;
+      border-radius:16px;
+      padding:16px;
+      box-shadow: inset 0 0 0 1px rgba(255,255,255,.35);
+      color:#0f172a;
+      display:flex; flex-direction:column; gap:8px;
+    }
+    .patient-mini-card h3{
+      font-size:16px; font-weight:700; color:#0d47a1; margin-bottom:4px;
+    }
+    .patient-mini-card p{ font-size:14px; color:#1e293b }
+    .patient-mini-card strong{ font-weight:700; color:#0d47a1 }
+
+    .divider{ height:1px; background:#e2e8f0; margin:16px 0 }
+
+    /* COLONNA NOTE DESTRA */
+    .content-area{
+      flex:1; background:#fff; border-radius:20px; padding:32px;
+      box-shadow:0 4px 20px rgba(0,0,0,.08); overflow-y:auto;
+    }
+    .notes-section h2{ font-size:24px; color:#1a1a2e; margin-bottom:24px }
+
+    .note-card{
+      background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+      border-left:4px solid #1565c0;
+      border-radius:16px; padding:24px; margin-bottom:20px;
+      box-shadow:0 2px 8px rgba(0,0,0,.05);
+    }
+    .note-card p{ margin:12px 0; font-size:14px; line-height:1.6; color:#475569 }
+    .note-card strong{ color:#1e293b; font-weight:600 }
+    .note-separator{ height:1px; background:linear-gradient(to right, #e2e8f0, transparent); margin:16px 0 }
+
+    .clinical-text{
+      background: rgba(25,118,210,.06);
+      border-left:3px solid #1565c0;
+      border-radius:12px; padding:16px; margin-top:12px;
+    }
+
+    .doctor-response-form{ margin-top:16px }
+    .doctor-response-form label{
+      display:block; font-weight:600; color:#1e293b; margin-bottom:8px; font-size:14px;
+    }
+    textarea{
+      width:100%; min-height:100px; padding:14px; border:2px solid #e5e7eb; border-radius:12px;
+      font-size:14px; resize:vertical; transition:all .3s ease; background:#f9fafb;
+      font-family:'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    textarea:focus{
+      outline:none; border-color:#1976d2; background:#fff; box-shadow:0 0 0 4px rgba(25,118,210,.15);
+    }
+    .save-btn{
+      margin-top:12px; padding:12px 24px; border:none; border-radius:10px; font-size:14px; font-weight:600;
+      cursor:pointer; transition:all .3s ease; color:#fff;
+      background: linear-gradient(135deg, #1976d2 0%, #0d47a1 100%);
+      box-shadow:0 6px 16px rgba(25,118,210,.3);
+    }
+    .save-btn:hover{ transform:translateY(-2px); box-shadow:0 8px 22px rgba(25,118,210,.4) }
+
+    .empty-state{ text-align:center; padding:80px 20px; color:#94a3b8 }
+    .empty-state p{ font-size:16px; margin-bottom:8px }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar{ width:8px }
+    ::-webkit-scrollbar-track{ background:#f1f5f9; border-radius:10px }
+    ::-webkit-scrollbar-thumb{ background:#cbd5e1; border-radius:10px }
+    ::-webkit-scrollbar-thumb:hover{ background:#94a3b8 }
+
+    @media (max-width:1024px){
+      .main-container{ flex-direction:column }
+      .patients-sidebar{ width:100% }
+    }
+  </style>
+  <script>
+    function selectPatient(selectedButton){
+      const buttons = document.querySelectorAll('.patient-btn');
+      buttons.forEach(btn => btn.classList.remove('selected'));
+      selectedButton.classList.add('selected');
+    }
+  </script>
 </head>
 <body>
-    <div class="header">
-        <img src="/media/logo.png" alt="SoulDiaryConnect" height="60px" style="margin-left: 30px;">
-        <h1>Benvenuto, Dr. {{ medico.nome }} {{ medico.cognome }}</h1>
-        <div>
-            <a href="{% url 'personalizza_generazione' %}" class="personalize-button">Personalizza Generazione<img src="/media/settings.png" height="17px" style="margin-left:2px;"></a>
-            <a href="{% url 'logout' %}" class="logout-button">Logout<img src="/media/logout_white.png" height="17px" style="margin-left:2px;"></a>
-        </div>
+  <div class="header">
+    <div class="header-left">
+      <img src="/media/logo.png" alt="SoulDiaryConnect">
+      <h1>Benvenuto, Dr. {{ medico.nome }} {{ medico.cognome }}</h1>
     </div>
-    <div class="container">
-        <div class="col-left">
-            <h2>Lista dei Pazienti</h2>
-            <ul>
-                {% for paziente in pazienti %}
-                    <li>
-                        <button onclick="selectPatient(this); location.href='?paziente_id={{ paziente.codice_fiscale }}'"
-                            class="{% if paziente_selezionato.codice_fiscale == paziente.codice_fiscale %}selected{% endif %}">
-                            {{ paziente.nome }} {{ paziente.cognome }}
-                        </button>
-                    </li>
-                {% endfor %}
-            </ul>
-        </div>
-        <div class="col-right">
-            {% if paziente_selezionato %}
-                <div class="patient-data">
-                    <h2>Dati del Paziente</h2>
-                    <p><strong>Nome Cognome:</strong> {{ paziente_selezionato.nome }} {{ paziente_selezionato.cognome }}</p>
-                    <p><strong>Codice Fiscale:</strong> {{ paziente_selezionato.codice_fiscale }} | <strong>Data di Nascita:</strong> {{ paziente_selezionato.data_di_nascita }}</p>
-                </div>
-                <div class="notes">
-                    <h2>Note Diario</h2>
-                    <ul>
-                        {% for nota in note_diario %}
-                            <li>
-                                <p><strong>Data:</strong> {{ nota.data_nota }}</p>
-                                <p><strong>Nota:</strong> {{ nota.testo_paziente }}</p>
-                                <div class='separator'></div>
-                                <p><strong>Supporto:</strong> {{ nota.testo_supporto }}</p>
-                                <div class='separator'></div>
-                                <p><strong>Testo per il medico:</strong> {{ nota.testo_clinico }}</p>
-                                <form method="POST" action="{% url 'modifica_testo_medico' nota.id %}">
-                                    {% csrf_token %}
-                                    <label><strong>Cosa ne pensa il medico:</strong></label><br>
-                                    <textarea name="testo_medico" rows="4">{{ nota.testo_medico }}</textarea><br>
-                                    <button type="submit">Salva</button>
-                                </form>
-                            </li>
-                        {% endfor %}
-                    </ul>
-                </div>
-            {% else %}
-                <p>Seleziona un paziente dalla lista per vedere i dettagli e le sue note.</p>
-            {% endif %}
-        </div>
+    <div class="header-actions">
+      <a href="{% url 'personalizza_generazione' %}" class="settings-btn">
+        <img src="/media/settings.png" alt=""> Personalizza
+      </a>
+      <a href="{% url 'logout' %}" class="logout-btn">
+        Logout <img src="/media/logout_white.png" alt="">
+      </a>
     </div>
+  </div>
+
+  <div class="main-container">
+    <!-- SIDEBAR SINISTRA -->
+    <div class="patients-sidebar">
+      <h2>Lista Pazienti</h2>
+      <div class="patients-list">
+        {% for paziente in pazienti %}
+          <button
+            onclick="selectPatient(this); location.href='?paziente_id={{ paziente.codice_fiscale }}'"
+            class="patient-btn {% if paziente_selezionato.codice_fiscale == paziente.codice_fiscale %}selected{% endif %}">
+            {{ paziente.nome }} {{ paziente.cognome }}
+          </button>
+
+          {# ——— NUOVO BOX DETTAGLI: appare sotto il paziente selezionato ——— #}
+          {% if paziente_selezionato and paziente_selezionato.codice_fiscale == paziente.codice_fiscale %}
+            <div class="patient-mini-card">
+              <h3>Dati del Paziente</h3>
+              <p><strong>Nome:</strong> {{ paziente_selezionato.nome }} {{ paziente_selezionato.cognome }}</p>
+              <p><strong>Codice Fiscale:</strong> {{ paziente_selezionato.codice_fiscale }}</p>
+              <p><strong>Data di Nascita:</strong> {{ paziente_selezionato.data_di_nascita|date:"d/m/Y" }}</p>
+            </div>
+          {% endif %}
+        {% endfor %}
+      </div>
+
+      <div class="divider"></div>
+      {# qui puoi aggiungere altri controlli lato sidebar, se servono #}
+    </div>
+
+    <!-- CONTENUTO DESTRO: SOLO NOTE -->
+    <div class="content-area">
+      <div class="notes-section">
+        <h2>Note Diario del Paziente</h2>
+        {% if paziente_selezionato %}
+          {% if note_diario %}
+            {% for nota in note_diario %}
+              <div class="note-card">
+                <p><strong>📅 Data:</strong> {{ nota.data_nota|date:"d/m/Y" }}</p>
+                <p><strong>📝 Nota del paziente:</strong> {{ nota.testo_paziente }}</p>
+
+                {% if nota.testo_supporto %}
+                  <div class="note-separator"></div>
+                  <p><strong>💙 Supporto automatico:</strong> {{ nota.testo_supporto }}</p>
+                {% endif %}
+
+                {% if nota.testo_clinico %}
+                  <div class="note-separator"></div>
+                  <div class="clinical-text">
+                    <p><strong>🔬 Analisi clinica:</strong> {{ nota.testo_clinico }}</p>
+                  </div>
+                {% endif %}
+
+                <form method="POST" action="{% url 'modifica_testo_medico' nota.id %}" class="doctor-response-form">
+                  {% csrf_token %}
+                  <label>🩺 Il tuo commento professionale:</label>
+                  <textarea name="testo_medico" rows="4">{{ nota.testo_medico }}</textarea>
+                  <button type="submit" class="save-btn">Salva Commento</button>
+                </form>
+              </div>
+            {% endfor %}
+          {% else %}
+            <div class="empty-state">
+              <p>Non ci sono note disponibili per questo paziente.</p>
+            </div>
+          {% endif %}
+        {% else %}
+          <div class="empty-state">
+            <p>Seleziona un paziente dalla lista per visualizzare le note.</p>
+          </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
 </body>
 </html>

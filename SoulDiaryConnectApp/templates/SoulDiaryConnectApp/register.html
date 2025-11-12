@@ -3,99 +3,213 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrazione</title>
+    <title>Registrazione - SoulDiaryConnect</title>
     <style>
-        body {
-            font-family: Verdana, sans-serif;
+        * {
             margin: 0;
             padding: 0;
-            background-color: #e3f2fd;
+            box-sizing: border-box;
         }
-        .header {
-            width: 100%;
-            background-color: #1565c0;
-            color: white;
-            padding: 15px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: fixed;
-            top: 0;
-            left: 0;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-            font-size: 20px;
-            text-decoration: none;
-            box-sizing: border-box; /* Evita overflow */
-        }
-        .header a {
-            text-decoration: none;
-            cursor: pointer;
-            color: white;
-        }
-        .header a:hover {
-            text-decoration: none;
-            cursor: pointer;
-            color: white;
-        }
-        .registration-container {
-            margin: 100px auto 0; /* Spazio per evitare sovrapposizione con header */
-            width: 100%;
-            max-width: 500px;
-            padding: 20px;
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            text-align: center;
-        }
-        h1 {
-            color: #1565c0;
-            margin-bottom: 20px;
-        }
-        form {
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1976d2 0%, #0d47a1 100%);
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
-            align-items: stretch;
         }
-        label {
-            font-weight: bold;
-            margin: 10px 0 5px;
-            text-align: left;
+
+        .header {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px 40px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
         }
-        select, input[type="text"], input[type="email"], input[type="password"], input[type="date"] {
+
+        .header a {
+            text-decoration: none;
+        }
+
+        .header img {
+            height: 50px;
+            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.2));
+        }
+
+        .main-container {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        .register-card {
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            padding: 48px;
             width: 100%;
-            padding: 10px;
-            margin-bottom: 15px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
+            max-width: 580px;
+            animation: slideUp 0.6s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .register-header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .register-header h1 {
+            font-size: 32px;
+            color: #1a1a2e;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .register-header p {
+            color: #6b7280;
+            font-size: 15px;
+        }
+
+        .form-group {
+            margin-bottom: 24px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 8px;
             font-size: 14px;
         }
-        button {
-            background-color: #1565c0;
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 14px 18px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 15px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            transition: all 0.3s ease;
+            background: #f9fafb;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: #1976d2;
+            background: white;
+            box-shadow: 0 0 0 4px rgba(25, 118, 210, 0.15);
+        }
+
+        .form-section {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .form-section.visible {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-grid .form-group {
+            margin-bottom: 0;
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #1976d2 0%, #0d47a1 100%);
             color: white;
             border: none;
-            padding: 10px 15px;
-            font-size: 22px;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
             cursor: pointer;
-            border-radius: 5px;
-            transition: 0.3s;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 32px;
         }
-        button:hover {
-            background-color: #0056b3;
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(25, 118, 210, 0.4);
         }
-        .hidden {
+
+        .submit-btn.hidden {
             display: none;
         }
-        p {
-            margin-top: 15px;
+
+        .submit-btn img {
+            height: 22px;
+            filter: brightness(0) invert(1);
+        }
+
+        .divider {
+            text-align: center;
+            margin: 32px 0;
+            color: #9ca3af;
             font-size: 14px;
         }
-        a {
-            color: #1565c0;
-            text-decoration: none;
-            font-weight: bold;
+
+        .login-link {
+            text-align: center;
+            color: #6b7280;
+            font-size: 15px;
         }
-        a:hover {
-            text-decoration: underline;
+
+        .login-link a {
+            color: #1976d2;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.3s ease;
+        }
+
+        .login-link a:hover {
+            color: #0d47a1;
+        }
+
+        @media (max-width: 640px) {
+            .register-card {
+                padding: 32px 24px;
+            }
+
+            .register-header h1 {
+                font-size: 28px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 24px;
+            }
         }
     </style>
     <script>
@@ -106,73 +220,125 @@
             const pazienteFields = document.getElementById('paziente_fields');
             const registra = document.getElementById('register_button');
 
-            registra.style.display = userType ? 'block' : 'none';
-            commonFields.style.display = userType ? 'block' : 'none';
-            medicoFields.style.display = userType === 'medico' ? 'block' : 'none';
-            pazienteFields.style.display = userType === 'paziente' ? 'block' : 'none';
+            registra.classList.toggle('hidden', !userType);
+            commonFields.classList.toggle('visible', !!userType);
+            medicoFields.classList.toggle('visible', userType === 'medico');
+            pazienteFields.classList.toggle('visible', userType === 'paziente');
         }
     </script>
 </head>
 <body>
-    <!-- Header con link per navigazione -->
     <div class="header">
-        <a href="{% url 'home' %}" ><img src="/media/logo.png" alt="SoulDiaryConnect" height="60px" style="margin-left: 30px;"></a>
+        <a href="{% url 'home' %}">
+            <img src="/media/logo.png" alt="SoulDiaryConnect">
+        </a>
     </div>
-    <br><br><br>
-    <div class="registration-container">
-        <h1>Registrazione</h1>
-        <form method="POST">
-            {% csrf_token %}
 
-            <!-- Selezione tipo utente -->
-            <label>Tipo di utente:</label>
-            <select name="user_type" id="user_type" onchange="toggleFields()" required>
-                <option value="">-- Seleziona --</option>
-                <option value="medico">Medico</option>
-                <option value="paziente">Paziente</option>
-            </select>
-
-            <!-- Campi comuni -->
-            <div id="common_fields" class="hidden">
-                <label>Nome</label>
-                <input type="text" name="nome" placeholder="Inserisci il tuo nome">
-                <label>Cognome</label>
-                <input type="text" name="cognome" placeholder="Inserisci il tuo cognome">
-                <label>Email</label>
-                <input type="email" name="email" placeholder="Inserisci la tua email">
-                <label>Password</label>
-                <input type="password" name="passwd" placeholder="Inserisci la tua password">
+    <div class="main-container">
+        <div class="register-card">
+            <div class="register-header">
+                <h1>Crea il tuo account</h1>
+                <p>Inizia il tuo viaggio con noi</p>
             </div>
 
-            <!-- Campi specifici per il medico -->
-            <div id="medico_fields" class="hidden">
-                <label>Codice identificativo</label>
-                <input type="text" name="codice_identificativo" placeholder="Inserisci il codice identificativo">
-                <label>Indirizzo studio</label>
-                <input type="text" name="indirizzo_studio" placeholder="Inserisci l'indirizzo dello studio">
-                <label>Numero civico</label>
-                <input type="text" name="numero_civico" placeholder="Inserisci il numero civico">
-                <label>Città</label>
-                <input type="text" name="citta" placeholder="Inserisci la città">
-                <label>Numero telefono studio</label>
-                <input type="text" name="numero_telefono_studio" placeholder="Inserisci il numero di telefono dello studio">
-                <label>Numero telefono cellulare</label>
-                <input type="text" name="numero_telefono_cellulare" placeholder="Inserisci il numero di telefono cellulare">
-            </div>
+            <form method="POST">
+                {% csrf_token %}
 
-            <!-- Campi specifici per il paziente -->
-            <div id="paziente_fields" class="hidden">
-                <label>Codice fiscale</label>
-                <input type="text" name="codice_fiscale" placeholder="Inserisci il codice fiscale">
-                <label>Data di nascita</label>
-                <input type="date" name="data_di_nascita">
-                <label>Medico di riferimento (codice identificativo)</label>
-                <input type="text" name="med" placeholder="Inserisci il codice identificativo del medico">
-            </div>
+                <div class="form-group">
+                    <label for="user_type">Tipo di utente</label>
+                    <select name="user_type" id="user_type" onchange="toggleFields()" required>
+                        <option value="">Seleziona il tipo di account</option>
+                        <option value="medico">Medico</option>
+                        <option value="paziente">Paziente</option>
+                    </select>
+                </div>
 
-            <button type="submit" class="submit-button hidden" id="register_button">Registrati <img src="/media/register.png" height="24px"></button>
-        </form>
-        <p>Sei già registrato? Effettua il <a href="{% url 'login' %}">login</a></p>
+                <div id="common_fields" class="form-section">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="nome">Nome</label>
+                            <input type="text" name="nome" id="nome" placeholder="Il tuo nome">
+                        </div>
+                        <div class="form-group">
+                            <label for="cognome">Cognome</label>
+                            <input type="text" name="cognome" id="cognome" placeholder="Il tuo cognome">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email</label>
+                        <input type="email" name="email" id="email" placeholder="nome@esempio.com">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <input type="password" name="passwd" id="password" placeholder="Crea una password sicura">
+                    </div>
+                </div>
+
+                <div id="medico_fields" class="form-section">
+                    <div class="form-group">
+                        <label for="codice_identificativo">Codice identificativo</label>
+                        <input type="text" name="codice_identificativo" id="codice_identificativo" placeholder="Codice medico">
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="indirizzo_studio">Indirizzo studio</label>
+                            <input type="text" name="indirizzo_studio" id="indirizzo_studio" placeholder="Via/Piazza">
+                        </div>
+                        <div class="form-group">
+                            <label for="numero_civico">Numero civico</label>
+                            <input type="text" name="numero_civico" id="numero_civico" placeholder="N. civico">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="citta">Città</label>
+                        <input type="text" name="citta" id="citta" placeholder="Città dello studio">
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="numero_telefono_studio">Tel. Studio</label>
+                            <input type="text" name="numero_telefono_studio" id="numero_telefono_studio" placeholder="Tel. studio">
+                        </div>
+                        <div class="form-group">
+                            <label for="numero_telefono_cellulare">Tel. Cellulare</label>
+                            <input type="text" name="numero_telefono_cellulare" id="numero_telefono_cellulare" placeholder="Tel. cellulare">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="paziente_fields" class="form-section">
+                    <div class="form-group">
+                        <label for="codice_fiscale">Codice fiscale</label>
+                        <input type="text" name="codice_fiscale" id="codice_fiscale" placeholder="Codice fiscale">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="data_di_nascita">Data di nascita</label>
+                        <input type="date" name="data_di_nascita" id="data_di_nascita">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="med">Medico di riferimento</label>
+                        <input type="text" name="med" id="med" placeholder="Codice identificativo del medico">
+                    </div>
+                </div>
+
+                <button type="submit" class="submit-btn hidden" id="register_button">
+                    Registrati
+                    <img src="/media/register.png" alt="">
+                </button>
+            </form>
+
+            <div class="divider">oppure</div>
+
+            <div class="login-link">
+                Hai già un account? <a href="{% url 'login' %}">Accedi</a>
+            </div>
+        </div>
     </div>
 </body>
 </html>
