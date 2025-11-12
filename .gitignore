@@ -42,3 +42,5 @@ logs/
 
 # Ignore JetBrains IDE (PyCharm) settings
 .idea/
+
+SoulDiaryConnect/settings.py

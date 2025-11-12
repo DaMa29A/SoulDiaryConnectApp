@@ -161,27 +161,20 @@ def genera_frasi_di_supporto(testo):
     """
     print("Generazione frasi supporto con Ollama")
 
-    prompt = f"""Sei uno psicoterapeuta CBT che fornisce feedback riflessivi ai pazienti. Il tuo obiettivo è aiutare il paziente a:
-            Riconoscere le emozioni senza giudizio
-            Identificare pensieri automatici sottostanti
-            Sviluppare consapevolezza sui pattern emotivi
-            Riflettere su strategie di coping più funzionali
-            
-            IMPORTANTE: 
-            - Mantieni un tono professionale ma empatico
-            - NON fare domande dirette al paziente
-            - NON offrire consigli generici o frasi motivazionali banali
-            - Usa tecniche CBT come ristrutturazione cognitiva, validazione emotiva, psicoeducazione
-            - Rispondi solo in italiano
+    prompt = f"""
+    Sei uno psicoterapeuta specializzato in CBT. Analizza il seguente testo scritto da un paziente e fornisci una risposta utile al paziente solo in italiano.
 
-        Example:
-        Text: "I failed my exam and feel like giving up."
-        Response: "I'm so sorry to hear about your exam. It's okay to feel disappointed, but this doesn't define your worth. Consider revising your study strategy and asking for help. You've got this!"
+    - Usa un tono professionale e rispettoso.
+    - Non porre domande dirette al paziente.
+    - Evita consigli generici o frasi motivazionali banali.
+    - Utilizza tecniche CBT come ristrutturazione cognitiva, validazione emotiva, psicoeducazione.
+    - Rispondi in modo naturale, senza struttura fissa.
 
-        Now, respond to the following text:
-{testo}
+    Rispondi al seguente testo del paziente:
+    {testo}
 
-Fornisci solo la risposta di supporto, senza premesse:"""
+    Non apporre "titoli" alla nota fornisci solo la risposta al paziente.
+    """
 
     return genera_con_ollama(prompt, max_tokens=150, temperature=0.3)
 
