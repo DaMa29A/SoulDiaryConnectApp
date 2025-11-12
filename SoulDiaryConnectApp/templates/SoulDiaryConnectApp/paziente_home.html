@@ -364,6 +364,9 @@
                                 <p><strong>🩺 Cosa ne pensa il medico:</strong> {{ nota.testo_medico }}</p>
                             </div>
                         {% endif %}
+                        <form method="GET" action="{% url 'elimina_nota' nota.id %}" style="margin-top:10px;">
+                            <button type="submit" style="background:#dc3545;color:white;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;">Elimina</button>
+                        </form>
                     </div>
                 {% endfor %}
             {% else %}

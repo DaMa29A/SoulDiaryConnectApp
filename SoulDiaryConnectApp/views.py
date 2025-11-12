@@ -315,3 +315,16 @@ def personalizza_generazione(request):
         'medico': medico,
         'tipo_parametri': zip(tipo_parametri, testo_parametri),
     })
+
+
+def elimina_nota(request, nota_id):
+    if request.session.get('user_type') != 'paziente':
+        return redirect('/login/')
+    nota = get_object_or_404(NotaDiario, id=nota_id)
+    # Sicurezza: solo il proprietario può eliminare
+    if nota.paz.codice_fiscale != request.session.get('user_id'):
+        return redirect('/paziente/home/')
+    if request.method == 'POST':
+        nota.delete()
+        return redirect('/paziente/home/')
+    return render(request, 'SoulDiaryConnectApp/conferma_eliminazione.html', {'nota': nota})

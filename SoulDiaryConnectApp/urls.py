@@ -12,6 +12,7 @@ urlpatterns = [
     path('paziente/home/', views.paziente_home, name='paziente_home'),
     path('medico/note/<int:nota_id>/modifica/', views.modifica_testo_medico, name='modifica_testo_medico'),
     path('medico/personalizza/', views.personalizza_generazione, name='personalizza_generazione'),
+    path('paziente/note/<int:nota_id>/elimina/', views.elimina_nota, name='elimina_nota'),
 ]
 
 if settings.DEBUG:
