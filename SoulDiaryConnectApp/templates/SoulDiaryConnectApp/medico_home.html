@@ -233,31 +233,34 @@
                 {% if nota.testo_clinico %}
                   <div class="note-separator"></div>
                   <div class="clinical-text">
-                    <p style="margin-bottom:8px;">
-                      <button type="button" class="save-btn" style="margin-bottom:8px;" onclick="rigeneraFraseClinica({{ nota.id }}, this)">🔄 Rigenera frase clinica</button>
+                    <p style="margin-bottom:2px;">
+                      <button type="button" class="save-btn" style="margin-bottom:2px;" onclick="rigeneraFraseClinica({{ nota.id }}, this)">🔄 Rigenera frase clinica</button>
                     </p>
                     <p><strong>🔬 Analisi clinica:</strong> <span id="testo-clinico-{{ nota.id }}">{{ nota.testo_clinico }}</span></p>
                   </div>
                 {% endif %}
-
                 <form method="POST" action="{% url 'modifica_testo_medico' nota.id %}" class="doctor-response-form">
                   {% csrf_token %}
                   <label>🩺 Il tuo commento professionale:</label>
-                  <textarea name="testo_medico" rows="4">{{ nota.testo_medico }}</textarea>
+                  <textarea name="testo_medico" rows="4">{% if nota.testo_medico %}{{ nota.testo_medico }}{% endif %}</textarea>
                   <button type="submit" class="save-btn">Salva Commento</button>
                 </form>
               </div>
+
             {% endfor %}
           {% else %}
             <div class="empty-state">
               <p>Non ci sono note disponibili per questo paziente.</p>
             </div>
+
           {% endif %}
         {% else %}
           <div class="empty-state">
+
             <p>Seleziona un paziente dalla lista per visualizzare le note.</p>
           </div>
         {% endif %}
+
       </div>
     </div>
   </div>

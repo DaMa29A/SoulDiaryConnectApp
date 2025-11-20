@@ -210,44 +210,45 @@ def genera_frasi_cliniche(testo, medico):
     print("Generazione commenti clinici con Ollama")
 
     try:
-        # Determina i parametri dal medico
         tipo_nota = medico.tipo_nota  # True per "strutturato", False per "non strutturato"
         lunghezza_nota = medico.lunghezza_nota  # True per "lungo", False per "breve"
         tipo_parametri = medico.tipo_parametri.split(".:;!") if medico.tipo_parametri else []
         testo_parametri = medico.testo_parametri.split(".:;!") if medico.testo_parametri else []
-
-        # Determina il max_tokens in base alla lunghezza_nota
-        max_tokens = 300 if lunghezza_nota else 150
+        if lunghezza_nota:
+            max_tokens = 1000
+        else:
+            max_tokens = 250
 
         if tipo_nota:
-            # Genera il prompt strutturato con parametri
             parametri_strutturati = "\n".join(
                 [f"{tipo}: {testo}" for tipo, testo in zip(tipo_parametri, testo_parametri)]
             )
-
             prompt = f"""
-                        You are a psychotherapist specializing in CBT. Analyze the following text and provide a clinical assessment. Respond only in Italian.
-
-                        Example:
-                        Text: "Today I failed my exam and feel like giving up."
-                        Response: 
-                        {parametri_strutturati}
-
-                        Parameters:
-                        {tipo_parametri}
-
-                        Now analyze this text:
-                        {testo}
-
-                        Respond in the format of the example response:
-                        """
+                    Sei uno psicoterapeuta specializzato in TCC. Analizza il seguente testo e fornisci una valutazione clinica.
+                    
+                    Esempio:
+                    Testo: "Oggi ho fallito il mio esame e ho voglia di arrendermi."
+                    Risposta:
+                    {parametri_strutturati}
+                    
+                    Parametri:
+                    {tipo_parametri}
+                    
+                    Ora analizza questo testo:
+                    {testo}
+                    
+                    Rispondi nel formato della risposta di esempio, senza markdown o elenchi puntati, solo in italiano
+                    e genera una nota senza troncamento con un numero di token pari a {max_tokens}.
+                """
         else:
-            # Genera il prompt non strutturato
             prompt = f"""
-                        You are a psychotherapist specializing in CBT. Analyze the following text and provide a clinical assessment. Respond only in Italian. The text is: {testo}
-                        """
+                Sei uno psicoterapeuta specializzato in CBT. Analizza il seguente testo e fornisci una valutazione clinica discorsiva, solo in italiano.
+                Non usare elenchi, grassetti, markdown, simboli, titoli o frasi introduttive. Scrivi una nota clinica discorsiva, 
+                iniziando direttamente con la valutazione e senza troncare gestendoti massimo questo numero di tokens: {max_tokens}:
+                {testo}
+            """
 
-        return genera_con_ollama(prompt, max_tokens=350, temperature=0.6)
+        return genera_con_ollama(prompt, max_tokens=max_tokens, temperature=0.6)
 
     except Exception as e:
         logger.error(f"Errore nella generazione clinica: {e}")
