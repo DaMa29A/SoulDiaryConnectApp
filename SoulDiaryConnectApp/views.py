@@ -1,14 +1,11 @@
-from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Medico, Paziente, NotaDiario
 from django.contrib import messages
 from django.contrib.auth import logout
 from datetime import date
 import requests
-import json
 import logging
-from django.shortcuts import get_object_or_404
+import re
 
 logger = logging.getLogger(__name__)
 
@@ -19,7 +16,8 @@ OLLAMA_MODEL = "llama3.1:8b"  # Cambia in "cbt-assistant" se hai creato il model
 
 def genera_con_ollama(prompt, max_tokens=150, temperature=0.7):
     """
-    Funzione helper per chiamare Ollama API
+    Funzione helper per chiamare Ollama API e normalizzare la risposta rimuovendo
+    eventuali prefissi o etichette introduttive (es. "Risposta:", "La tua risposta:").
     """
     try:
         payload = {
@@ -32,10 +30,39 @@ def genera_con_ollama(prompt, max_tokens=150, temperature=0.7):
             }
         }
 
-        response = requests.post(OLLAMA_BASE_URL, json=payload, timeout=60)
+        response = requests.post(OLLAMA_BASE_URL, json=payload, timeout=120)
         response.raise_for_status()
         result = response.json()
-        return result.get('response', '').strip()
+
+        # Estrai il testo dalla risposta in modo robusto
+        text = ''
+        if isinstance(result, dict):
+            # Ollama può restituire diversi formati; proviamo alcune chiavi comuni
+            for key in ('response', 'text', 'output', 'result'):
+                if key in result and result[key]:
+                    text = result[key]
+                    break
+        else:
+            text = result
+
+        # Se il testo è una lista, unisci gli elementi
+        if isinstance(text, list):
+            text = " ".join(map(str, text))
+
+        text = str(text or '').strip()
+
+        # Rimuove prefissi introduttivi comuni (case-insensitive)
+        text = re.sub(
+            r'^\s*(?:La tua risposta[:\-\s]*|Risposta[:\-\s]*|Output[:\-\s]*|>\s*|Answer[:\-\s]*|Risposta del modello[:\-\s]*)+',
+            '',
+            text,
+            flags=re.I
+        )
+
+        # Rimuove virgolette, apici, bullets o caratteri di maggiore iniziali
+        text = re.sub(r'^[\'"“«\s\-\u2022>]+', '', text).strip()
+
+        return text
 
     except requests.exceptions.RequestException as e:
         logger.error(f"Errore nella chiamata a Ollama: {e}")
@@ -161,22 +188,18 @@ def genera_frasi_di_supporto(testo):
     """
     print("Generazione frasi supporto con Ollama")
 
-    prompt = f"""
-    Sei uno psicoterapeuta specializzato in CBT. Analizza il seguente testo scritto da un paziente e fornisci una risposta utile al paziente solo in italiano.
+    prompt = prompt = f"""
+        You are a supportive assistant. Use the following example to craft your response.
 
-    - Usa un tono professionale e rispettoso.
-    - Non porre domande dirette al paziente.
-    - Evita consigli generici o frasi motivazionali banali.
-    - Utilizza tecniche CBT come ristrutturazione cognitiva, validazione emotiva, psicoeducazione.
-    - Rispondi in modo naturale, senza struttura fissa.
+        Example:
+        Text: "I failed my exam and feel like giving up."
+        Response: "I'm so sorry to hear about your exam. It's okay to feel disappointed, but this doesn't define your worth. Consider revising your study strategy and asking for help. You've got this!"
 
-    Rispondi al seguente testo del paziente:
-    {testo}
+        Now, respond to the following text in italian:
+        {testo}
+        """
 
-    Non apporre "titoli" alla nota fornisci solo la risposta al paziente.
-    """
-
-    return genera_con_ollama(prompt, max_tokens=150, temperature=0.3)
+    return genera_con_ollama(prompt, max_tokens=350, temperature=0.3)
 
 
 def genera_frasi_cliniche(testo, medico):
@@ -223,7 +246,7 @@ def genera_frasi_cliniche(testo, medico):
                         You are a psychotherapist specializing in CBT. Analyze the following text and provide a clinical assessment. Respond only in Italian. The text is: {testo}
                         """
 
-        return genera_con_ollama(prompt, max_tokens=max_tokens, temperature=0.6)
+        return genera_con_ollama(prompt, max_tokens=350, temperature=0.6)
 
     except Exception as e:
         logger.error(f"Errore nella generazione clinica: {e}")
