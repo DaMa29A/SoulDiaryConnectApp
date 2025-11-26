@@ -292,6 +292,51 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
         }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(30, 41, 59, 0.35);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        }
+        .modal-content {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+            padding: 32px 28px;
+            text-align: center;
+            min-width: 340px;
+            max-width: 540px;
+            width: 100%;
+        }
+        .modal-content h2 {
+            color: #dc3545;
+            font-size: 22px;
+            margin-bottom: 12px;
+        }
+        .modal-content p {
+            font-size: 16px;
+            color: #1a1a2e;
+            margin-bottom: 16px;
+            word-break: break-word;
+        }
+        #deleteForm {
+            display: flex;
+            flex-direction: row;
+            gap: 12px;
+            justify-content: center;
+            margin-top: 18px;
+        }
+        #deleteForm .submit-btn {
+            flex: 1;
+            padding: 12px 0;
+            font-size: 16px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
@@ -364,9 +409,14 @@
                                 <p><strong>🩺 Cosa ne pensa il medico:</strong> {{ nota.testo_medico }}</p>
                             </div>
                         {% endif %}
-                        <form method="GET" action="{% url 'elimina_nota' nota.id %}" style="margin-top:10px;">
-                            <button type="submit" style="background:#dc3545;color:white;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;">Elimina</button>
-                        </form>
+                        <button type="button" class="delete-btn" 
+    data-id="{{ nota.id }}" 
+    data-data="{{ nota.data_nota|date:'d/m/Y'|escapejs }}" 
+    data-nota="{{ nota.testo_paziente|escapejs }}" 
+    onclick="openDeleteModalFromButton(this)" 
+    style="background:#dc3545;color:white;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;margin-top:10px;">
+    Elimina
+</button>
                     </div>
                 {% endfor %}
             {% else %}
@@ -377,5 +427,38 @@
             {% endif %}
         </div>
     </div>
+
+    <!-- Modal di conferma eliminazione -->
+    <div id="deleteModal" class="modal-overlay" style="display:none;">
+        <div class="modal-content">
+            <h2 style="color:#dc3545;">Conferma eliminazione</h2>
+            <p id="modalData"></p>
+            <p id="modalNota"></p>
+            <form method="POST" id="deleteForm">
+                {% csrf_token %}
+                <button type="submit" class="submit-btn" style="background:#dc3545;">Elimina definitivamente</button>
+                <button type="button" class="submit-btn" style="background:#6c757d;margin-left:12px;" onclick="closeDeleteModal()">Annulla</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function openDeleteModalFromButton(btn) {
+            var notaId = btn.getAttribute('data-id');
+            var dataNota = btn.getAttribute('data-data');
+            var testoNota = btn.getAttribute('data-nota');
+            openDeleteModal(notaId, dataNota, testoNota);
+        }
+        function openDeleteModal(notaId, dataNota, testoNota) {
+            document.getElementById('modalData').innerHTML = '<strong>Data:</strong> ' + dataNota;
+            document.getElementById('modalNota').innerHTML = '<strong>Nota:</strong> ' + testoNota;
+            var form = document.getElementById('deleteForm');
+            form.action = '/paziente/note/' + notaId + '/elimina/';
+            document.getElementById('deleteModal').style.display = 'flex';
+        }
+        function closeDeleteModal() {
+            document.getElementById('deleteModal').style.display = 'none';
+        }
+    </script>
 </body>
 </html>

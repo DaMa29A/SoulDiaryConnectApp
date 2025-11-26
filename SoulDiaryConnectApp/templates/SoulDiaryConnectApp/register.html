@@ -225,6 +225,12 @@
             medicoFields.classList.toggle('visible', userType === 'medico');
             pazienteFields.classList.toggle('visible', userType === 'paziente');
         }
+
+        function aggiornaCodiceMedico() {
+            const medicoSelect = document.getElementById('medico_select');
+            const medInput = document.getElementById('med');
+            medInput.value = medicoSelect.value;
+        }
     </script>
 </head>
 <body>
@@ -322,8 +328,14 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="med">Medico di riferimento</label>
-                        <input type="text" name="med" id="med" placeholder="Codice identificativo del medico">
+                        <label for="medico_select">Medico di riferimento</label>
+                        <select name="medico_select" id="medico_select" onchange="aggiornaCodiceMedico()">
+                            <option value="">Seleziona un medico</option>
+                            {% for medico in medici %}
+                            <option value="{{ medico.codice_identificativo }}">{{ medico.nome }} {{ medico.cognome }} - {{ medico.codice_identificativo }}</option>
+                            {% endfor %}
+                        </select>
+                        <input type="hidden" name="med" id="med">
                     </div>
                 </div>
 

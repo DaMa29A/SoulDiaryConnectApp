@@ -150,7 +150,9 @@ def register_view(request):
         messages.success(request, 'Registrazione completata con successo!')
         return redirect('login')
 
-    return render(request, 'SoulDiaryConnectApp/register.html')
+    # Recupera tutti i medici per il dropdown
+    medici = Medico.objects.all().order_by('cognome', 'nome')
+    return render(request, 'SoulDiaryConnectApp/register.html', {'medici': medici})
 
 
 def logout_view(request):
