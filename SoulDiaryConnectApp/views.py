@@ -2,7 +2,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from .models import Medico, Paziente, NotaDiario
 from django.contrib import messages
 from django.contrib.auth import logout
-from datetime import datetime
+from django.utils import timezone
 import requests
 import logging
 import re
@@ -32,6 +32,13 @@ def genera_con_ollama(prompt, max_tokens=150, temperature=0.7):
         }
 
         response = requests.post(OLLAMA_BASE_URL, json=payload, timeout=120)
+        
+        # Log della risposta per debug
+        if response.status_code != 200:
+            logger.error(f"Ollama ha restituito status code {response.status_code}")
+            logger.error(f"Risposta: {response.text}")
+            return "Il servizio di generazione testo non è al momento disponibile. Riprova più tardi."
+        
         response.raise_for_status()
         result = response.json()
 
@@ -61,13 +68,22 @@ def genera_con_ollama(prompt, max_tokens=150, temperature=0.7):
         )
 
         # Rimuove virgolette, apici, bullets o caratteri di maggiore iniziali
-        text = re.sub(r'^[\'"“«\s\-\u2022>]+', '', text).strip()
+        text = re.sub(r'^[\'"«\s\-\u2022>]+', '', text).strip()
 
-        return text
+        return text if text else "Generazione non disponibile al momento."
 
+    except requests.exceptions.ConnectionError:
+        logger.error("Impossibile connettersi a Ollama. Assicurati che il servizio sia in esecuzione.")
+        return "Servizio di generazione testo non disponibile. Verifica che Ollama sia attivo."
+    except requests.exceptions.Timeout:
+        logger.error("Timeout nella chiamata a Ollama")
+        return "Il tempo di attesa per la generazione è scaduto. Riprova."
     except requests.exceptions.RequestException as e:
         logger.error(f"Errore nella chiamata a Ollama: {e}")
-        return f"Errore durante la generazione: {e}"
+        return "Errore durante la generazione del testo. Riprova più tardi."
+    except Exception as e:
+        logger.error(f"Errore imprevisto: {e}")
+        return "Errore imprevisto durante la generazione. Riprova."
 
 
 def home(request):
@@ -302,7 +318,7 @@ def paziente_home(request):
                 testo_paziente=testo_paziente,
                 testo_supporto=testo_supporto,
                 testo_clinico=testo_clinico,
-                data_nota=datetime.now()
+                data_nota=timezone.now()
             )
 
     note_diario = NotaDiario.objects.filter(paz=paziente).order_by('-data_nota')

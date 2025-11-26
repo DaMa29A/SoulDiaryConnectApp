@@ -337,6 +337,60 @@
             border-radius: 8px;
             font-weight: 600;
         }
+
+        /* Loading Modal */
+        .loading-modal .modal-content {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 2px solid #1976d2;
+        }
+        .loading-modal h2 {
+            color: #1976d2 !important;
+            font-size: 22px;
+            margin-bottom: 20px;
+        }
+        .loading-animation {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+        }
+        .loading-dot {
+            width: 12px;
+            height: 12px;
+            background: #1976d2;
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+        .loading-dot:nth-child(1) {
+            animation-delay: -0.32s;
+        }
+        .loading-dot:nth-child(2) {
+            animation-delay: -0.16s;
+        }
+        @keyframes bounce {
+            0%, 80%, 100% {
+                transform: scale(0);
+                opacity: 0.5;
+            }
+            40% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        .note-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.1);
+            }
+        }
     </style>
 </head>
 <body>
@@ -370,7 +424,7 @@
 
             <div class="add-note-section">
                 <h2>Aggiungi una nuova nota</h2>
-                <form method="POST">
+                <form method="POST" id="addNoteForm" onsubmit="showLoadingModal(event)">
                     {% csrf_token %}
                     <textarea name="desc" placeholder="Scrivi qui i tuoi pensieri..." rows="8" required></textarea>
 
@@ -442,7 +496,28 @@
         </div>
     </div>
 
+    <!-- Modal di caricamento -->
+    <div id="loadingModal" class="modal-overlay loading-modal" style="display:none;">
+        <div class="modal-content">
+            <div class="note-icon">📝</div>
+            <h2>Generazione nota in corso...</h2>
+            <p style="color: #475569; font-size: 15px;">Stiamo elaborando la tua nota e generando il supporto personalizzato</p>
+            <div class="loading-animation">
+                <div class="loading-dot"></div>
+                <div class="loading-dot"></div>
+                <div class="loading-dot"></div>
+            </div>
+        </div>
+    </div>
+
     <script>
+        function showLoadingModal(event) {
+            // Mostra il modal di caricamento
+            document.getElementById('loadingModal').style.display = 'flex';
+            // Permetti l'invio del form
+            return true;
+        }
+
         function openDeleteModalFromButton(btn) {
             var notaId = btn.getAttribute('data-id');
             var dataNota = btn.getAttribute('data-data');
