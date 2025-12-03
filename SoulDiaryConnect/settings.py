@@ -132,7 +132,7 @@ STATIC_URL = "/static/"
 
 # Directory dove Django cercherà i file statici durante lo sviluppo
 STATICFILES_DIRS = [
-    BASE_DIR / "SoulDiaryConnectApp" / "templates/SoulDiaryConnectApp/static",
+    BASE_DIR / "SoulDiaryConnectApp" / "templates/SoulDiaryConnectApp",
 ]
 
 # Directory dove collectstatic raccoglierà tutti i file statici per la produzione
