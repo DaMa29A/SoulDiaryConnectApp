@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-{%  load static %}
+{% load static %}
 <html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Registrazione - SoulDiaryConnect</title>
     <link rel="stylesheet" href="{% static 'SoulDiaryConnectApp/css/register.css' %}">
+
     <script>
         function toggleFields() {
             const userType = document.getElementById('user_type').value;
@@ -27,12 +28,22 @@
         }
     </script>
 </head>
+
 <body>
-    <div class="header">
-        <a href="{% url 'home' %}">
-            <img src="/media/logo.png" alt="SoulDiaryConnect">
+    <!-- Background video (same as Home) -->
+    <video class="background-video" autoplay loop muted playsinline>
+        <source src="/media/wallpaper.mp4" type="video/mp4">
+    </video>
+
+    <!-- Overlay -->
+    <div class="overlay"></div>
+
+    <!-- Only small logo back to Home -->
+    <header class="top-left">
+        <a class="home-logo" href="{% url 'home' %}" aria-label="Torna alla Home">
+            <img src="/media/2-01.png" alt="SoulDiaryConnect">
         </a>
-    </div>
+    </header>
 
     <div class="main-container">
         <div class="register-card">

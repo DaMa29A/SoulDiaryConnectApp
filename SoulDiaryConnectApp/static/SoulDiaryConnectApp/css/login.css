@@ -6,33 +6,61 @@
 
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #1976d2 0%, #0d47a1 100%);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+    height: 100vh;
+    overflow: hidden;
 }
 
-.header {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    padding: 20px 40px;
-    display: flex;
-    justify-content: space-between;
+/* Background video */
+.background-video {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+}
+
+/* Overlay like Home */
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(13, 71, 161, 0.85), rgba(21, 101, 192, 0.75));
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* Only logo (no "patacca") */
+.top-left {
+    position: fixed;
+    top: 22px;
+    left: 28px;
+    z-index: 50;
+}
+
+.home-logo {
+    display: inline-flex;
     align-items: center;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.header a {
     text-decoration: none;
 }
 
-.header img {
-    height: 50px;
-    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.2));
+.home-logo img {
+    height: 80px;
+    width: auto;
+    display: block;
+    filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.25));
+    transition: transform 0.2s ease, opacity 0.2s ease;
+    opacity: 0.95;
+}
+
+.home-logo:hover img {
+    transform: translateY(-2px);
+    opacity: 1;
 }
 
 .main-container {
-    flex: 1;
+    position: relative;
+    z-index: 10;
+    height: 100vh;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -40,9 +68,9 @@ body {
 }
 
 .login-card {
-    background: white;
+    background: rgba(255, 255, 255, 0.96);
     border-radius: 24px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.30);
     padding: 48px;
     width: 100%;
     max-width: 440px;
@@ -50,14 +78,8 @@ body {
 }
 
 @keyframes slideUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
 .login-header {
@@ -67,7 +89,7 @@ body {
 
 .login-header h1 {
     font-size: 32px;
-    color: #1a1a2e;
+    color: #0d4071;
     font-weight: 700;
     margin-bottom: 8px;
 }
@@ -95,7 +117,7 @@ body {
     border: 2px solid #e5e7eb;
     border-radius: 12px;
     font-size: 15px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: inherit;
     transition: all 0.3s ease;
     background: #f9fafb;
 }
@@ -160,11 +182,8 @@ body {
 }
 
 @media (max-width: 480px) {
-    .login-card {
-        padding: 32px 24px;
-    }
-
-    .login-header h1 {
-        font-size: 28px;
-    }
+    .login-card { padding: 32px 24px; }
+    .login-header h1 { font-size: 28px; }
+    .top-left { top: 14px; left: 16px; }
+    .home-logo img { height: 60px; }
 }

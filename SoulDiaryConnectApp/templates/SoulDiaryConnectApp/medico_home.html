@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-{%  load static %}
+{% load static %}
 <html lang="it">
 <head>
   <meta charset="UTF-8">
@@ -46,12 +46,12 @@
 <body>
   <div class="header">
     <div class="header-left">
-      <img src="/media/logo.png" alt="SoulDiaryConnect">
+      <img src="/media/2-01.png" alt="SoulDiaryConnect">
       <h1>Benvenuto, Dr. {{ medico.nome }} {{ medico.cognome }} [Codice ID: {{ medico.codice_identificativo }}]</h1>
     </div>
     <div class="header-actions">
       <a href="{% url 'personalizza_generazione' %}" class="settings-btn">
-        <img src="/media/settings.png" alt=""> Personalizza
+        <img src="/media/settings2.png" alt=""> Personalizza
       </a>
       <a href="{% url 'logout' %}" class="logout-btn">
         Logout <img src="/media/logout_white.png" alt="">

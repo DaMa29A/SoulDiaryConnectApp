@@ -38,7 +38,7 @@
 <body>
     <div class="header">
         <div class="header-left">
-            <img src="/media/logo.png" alt="SoulDiaryConnect">
+            <img src="/media/2-01.png" alt="SoulDiaryConnect">
             <h1>Personalizza Generazione</h1>
         </div>
         <div class="header-actions">
@@ -58,34 +58,38 @@
                 <div class="settings-grid">
                     <div class="setting-section">
                         <h2>Tipo di Nota</h2>
+
                         <div class="radio-group">
-                            <div class="radio-option">
+                            <label class="radio-option">
                                 <input type="radio" name="tipo_nota" value="strutturato" id="strutturato"
                                     {% if medico.tipo_nota %}checked{% endif %} onchange="toggleParametriTable()">
-                                <label for="strutturato">Commento Strutturato</label>
-                            </div>
-                            <div class="radio-option">
+                                <span>Commento Strutturato</span>
+                            </label>
+
+                            <label class="radio-option">
                                 <input type="radio" name="tipo_nota" value="non_strutturato" id="non_strutturato"
                                     {% if medico.tipo_nota is not None and not medico.tipo_nota %}checked{% endif %}
                                     onchange="toggleParametriTable()">
-                                <label for="non_strutturato">Commento Non Strutturato</label>
-                            </div>
+                                <span>Commento Non Strutturato</span>
+                            </label>
                         </div>
                     </div>
 
                     <div class="setting-section">
                         <h2>Lunghezza della Nota</h2>
+
                         <div class="radio-group">
-                            <div class="radio-option">
+                            <label class="radio-option">
                                 <input type="radio" name="lunghezza_nota" value="lungo" id="lungo"
                                     {% if medico.lunghezza_nota %}checked{% endif %}>
-                                <label for="lungo">Commento Lungo</label>
-                            </div>
-                            <div class="radio-option">
+                                <span>Commento Lungo</span>
+                            </label>
+
+                            <label class="radio-option">
                                 <input type="radio" name="lunghezza_nota" value="breve" id="breve"
                                     {% if medico.lunghezza_nota is not None and not medico.lunghezza_nota %}checked{% endif %}>
-                                <label for="breve">Commento Breve</label>
-                            </div>
+                                <span>Commento Breve</span>
+                            </label>
                         </div>
                     </div>
                 </div>

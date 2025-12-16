@@ -1,41 +1,39 @@
 <!DOCTYPE html>
-{%  load static %}
+{% load static %}
 <html lang="it">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Home - SoulDiaryConnect</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@600;700;800&display=swap" rel="stylesheet">
+
     <link rel="stylesheet" href="{% static 'SoulDiaryConnectApp/css/home.css' %}">
 </head>
+
 <body>
-    <video class="background-video" autoplay loop muted playsinline>
-        <source src="/media/wallpaper.mp4" type="video/mp4">
-    </video>
+<video class="background-video" autoplay loop muted playsinline>
+    <source src="/media/wallpaper.mp4" type="video/mp4">
+</video>
 
-    <div class="overlay"></div>
+<div class="overlay"></div>
 
-    <div class="header">
-        <div class="logo-container">
-            <a href="{% url 'home' %}">
-                <img src="/media/logo.png" alt="SoulDiaryConnect">
-            </a>
-        </div>
-        <a href="{% url 'login' %}" class="login-btn">
-            Login
-            <img src="/media/enter.png" alt="">
-        </a>
-    </div>
+<!-- solo login in alto a destra -->
+<header class="header">
+    <a href="{% url 'login' %}" class="login-btn">
+        Login
+        <img src="/media/enter.png" alt="">
+    </a>
+</header>
 
-    <div class="hero-section">
-        <div class="hero-content">
-            <div class="hero-logo">
-                <a href="{% url 'home' %}">
-                    <img src="/media/logo.png" alt="SoulDiaryConnect">
-                </a>
-            </div>
-            <h1 class="hero-title">Benvenuto su SoulDiaryConnect</h1>
-            <p class="hero-subtitle">Il tuo diario digitale, sempre al tuo fianco.</p>
-        </div>
-    </div>
+<!-- hero centrale: Benvenuto su -> logo -> subtitle -->
+<main class="hero-section">
+    <h1 class="hero-kicker">Benvenuto su</h1>
+
+    <img class="hero-main-logo" src="/media/2-01.png" alt="SoulDiaryConnect">
+
+    <p class="hero-subtitle">Il diario digitale, sempre al tuo fianco.</p>
+</main>
 </body>
 </html>

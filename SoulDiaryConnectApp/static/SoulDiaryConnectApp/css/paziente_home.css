@@ -32,7 +32,7 @@ body {
 }
 
 .header img {
-    height: 45px;
+    height: 60px;
 }
 
 .header h1 {
@@ -84,7 +84,7 @@ body {
 
 .sidebar h2 {
     font-size: 20px;
-    color: #1a1a2e;
+    color: #0d4071;
     margin-bottom: 20px;
     display: flex;
     align-items: center;
@@ -193,7 +193,7 @@ textarea:focus {
 
 .notes-section h2 {
     font-size: 24px;
-    color: #1a1a2e;
+    color: #0d4071;
     margin-bottom: 24px;
     display: flex;
     align-items: center;

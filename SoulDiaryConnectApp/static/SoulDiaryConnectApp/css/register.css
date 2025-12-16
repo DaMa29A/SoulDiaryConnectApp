@@ -4,42 +4,87 @@
     box-sizing: border-box;
 }
 
+html, body {
+    height: 100%;
+}
+
 body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(135deg, #1976d2 0%, #0d47a1 100%);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
+
+    /* IMPORTANT: allow scrolling when the form becomes taller */
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
-.header {
-    background: rgba(255, 255, 255, 0.1);
-    backdrop-filter: blur(10px);
-    padding: 20px 40px;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+/* Background video */
+.background-video {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
 }
 
-.header a {
+/* Overlay like Home */
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(13, 71, 161, 0.85), rgba(21, 101, 192, 0.75));
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* Only logo (no "patacca") */
+.top-left {
+    position: fixed;
+    top: 22px;
+    left: 28px;
+    z-index: 50;
+}
+
+.home-logo {
+    display: inline-flex;
+    align-items: center;
     text-decoration: none;
 }
 
-.header img {
-    height: 50px;
-    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.2));
+.home-logo img {
+    height: 80px;
+    width: auto;
+    display: block;
+    filter: drop-shadow(0 8px 18px rgba(0, 0, 0, 0.25));
+    transition: transform 0.2s ease, opacity 0.2s ease;
+    opacity: 0.95;
 }
 
+.home-logo:hover img {
+    transform: translateY(-2px);
+    opacity: 1;
+}
+
+/* Page wrapper
+   - min-height instead of height:100vh so it can grow
+   - align-items:flex-start so tall forms behave naturally
+   - padding-top to avoid overlapping the fixed logo
+*/
 .main-container {
-    flex: 1;
+    position: relative;
+    z-index: 10;
+
+    min-height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: center;
-    padding: 40px 20px;
+    align-items: flex-start;
+
+    padding: 120px 20px 60px; /* top space for logo + breathing room */
 }
 
+/* Card */
 .register-card {
-    background: white;
+    background: rgba(255, 255, 255, 0.96);
     border-radius: 24px;
-    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.30);
     padding: 48px;
     width: 100%;
     max-width: 580px;
@@ -47,14 +92,8 @@ body {
 }
 
 @keyframes slideUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
 .register-header {
@@ -64,7 +103,7 @@ body {
 
 .register-header h1 {
     font-size: 32px;
-    color: #1a1a2e;
+    color: #0d4071;
     font-weight: 700;
     margin-bottom: 8px;
 }
@@ -93,7 +132,7 @@ body {
     border: 2px solid #e5e7eb;
     border-radius: 12px;
     font-size: 15px;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: inherit;
     transition: all 0.3s ease;
     background: #f9fafb;
 }
@@ -106,6 +145,7 @@ body {
     box-shadow: 0 0 0 4px rgba(25, 118, 210, 0.15);
 }
 
+/* Sections toggle */
 .form-section {
     display: none;
     animation: fadeIn 0.4s ease;
@@ -116,12 +156,8 @@ body {
 }
 
 @keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-    to {
-        opacity: 1;
-    }
+    from { opacity: 0; }
+    to   { opacity: 1; }
 }
 
 .form-grid {
@@ -191,16 +227,12 @@ body {
 }
 
 @media (max-width: 640px) {
-    .register-card {
-        padding: 32px 24px;
-    }
+    .register-card { padding: 32px 24px; }
+    .register-header h1 { font-size: 28px; }
+    .form-grid { grid-template-columns: 1fr; gap: 24px; }
 
-    .register-header h1 {
-        font-size: 28px;
-    }
+    .top-left { top: 14px; left: 16px; }
+    .home-logo img { height: 56px; }
 
-    .form-grid {
-        grid-template-columns: 1fr;
-        gap: 24px;
-    }
+    .main-container { padding: 100px 16px 50px; }
 }
