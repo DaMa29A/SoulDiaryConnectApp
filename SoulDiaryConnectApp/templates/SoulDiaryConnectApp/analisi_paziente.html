@@ -77,43 +77,9 @@
         {% if emotion_chart_data %}
             <!-- GRAFICO EMOZIONI -->
             <div class="chart-section">
-                <!-- SEZIONE INSIGHTS -->
+                <!-- SEZIONE INSIGHTS (popolata dinamicamente dal JavaScript) -->
                 <div class="insights-grid">
-                    {% if statistiche %}
-                        {% if statistiche.media_emotiva >= 3.5 %}
-                            <div class="insight-card positive">
-                                <span class="insight-icon">✅</span>
-                                <div class="insight-content">
-                                    <h3>Stato Generale Positivo</h3>
-                                    <p>Il paziente mostra una tendenza emotiva prevalentemente positiva con una media di {{ statistiche.media_emotiva }}/4. Le emozioni predominanti sono nella categoria positive/neutre.</p>
-                                </div>
-                            </div>
-                        {% elif statistiche.media_emotiva >= 2.5 %}
-                            <div class="insight-card neutral">
-                                <span class="insight-icon">ℹ️</span>
-                                <div class="insight-content">
-                                    <h3>Stato Emotivo Equilibrato</h3>
-                                    <p>Il paziente presenta uno stato emotivo nel complesso equilibrato con una media di {{ statistiche.media_emotiva }}/4. Mix tra emozioni neutre e ansiose.</p>
-                                </div>
-                            </div>
-                        {% elif statistiche.media_emotiva >= 1.5 %}
-                            <div class="insight-card warning">
-                                <span class="insight-icon">⚠️</span>
-                                <div class="insight-content">
-                                    <h3>Attenzione Richiesta</h3>
-                                    <p>Il paziente mostra segni di difficoltà emotiva con una media di {{ statistiche.media_emotiva }}/4. Prevalenza di emozioni ansiose/negative. Monitorare attentamente.</p>
-                                </div>
-                            </div>
-                        {% else %}
-                            <div class="insight-card alert">
-                                <span class="insight-icon">🚨</span>
-                                <div class="insight-content">
-                                    <h3>Stato Critico</h3>
-                                    <p>Il paziente presenta uno stato emotivo prevalentemente negativo con una media di {{ statistiche.media_emotiva }}/4. Intervento consigliato.</p>
-                                </div>
-                            </div>
-                        {% endif %}
-                    {% endif %}
+                    <!-- Gli insights verranno inseriti qui dinamicamente in base al filtro -->
                 </div>
 
                 <h2 style="margin-top: 20px;">📊 Andamento Emotivo nel Tempo</h2>
@@ -121,6 +87,45 @@
                     Questo grafico mostra l'evoluzione dello stato emotivo del paziente nel tempo.
                     Ogni punto rappresenta una nota con la relativa emozione predominante rilevata.
                 </p>
+
+                <!-- FILTRI TEMPORALI -->
+                <div class="chart-filters">
+                    <div class="filter-section">
+                        <label class="filter-label">Periodo rapido:</label>
+                        <div class="filter-buttons">
+                            <button class="filter-btn active" onclick="filterByPeriod('all')">Tutti</button>
+                            <button class="filter-btn" onclick="filterByPeriod('7days')">Ultimi 7gg</button>
+                            <button class="filter-btn" onclick="filterByPeriod('30days')">Ultimo mese</button>
+                            <button class="filter-btn" onclick="filterByPeriod('3months')">Ultimi 3 mesi</button>
+                            <button class="filter-btn" onclick="filterByPeriod('year')">Ultimo anno</button>
+                        </div>
+                    </div>
+
+                    <div class="filter-section">
+                        <label class="filter-label">Periodo specifico:</label>
+                        <div class="filter-selects">
+                            <select id="yearFilter" class="filter-select" onchange="filterBySpecificPeriod()">
+                                <option value="">Anno...</option>
+                            </select>
+                            <select id="monthFilter" class="filter-select" onchange="filterBySpecificPeriod()">
+                                <option value="">Mese...</option>
+                                <option value="1">Gennaio</option>
+                                <option value="2">Febbraio</option>
+                                <option value="3">Marzo</option>
+                                <option value="4">Aprile</option>
+                                <option value="5">Maggio</option>
+                                <option value="6">Giugno</option>
+                                <option value="7">Luglio</option>
+                                <option value="8">Agosto</option>
+                                <option value="9">Settembre</option>
+                                <option value="10">Ottobre</option>
+                                <option value="11">Novembre</option>
+                                <option value="12">Dicembre</option>
+                            </select>
+                            <button class="reset-btn" onclick="resetFilters()">✕ Reset</button>
+                        </div>
+                    </div>
+                </div>
 
                 <div class="chart-container">
                     <canvas id="emotionChart"></canvas>
@@ -178,23 +183,195 @@
 
 <script>
     {% if emotion_chart_data %}
-        document.addEventListener('DOMContentLoaded', function() {
-            createEmotionChart();
+        // Dati globali
+        let chartInstance = null;
+        const allDates = {{ emotion_chart_data.dates|safe }};
+        const allEmotions = {{ emotion_chart_data.emotions|safe }};
+        const allValues = {{ emotion_chart_data.values|safe }};
+
+        // Converti le date in oggetti Date per il filtraggio
+        const parsedDates = allDates.map(dateStr => {
+            const parts = dateStr.split('/');
+            return new Date(parts[2], parts[1] - 1, parts[0]);
         });
 
-        function createEmotionChart() {
+        document.addEventListener('DOMContentLoaded', function() {
+            populateYearFilter();
+            createEmotionChart(allDates, allEmotions, allValues);
+        });
+
+        function populateYearFilter() {
+            const yearFilter = document.getElementById('yearFilter');
+            const years = new Set();
+
+            parsedDates.forEach(date => {
+                years.add(date.getFullYear());
+            });
+
+            const sortedYears = Array.from(years).sort((a, b) => b - a);
+            sortedYears.forEach(year => {
+                const option = document.createElement('option');
+                option.value = year;
+                option.textContent = year;
+                yearFilter.appendChild(option);
+            });
+        }
+
+        function filterByPeriod(period) {
+            // Aggiorna pulsanti attivi
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Reset filtri specifici
+            document.getElementById('yearFilter').value = '';
+            document.getElementById('monthFilter').value = '';
+
+            const now = new Date();
+            let startDate;
+
+            switch(period) {
+                case '7days':
+                    startDate = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                    break;
+                case '30days':
+                    startDate = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+                    break;
+                case '3months':
+                    startDate = new Date(now.getTime() - 90 * 24 * 60 * 60 * 1000);
+                    break;
+                case 'year':
+                    startDate = new Date(now.getTime() - 365 * 24 * 60 * 60 * 1000);
+                    break;
+                default:
+                    // 'all' - mostra tutto
+                    createEmotionChart(allDates, allEmotions, allValues);
+                    return;
+            }
+
+            filterData(date => date >= startDate);
+        }
+
+        function filterBySpecificPeriod() {
+            const yearValue = document.getElementById('yearFilter').value;
+            const monthValue = document.getElementById('monthFilter').value;
+
+            // Deseleziona pulsanti rapidi
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+
+            if (!yearValue && !monthValue) {
+                return;
+            }
+
+            filterData(date => {
+                const yearMatch = !yearValue || date.getFullYear() === parseInt(yearValue);
+                const monthMatch = !monthValue || (date.getMonth() + 1) === parseInt(monthValue);
+                return yearMatch && monthMatch;
+            });
+        }
+
+        function filterData(filterFn) {
+            const filteredDates = [];
+            const filteredEmotions = [];
+            const filteredValues = [];
+
+            parsedDates.forEach((date, index) => {
+                if (filterFn(date)) {
+                    filteredDates.push(allDates[index]);
+                    filteredEmotions.push(allEmotions[index]);
+                    filteredValues.push(allValues[index]);
+                }
+            });
+
+            if (filteredDates.length === 0) {
+                alert('Nessun dato disponibile per il periodo selezionato.');
+                return;
+            }
+
+            createEmotionChart(filteredDates, filteredEmotions, filteredValues);
+        }
+
+        function resetFilters() {
+            // Reset pulsanti
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            document.querySelector('.filter-btn').classList.add('active'); // Attiva "Tutti"
+
+            // Reset select
+            document.getElementById('yearFilter').value = '';
+            document.getElementById('monthFilter').value = '';
+
+            // Mostra tutti i dati
+            createEmotionChart(allDates, allEmotions, allValues);
+        }
+
+        function updateInsights(values) {
+            // Calcola la media dei valori filtrati
+            const filteredAverage = values.reduce((sum, val) => sum + val, 0) / values.length;
+            const roundedAverage = Math.round(filteredAverage * 100) / 100;
+
+            // Determina quale insight mostrare
+            let insightHTML = '';
+
+            if (roundedAverage >= 3.2) {
+                insightHTML = `
+                    <div class="insight-card positive">
+                        <span class="insight-icon">✅</span>
+                        <div class="insight-content">
+                            <h3>Stato Generale Positivo</h3>
+                            <p>Nel periodo selezionato, il paziente mostra una tendenza emotiva prevalentemente positiva con una media di ${roundedAverage}/4. Le emozioni predominanti sono nella categoria positive/neutre.</p>
+                        </div>
+                    </div>
+                `;
+            } else if (roundedAverage >= 2.5) {
+                insightHTML = `
+                    <div class="insight-card neutral">
+                        <span class="insight-icon">ℹ️</span>
+                        <div class="insight-content">
+                            <h3>Stato Emotivo Equilibrato</h3>
+                            <p>Nel periodo selezionato, il paziente presenta uno stato emotivo nel complesso equilibrato con una media di ${roundedAverage}/4. Mix tra emozioni neutre e ansiose.</p>
+                        </div>
+                    </div>
+                `;
+            } else if (roundedAverage >= 1.5) {
+                insightHTML = `
+                    <div class="insight-card warning">
+                        <span class="insight-icon">⚠️</span>
+                        <div class="insight-content">
+                            <h3>Attenzione Richiesta</h3>
+                            <p>Nel periodo selezionato, il paziente mostra segni di difficoltà emotiva con una media di ${roundedAverage}/4. Prevalenza di emozioni ansiose/negative. Monitorare attentamente.</p>
+                        </div>
+                    </div>
+                `;
+            } else {
+                insightHTML = `
+                    <div class="insight-card alert">
+                        <span class="insight-icon">🚨</span>
+                        <div class="insight-content">
+                            <h3>Stato Critico</h3>
+                            <p>Nel periodo selezionato, il paziente presenta uno stato emotivo prevalentemente negativo con una media di ${roundedAverage}/4. Intervento consigliato.</p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            // Aggiorna il DOM
+            const insightsGrid = document.querySelector('.insights-grid');
+            if (insightsGrid) {
+                insightsGrid.innerHTML = insightHTML;
+            }
+        }
+
+        function createEmotionChart(dates, emotions, values) {
             const ctx = document.getElementById('emotionChart').getContext('2d');
 
-            const dates = {{ emotion_chart_data.dates|safe }};
-            const emotions = {{ emotion_chart_data.emotions|safe }};
-            const values = {{ emotion_chart_data.values|safe }};
+            // Aggiorna gli insights con i dati filtrati
+            updateInsights(values);
 
             // Mappa i valori ai colori basati sulle categorie
             const backgroundColors = values.map(value => {
-                if (value === 4) return 'rgba(76, 175, 80, 0.8)';      // Verde - Positive
-                if (value === 3) return 'rgba(156, 39, 176, 0.8)';     // Lilla - Neutral
-                if (value === 2) return 'rgba(255, 193, 7, 0.8)';      // Giallo - Anxious
-                return 'rgba(244, 67, 54, 0.8)';                        // Rosso - Negative
+                if (value === 4) return 'rgba(76, 175, 80, 0.8)';
+                if (value === 3) return 'rgba(156, 39, 176, 0.8)';
+                if (value === 2) return 'rgba(255, 193, 7, 0.8)';
+                return 'rgba(244, 67, 54, 0.8)';
             });
 
             const borderColors = values.map(value => {
@@ -204,7 +381,12 @@
                 return 'rgba(244, 67, 54, 1)';
             });
 
-            new Chart(ctx, {
+            // Distruggi il grafico esistente se presente
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            chartInstance = new Chart(ctx, {
                 type: 'line',
                 data: {
                     labels: dates,
@@ -238,6 +420,7 @@
                         legend: {
                             display: true,
                             position: 'top',
+                            onClick: null,
                             labels: {
                                 font: {
                                     size: 14,
@@ -280,7 +463,7 @@
                         y: {
                             beginAtZero: true,
                             min: 0,
-                            suggestedMax: 2.0,
+                            suggestedMax: 4.2,
                             ticks: {
                                 stepSize: 1,
                                 font: {

@@ -213,13 +213,113 @@ body {
     line-height: 1.6;
 }
 
+.chart-filters {
+    background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 24px;
+    border: 1px solid #e2e8f0;
+}
+
+.filter-section {
+    margin-bottom: 16px;
+}
+
+.filter-section:last-child {
+    margin-bottom: 0;
+}
+
+.filter-label {
+    display: block;
+    font-size: 13px;
+    font-weight: 600;
+    color: #475569;
+    margin-bottom: 8px;
+}
+
+.filter-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    padding: 8px 16px;
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.filter-btn:hover {
+    border-color: #1976d2;
+    color: #1976d2;
+    transform: translateY(-1px);
+}
+
+.filter-btn.active {
+    background: linear-gradient(135deg, #1976d2 0%, #0d47a1 100%);
+    border-color: #1976d2;
+    color: white;
+}
+
+.filter-selects {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.filter-select {
+    padding: 8px 12px;
+    background: white;
+    border: 2px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #475569;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 120px;
+}
+
+.filter-select:hover {
+    border-color: #1976d2;
+}
+
+.filter-select:focus {
+    outline: none;
+    border-color: #1976d2;
+    box-shadow: 0 0 0 3px rgba(25, 118, 210, 0.1);
+}
+
+.reset-btn {
+    padding: 8px 16px;
+    background: #ef4444;
+    border: none;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 500;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.reset-btn:hover {
+    background: #dc2626;
+    transform: translateY(-1px);
+}
+
 .chart-container {
     position: relative;
     height: 400px;
     margin-bottom: 32px;
     background: #fafafa;
     border-radius: 12px;
-    padding: 20px;
+    /*padding: 10px;*/
 }
 
 .emotion-legend {
@@ -299,6 +399,7 @@ body {
 .insights-grid {
     display: grid;
     gap: 16px;
+    margin-bottom: 20px;
 }
 
 .insight-card {
