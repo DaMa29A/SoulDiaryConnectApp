@@ -14,24 +14,37 @@ logger = logging.getLogger(__name__)
 OLLAMA_BASE_URL = "http://localhost:11434/api/generate"
 OLLAMA_MODEL = "llama3.1:8b"  # Cambia in "cbt-assistant" se hai creato il modello personalizzato
 
+# Configurazione lunghezza note cliniche (in caratteri)
+LUNGHEZZA_NOTA_BREVE = 350
+LUNGHEZZA_NOTA_LUNGA = 800
 
-def genera_con_ollama(prompt, max_tokens=150, temperature=0.7):
+
+def genera_con_ollama(prompt, max_chars=None, temperature=0.7):
     """
     Funzione helper per chiamare Ollama API e normalizzare la risposta rimuovendo
     eventuali prefissi o etichette introduttive (es. "Risposta:", "La tua risposta:").
+    
+    Args:
+        prompt: Il prompt da inviare al modello
+        max_chars: Numero massimo di caratteri per la risposta (opzionale)
+        temperature: Temperatura per la generazione (default 0.7)
     """
     try:
+        # Stima approssimativa: ~2 caratteri per token in italiano
+        # Aggiungiamo un margine di sicurezza per evitare troncamenti
+        estimated_tokens = (max_chars * 2) if max_chars else 500
+        
         payload = {
             "model": OLLAMA_MODEL,
             "prompt": prompt,
             "stream": False,
             "options": {
                 "temperature": temperature,
-                "num_predict": max_tokens,
+                "num_predict": estimated_tokens,
             }
         }
 
-        response = requests.post(OLLAMA_BASE_URL, json=payload, timeout=120)
+        response = requests.post(OLLAMA_BASE_URL, json=payload, timeout=500)
         
         # Log della risposta per debug
         if response.status_code != 200:
@@ -230,12 +243,100 @@ def genera_frasi_di_supporto(testo):
         {testo}
         """
 
-    return genera_con_ollama(prompt, max_tokens=350, temperature=0.3)
+    return genera_con_ollama(prompt, max_chars=500, temperature=0.3)
+
+
+def _genera_prompt_strutturato_breve(testo, parametri_strutturati, tipo_parametri, max_chars):
+    """Prompt per nota strutturata breve"""
+    return f"""Sei un assistente per uno psicoterapeuta. Analizza il seguente testo e fornisci una valutazione clinica strutturata e CONCISA.
+
+Esempio:
+Testo: "Oggi ho fallito il mio esame e ho voglia di arrendermi."
+Risposta:
+{parametri_strutturati}
+
+Parametri da utilizzare:
+{tipo_parametri}
+
+ISTRUZIONI IMPORTANTI:
+- La risposta deve essere BREVE e SINTETICA (massimo {max_chars} caratteri)
+- FORMATO OBBLIGATORIO: ogni parametro deve essere su una NUOVA RIGA nel formato "NomeParametro: valore"
+- Vai a capo dopo ogni parametro
+- Non usare markdown, elenchi puntati o simboli
+- Scrivi solo in italiano
+- Completa sempre la frase, non troncare mai a metà
+
+Ora analizza questo testo:
+{testo}"""
+
+
+def _genera_prompt_strutturato_lungo(testo, parametri_strutturati, tipo_parametri, max_chars):
+    """Prompt per nota strutturata lunga"""
+    return f"""Sei un assistente per uno psicoterapeuta. Analizza il seguente testo e fornisci una valutazione clinica strutturata e DETTAGLIATA.
+
+Esempio:
+Testo: "Oggi ho fallito il mio esame e ho voglia di arrendermi."
+Risposta:
+{parametri_strutturati}
+
+Parametri da utilizzare:
+{tipo_parametri}
+
+ISTRUZIONI IMPORTANTI:
+- La risposta deve essere DETTAGLIATA e APPROFONDITA (massimo {max_chars} caratteri)
+- FORMATO OBBLIGATORIO: ogni parametro deve essere su una NUOVA RIGA nel formato "NomeParametro: valore"
+- Vai a capo dopo ogni parametro
+- Fornisci analisi complete per ogni parametro
+- Non usare markdown, elenchi puntati o simboli
+- Scrivi solo in italiano
+- Completa sempre la frase, non troncare mai a metà
+
+Ora analizza questo testo:
+{testo}"""
+
+
+def _genera_prompt_non_strutturato_breve(testo, max_chars):
+    """Prompt per nota non strutturata breve"""
+    return f"""Sei un assistente di uno psicoterapeuta specializzato. Analizza il seguente testo e fornisci una valutazione clinica discorsiva BREVE.
+
+ISTRUZIONI IMPORTANTI:
+- La risposta deve essere BREVE e SINTETICA (massimo {max_chars} caratteri)
+- Scrivi in modo discorsivo, senza struttura a punti
+- Non usare elenchi, grassetti, markdown, simboli o titoli
+- Non usare frasi introduttive, inizia direttamente con la valutazione
+- Scrivi solo in italiano
+- Completa sempre la frase, non troncare mai a metà
+
+Testo da analizzare:
+{testo}"""
+
+
+def _genera_prompt_non_strutturato_lungo(testo, max_chars):
+    """Prompt per nota non strutturata lunga"""
+    return f"""Sei un assistente di uno psicoterapeuta specializzato. Analizza il seguente testo e fornisci una valutazione clinica discorsiva DETTAGLIATA e APPROFONDITA.
+
+ISTRUZIONI IMPORTANTI:
+- La risposta deve essere DETTAGLIATA e COMPLETA (massimo {max_chars} caratteri)
+- Scrivi in modo discorsivo, senza struttura a punti
+- Approfondisci gli aspetti emotivi, cognitivi e comportamentali
+- Non usare elenchi, grassetti, markdown, simboli o titoli
+- Non usare frasi introduttive, inizia direttamente con la valutazione
+- Scrivi solo in italiano
+- Completa sempre la frase, non troncare mai a metà
+
+Testo da analizzare:
+{testo}"""
 
 
 def genera_frasi_cliniche(testo, medico):
     """
-    Genera note cliniche CBT personalizzate in base alle preferenze del medico
+    Genera note cliniche personalizzate in base alle preferenze del medico.
+    
+    Gestisce 4 combinazioni:
+    - Strutturata + Breve
+    - Strutturata + Lunga
+    - Non Strutturata + Breve
+    - Non Strutturata + Lunga
     """
     print("Generazione commenti clinici con Ollama")
 
@@ -244,41 +345,31 @@ def genera_frasi_cliniche(testo, medico):
         lunghezza_nota = medico.lunghezza_nota  # True per "lungo", False per "breve"
         tipo_parametri = medico.tipo_parametri.split(".:;!") if medico.tipo_parametri else []
         testo_parametri = medico.testo_parametri.split(".:;!") if medico.testo_parametri else []
-        if lunghezza_nota:
-            max_tokens = 1000
-        else:
-            max_tokens = 250
+        
+        # Determina la lunghezza massima in caratteri
+        max_chars = LUNGHEZZA_NOTA_LUNGA if lunghezza_nota else LUNGHEZZA_NOTA_BREVE
 
         if tipo_nota:
+            # Nota strutturata
             parametri_strutturati = "\n".join(
-                [f"{tipo}: {testo}" for tipo, testo in zip(tipo_parametri, testo_parametri)]
+                [f"{tipo}: {txt}" for tipo, txt in zip(tipo_parametri, testo_parametri)]
             )
-            prompt = f"""
-                    Sei uno psicoterapeuta specializzato in TCC. Analizza il seguente testo e fornisci una valutazione clinica.
-                    
-                    Esempio:
-                    Testo: "Oggi ho fallito il mio esame e ho voglia di arrendermi."
-                    Risposta:
-                    {parametri_strutturati}
-                    
-                    Parametri:
-                    {tipo_parametri}
-                    
-                    Ora analizza questo testo:
-                    {testo}
-                    
-                    Rispondi nel formato della risposta di esempio, senza markdown o elenchi puntati, solo in italiano
-                    e genera una nota senza troncamento con un numero di token pari a {max_tokens}.
-                """
+            if lunghezza_nota:
+                # Strutturata + Lunga
+                prompt = _genera_prompt_strutturato_lungo(testo, parametri_strutturati, tipo_parametri, max_chars)
+            else:
+                # Strutturata + Breve
+                prompt = _genera_prompt_strutturato_breve(testo, parametri_strutturati, tipo_parametri, max_chars)
         else:
-            prompt = f"""
-                Sei uno psicoterapeuta specializzato in CBT. Analizza il seguente testo e fornisci una valutazione clinica discorsiva, solo in italiano.
-                Non usare elenchi, grassetti, markdown, simboli, titoli o frasi introduttive. Scrivi una nota clinica discorsiva, 
-                iniziando direttamente con la valutazione e senza troncare gestendoti massimo questo numero di tokens: {max_tokens}:
-                {testo}
-            """
+            # Nota non strutturata
+            if lunghezza_nota:
+                # Non Strutturata + Lunga
+                prompt = _genera_prompt_non_strutturato_lungo(testo, max_chars)
+            else:
+                # Non Strutturata + Breve
+                prompt = _genera_prompt_non_strutturato_breve(testo, max_chars)
 
-        return genera_con_ollama(prompt, max_tokens=max_tokens, temperature=0.6)
+        return genera_con_ollama(prompt, max_chars=max_chars, temperature=0.6)
 
     except Exception as e:
         logger.error(f"Errore nella generazione clinica: {e}")
