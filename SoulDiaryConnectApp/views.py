@@ -358,44 +358,104 @@ def analizza_sentiment(testo):
 
     emozioni_lista = ', '.join(EMOZIONI_EMOJI.keys())
     
-    prompt = f"""Sei un esperto di analisi delle emozioni. Il tuo compito è identificare l'emozione predominante in un testo.
+    prompt = f"""Sei un esperto di analisi delle emozioni. Il tuo compito è identificare l'emozione predominante in un testo scegliendo ESCLUSIVAMENTE tra le emozioni della lista fornita.
 
-ISTRUZIONI:
-- Analizza attentamente il testo fornito
-- Identifica l'emozione principale espressa
-- Rispondi con UNA SOLA PAROLA: l'emozione predominante
-- Le emozioni possibili sono: {emozioni_lista}
-- Se non riesci a identificare un'emozione specifica, rispondi con l'emozione più vicina
-- Non aggiungere spiegazioni, punteggiatura o altro
+EMOZIONI DISPONIBILI (scegli SOLO tra queste):
+{emozioni_lista}
 
-Esempi:
-Testo: "Oggi sono riuscito a superare l'esame, sono contentissimo!"
-Risposta: gioia
+REGOLE FONDAMENTALI:
+1. Devi rispondere con UNA SOLA PAROLA
+2. La parola DEVE essere ESATTAMENTE una di quelle nella lista sopra
+3. NON inventare nuove emozioni
+4. NON usare sinonimi o variazioni (es. "allegria" invece di "gioia")
+5. NON aggiungere spiegazioni, punteggiatura o altro testo
+6. Se il testo esprime più emozioni, scegli la PREDOMINANTE
+7. Se non sei sicuro, scegli l'emozione più simile dalla lista
 
-Testo: "Mi sento solo e nessuno mi capisce"
+ESEMPI CORRETTI:
+Testo: "Oggi sono riuscito a superare l'esame, sono contentissimo e felice!"
+Risposta: felicità
+
+Testo: "Mi sento solo e nessuno mi capisce, è terribile"
 Risposta: solitudine
 
-Testo: "Non ce la faccio più, tutto va storto"
+Testo: "Non ce la faccio più, tutto va storto e sono stufo"
 Risposta: frustrazione
+
+Testo: "Sono preoccupato per il futuro, non so cosa mi aspetta"
+Risposta: preoccupazione
+
+Testo: "Mi vergogno di quello che ho fatto"
+Risposta: vergogna
+
+ESEMPI SBAGLIATI (NON FARE MAI COSÌ):
+❌ "contentezza" (non è nella lista, usa "gioia" o "felicità")
+❌ "allegria" (non è nella lista, usa "gioia" o "felicità")
+❌ "angoscia" (non è nella lista, usa "ansia" o "paura")
+❌ "tristezza." (NON aggiungere punteggiatura)
+❌ "L'emozione è rabbia" (risposta SOLO con la parola dell'emozione)
 
 Testo da analizzare:
 {testo}
 
-Emozione predominante:"""
+Emozione predominante (SCEGLI SOLO DALLA LISTA SOPRA):"""
 
     risposta = genera_con_ollama(prompt, max_chars=50, temperature=0.1)
     
-    # Normalizza la risposta: lowercase e rimuovi spazi
-    emozione = risposta.lower().strip().rstrip('.')
-    
-    # Cerca una corrispondenza nel dizionario
+    # Normalizza la risposta: lowercase, rimuovi spazi e punteggiatura
+    emozione = risposta.lower().strip().rstrip('.!?,;:')
+
+    # Primo tentativo: corrispondenza esatta
+    if emozione in EMOZIONI_EMOJI:
+        return emozione
+
+    # Secondo tentativo: cerca se la risposta contiene una delle emozioni valide
+    # (nel caso l'AI abbia aggiunto testo extra)
     for chiave in EMOZIONI_EMOJI.keys():
         if chiave in emozione:
             return chiave
     
-    # Se non trova corrispondenza, restituisci la risposta così com'è
-    # con un'emoji di default
-    return emozione if emozione else 'neutro'
+    # Terzo tentativo: fuzzy matching per sinonimi comuni
+    sinonimi = {
+        'contentezza': 'gioia',
+        'allegria': 'gioia',
+        'contento': 'gioia',
+        'felice': 'felicità',
+        'triste': 'tristezza',
+        'arrabbiato': 'rabbia',
+        'furioso': 'rabbia',
+        'spaventato': 'paura',
+        'impaurito': 'paura',
+        'ansioso': 'ansia',
+        'agitato': 'ansia',
+        'nervoso': 'nervosismo',
+        'stanco': 'stanchezza',
+        'affaticato': 'stanchezza',
+        'angoscia': 'ansia',
+        'angosciato': 'ansia',
+        'confuso': 'confusione',
+        'nostalgico': 'nostalgia',
+        'deluso': 'delusione',
+        'solo': 'solitudine',
+        'isolato': 'solitudine',
+        'frustrato': 'frustrazione',
+        'orgoglioso': 'orgoglio',
+        'imbarazzato': 'imbarazzo',
+        'inadeguato': 'inadeguatezza',
+        'disperato': 'disperazione',
+    }
+
+    if emozione in sinonimi:
+        return sinonimi[emozione]
+
+    # Se ancora non trova corrispondenza, prova a cercare parzialmente nei sinonimi
+    for sinonimo, emozione_corretta in sinonimi.items():
+        if sinonimo in emozione or emozione in sinonimo:
+            return emozione_corretta
+
+    # Ultimo fallback: restituisci confusione come emozione neutrale di default
+    print(f"ATTENZIONE: Emozione non riconosciuta '{emozione}', usando 'confusione' come default")
+    return 'confusione'
 
 
 def get_emoji_for_emotion(emozione):

@@ -44,3 +44,4 @@ logs/
 .idea/
 
 SoulDiaryConnect/settings.py
+SoulDiaryConnectApp/migrations
