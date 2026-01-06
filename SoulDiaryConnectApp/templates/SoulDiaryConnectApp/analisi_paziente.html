@@ -413,14 +413,14 @@
             // Mappa i valori ai colori basati sulle categorie
             const backgroundColors = values.map(value => {
                 if (value === 4) return 'rgba(76, 175, 80, 0.8)';
-                if (value === 3) return 'rgba(156, 39, 176, 0.8)';
+                if (value === 3) return 'rgb(177,118,232, 0.8)';
                 if (value === 2) return 'rgba(255, 193, 7, 0.8)';
                 return 'rgba(244, 67, 54, 0.8)';
             });
 
             const borderColors = values.map(value => {
                 if (value === 4) return 'rgba(76, 175, 80, 1)';
-                if (value === 3) return 'rgba(156, 39, 176, 1)';
+                if (value === 3) return 'rgb(177,118,232, 1)';
                 if (value === 2) return 'rgba(255, 193, 7, 1)';
                 return 'rgba(244, 67, 54, 1)';
             });
@@ -575,8 +575,8 @@
                         {
                             label: 'Neutre',
                             data: neutralData,
-                            backgroundColor: 'rgba(156, 39, 176, 0.8)',
-                            borderColor: 'rgba(156, 39, 176, 1)',
+                            backgroundColor: 'rgb(177,118,232, 0.8)',
+                            borderColor: 'rgb(177,118,232, 1)',
                             borderWidth: 1
                         },
                         {
@@ -648,14 +648,14 @@
             // Colora le barre in base alla media
             const barColors = medieData.map(media => {
                 if (media >= 3.2) return 'rgba(76, 175, 80, 0.8)';
-                if (media >= 2.5) return 'rgba(156, 39, 176, 0.8)';
+                if (media >= 2.5) return 'rgb(177,118,232, 0.8)';
                 if (media >= 1.5) return 'rgba(255, 193, 7, 0.8)';
                 return 'rgba(244, 67, 54, 0.8)';
             });
 
             const borderColorsMedie = medieData.map(media => {
                 if (media >= 3.2) return 'rgba(76, 175, 80, 1)';
-                if (media >= 2.5) return 'rgba(156, 39, 176, 1)';
+                if (media >= 2.5) return 'rgb(177,118,232, 1)';
                 if (media >= 1.5) return 'rgba(255, 193, 7, 1)';
                 return 'rgba(244, 67, 54, 1)';
             });

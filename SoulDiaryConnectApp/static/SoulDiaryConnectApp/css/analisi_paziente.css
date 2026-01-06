@@ -229,7 +229,7 @@ body {
 }
 
 .legend-color-sidebar.color-neutral {
-    background-color: #9c27b0;
+    background-color: #b176e8;
 }
 
 .legend-color-sidebar.color-anxious {
@@ -248,7 +248,8 @@ body {
 
 .legend-text-sidebar strong {
     font-size: 14px;
-    color: #1e293b;
+    /*color: #1e293b;*/
+    color: #0d4071;
 }
 
 .legend-text-sidebar small {
@@ -277,6 +278,10 @@ body {
     font-size: 24px;
     color: #0d4071;
     margin-bottom: 12px;
+}
+
+.chart-section h3 {
+    color: #0d4071;
 }
 
 .chart-description {
@@ -511,7 +516,7 @@ body {
 
 .insight-content h3 {
     font-size: 16px;
-    color: #1e293b;
+    color: #0d4071;
     margin-bottom: 8px;
     font-weight: 600;
 }
@@ -519,6 +524,12 @@ body {
 .insight-content p {
     font-size: 14px;
     color: #475569;
+    line-height: 1.6;
+}
+
+.insight-content strong {
+    font-size: 14px;
+    color: #0d4071;
     line-height: 1.6;
 }
 

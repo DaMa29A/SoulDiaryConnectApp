@@ -102,7 +102,7 @@
               <p><strong>Data di Nascita:</strong> {{ paziente_selezionato.data_di_nascita|date:"d/m/Y" }}</p>
 
               <a href="{% url 'analisi_paziente' %}?paziente_id={{ paziente_selezionato.codice_fiscale }}" class="analisi-btn">
-                📊 Analisi
+                📊 Analisi umore
               </a>
               <a href="{% url 'riassunto_caso_clinico' %}?paziente_id={{ paziente_selezionato.codice_fiscale }}" class="riassunto-btn">
                 📋 Riassunto caso clinico
