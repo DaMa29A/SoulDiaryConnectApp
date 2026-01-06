@@ -132,7 +132,7 @@
                         <select name="medico_select" id="medico_select" onchange="aggiornaCodiceMedico()">
                             <option value="">Seleziona un medico</option>
                             {% for medico in medici %}
-                            <option value="{{ medico.codice_identificativo }}">{{ medico.nome }} {{ medico.cognome }} - {{ medico.codice_identificativo }}</option>
+                                <option value="{{ medico.codice_identificativo }}">{{ medico.nome }} {{ medico.cognome }} - {{ medico.codice_identificativo }}</option>
                             {% endfor %}
                         </select>
                         <input type="hidden" name="med" id="med">

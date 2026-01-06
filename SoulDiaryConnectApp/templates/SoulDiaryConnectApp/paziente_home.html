@@ -91,18 +91,18 @@
                             </div>
                         {% else %}
                             {% if not nota.is_emergency %}
-                            <div class="note-separator"></div>
-                            <div class="generate-support-section">
-                                <p style="color: #64748b; font-style: italic; margin-bottom: 12px;">
-                                    Questa nota non ha ancora una frase di supporto.
-                                </p>
-                                <form method="POST" action="{% url 'genera_frase_supporto_nota' nota.id %}" onsubmit="showGenerateSupportModal(event, this)">
-                                    {% csrf_token %}
-                                    <button type="submit" class="generate-support-btn">
-                                        <span>✨</span> Genera frase di supporto
-                                    </button>
-                                </form>
-                            </div>
+                                <div class="note-separator"></div>
+                                <div class="generate-support-section">
+                                    <p style="color: #64748b; font-style: italic; margin-bottom: 12px;">
+                                        Questa nota non ha ancora una frase di supporto.
+                                    </p>
+                                    <form method="POST" action="{% url 'genera_frase_supporto_nota' nota.id %}" onsubmit="showGenerateSupportModal(event, this)">
+                                        {% csrf_token %}
+                                        <button type="submit" class="generate-support-btn">
+                                            <span>✨</span> Genera frase di supporto
+                                        </button>
+                                    </form>
+                                </div>
                             {% endif %}
                         {% endif %}
 
@@ -112,14 +112,14 @@
                                 <p><strong>🩺 Cosa ne pensa il medico:</strong> {{ nota.testo_medico }}</p>
                             </div>
                         {% endif %}
-                        <button type="button" class="delete-btn" 
-    data-id="{{ nota.id }}" 
-    data-data="{{ nota.data_nota|date:'d/m/Y' }} alle ore {{ nota.data_nota|date:'H:i'|escapejs }}"
-    data-nota="{{ nota.testo_paziente|escapejs }}"
-    onclick="openDeleteModalFromButton(this)" 
-    style="background:#dc3545;color:white;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;margin-top:10px;">
-    Elimina
-</button>
+                        <button type="button" class="delete-btn"
+                                data-id="{{ nota.id }}"
+                                data-data="{{ nota.data_nota|date:'d/m/Y' }} alle ore {{ nota.data_nota|date:'H:i'|escapejs }}"
+                                data-nota="{{ nota.testo_paziente|escapejs }}"
+                                onclick="openDeleteModalFromButton(this)"
+                                style="background:#dc3545;color:white;border:none;padding:8px 16px;border-radius:8px;cursor:pointer;margin-top:10px;">
+                            Elimina
+                        </button>
                     </div>
                 {% endfor %}
             {% else %}

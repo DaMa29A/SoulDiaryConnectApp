@@ -62,14 +62,14 @@
                         <div class="radio-group">
                             <label class="radio-option">
                                 <input type="radio" name="tipo_nota" value="strutturato" id="strutturato"
-                                    {% if medico.tipo_nota %}checked{% endif %} onchange="toggleParametriTable()">
+                                       {% if medico.tipo_nota %}checked{% endif %} onchange="toggleParametriTable()">
                                 <span>Analisi Strutturata</span>
                             </label>
 
                             <label class="radio-option">
                                 <input type="radio" name="tipo_nota" value="non_strutturato" id="non_strutturato"
-                                    {% if medico.tipo_nota is not None and not medico.tipo_nota %}checked{% endif %}
-                                    onchange="toggleParametriTable()">
+                                       {% if medico.tipo_nota is not None and not medico.tipo_nota %}checked{% endif %}
+                                       onchange="toggleParametriTable()">
                                 <span>Analisi Non Strutturata</span>
                             </label>
                         </div>
@@ -81,13 +81,13 @@
                         <div class="radio-group">
                             <label class="radio-option">
                                 <input type="radio" name="lunghezza_nota" value="lungo" id="lungo"
-                                    {% if medico.lunghezza_nota %}checked{% endif %}>
+                                       {% if medico.lunghezza_nota %}checked{% endif %}>
                                 <span>Analisi Lunga</span>
                             </label>
 
                             <label class="radio-option">
                                 <input type="radio" name="lunghezza_nota" value="breve" id="breve"
-                                    {% if medico.lunghezza_nota is not None and not medico.lunghezza_nota %}checked{% endif %}>
+                                       {% if medico.lunghezza_nota is not None and not medico.lunghezza_nota %}checked{% endif %}>
                                 <span>Analisi Breve</span>
                             </label>
                         </div>
