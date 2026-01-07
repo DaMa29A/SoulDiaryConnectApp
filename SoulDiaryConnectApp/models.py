@@ -11,8 +11,8 @@ class Medico(models.Model):
     numero_telefono_cellulare = models.CharField(max_length=13, unique=True, null=True, blank=True)
     email = models.EmailField(unique=True)
     password = models.CharField(max_length=50)
-    tipo_nota = models.BooleanField(null=True, blank=True)
-    lunghezza_nota = models.BooleanField(null=True, blank=True)
+    tipo_nota = models.BooleanField(default=False)  # False = non strutturato, True = strutturato
+    lunghezza_nota = models.BooleanField(default=False)  # False = breve, True = lungo
     tipo_parametri = models.CharField(max_length=400, null=True, blank=True)
     testo_parametri = models.CharField(max_length=2500, null=True, blank=True)
 

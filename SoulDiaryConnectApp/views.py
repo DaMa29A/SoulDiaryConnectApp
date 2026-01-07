@@ -22,7 +22,7 @@ OLLAMA_BASE_URL = "http://localhost:11434/api/generate"
 OLLAMA_MODEL = "llama3.1:8b"  # Cambia in "cbt-assistant" se hai creato il modello personalizzato
 
 # Configurazione lunghezza note cliniche (in caratteri)
-LUNGHEZZA_NOTA_BREVE = 250
+LUNGHEZZA_NOTA_BREVE = 300
 LUNGHEZZA_NOTA_LUNGA = 500
 
 # ============================================================================
@@ -354,6 +354,8 @@ def register_view(request):
                 numero_telefono_cellulare=numero_telefono_cellulare,
                 email=email,
                 password=password,
+                tipo_nota=False,  # Default: analisi non strutturata
+                lunghezza_nota=False,  # Default: analisi breve
             )
         elif user_type == 'paziente':
             # Dettagli specifici per il paziente
@@ -517,6 +519,7 @@ EMOZIONI_CATEGORIE = {
     'delusione': 'negative',
     'malinconia': 'negative',
     'disperazione': 'negative',
+    'inadeguatezza': 'negative',
     # Emozioni ansiose (giallo/ambra)
     'ansia': 'anxious',
     'preoccupazione': 'anxious',
@@ -528,7 +531,6 @@ EMOZIONI_CATEGORIE = {
     'colpa': 'neutral',
     'confusione': 'neutral',
     'nostalgia': 'neutral',
-    'inadeguatezza': 'neutral',
     'imbarazzo': 'neutral',
 }
 
@@ -829,41 +831,63 @@ def analizza_sentiment(testo, paziente=None):
     REGOLE FONDAMENTALI:
     1. La prima riga DEVE iniziare con "Emozione:" seguita da UNA SOLA PAROLA dalla lista
     2. La seconda riga DEVE iniziare con "Spiegazione:" seguita dalla motivazione
-    3. Nella spiegazione, cita parole o frasi SPECIFICHE del testo originale
+    3. Nella spiegazione, DEVI citare parole o frasi SPECIFICHE del testo originale tra virgolette
     4. La spiegazione deve essere breve (max 2 frasi)
     5. NON inventare emozioni non presenti nella lista
+    6. USA "confusione" SOLO se il testo esprime esplicitamente incertezza, dubbi o disorientamento
+    7. La spiegazione DEVE SEMPRE contenere citazioni dirette dal testo
+    
+    ATTENZIONE SU "CONFUSIONE":
+    - "confusione" significa disorientamento mentale, non sapere cosa fare o pensare
+    - NON usare "confusione" come emozione di default quando non sai cosa scegliere
+    - Se il testo esprime più emozioni, scegli quella PREDOMINANTE (la più forte/evidente)
+    - Se il testo è neutro o descrittivo, cerca comunque il tono emotivo sottostante
     
     ESEMPI CORRETTI:
     Testo: "Oggi sono riuscito a superare l'esame, sono contentissimo e felice!"
     Emozione: felicità
-    Spiegazione: Il testo esprime felicità attraverso termini positivi come "contentissimo" e "felice", inoltre il successo nell'esame indica un evento gratificante.
+    Spiegazione: Il testo esprime felicità attraverso le parole "contentissimo" e "felice", associate al successo nell'esame.
     
     Testo: "Mi sento solo e nessuno mi capisce, è terribile"
     Emozione: solitudine
-    Spiegazione: L'espressione "mi sento solo" e "nessuno mi capisce" indica chiaramente un vissuto di isolamento e mancanza di connessione con gli altri.
+    Spiegazione: L'espressione "mi sento solo" e "nessuno mi capisce" indica un vissuto di isolamento emotivo.
     
     Testo: "Non ce la faccio più, tutto va storto e sono stufo"
     Emozione: frustrazione
-    Spiegazione: Le frasi "non ce la faccio più" e "tutto va storto" indicano un accumulo di difficoltà che genera un senso di impotenza e irritazione.
+    Spiegazione: Le frasi "non ce la faccio più" e "tutto va storto" indicano un senso di impotenza e irritazione.
+    
+    Testo: "Non so cosa fare, sono indeciso se accettare o rifiutare"
+    Emozione: confusione
+    Spiegazione: Le espressioni "non so cosa fare" e "sono indeciso" indicano uno stato di incertezza e disorientamento decisionale.
     
     Testo da analizzare:
     {testo}
     
-    Rispondi ora nel formato richiesto:"""
+    Rispondi ora nel formato richiesto (ricorda: la spiegazione DEVE citare parole specifiche del testo):"""
 
     risposta = genera_con_ollama(prompt, max_chars=300, temperature=0.2)
 
-    # Parsing della risposta
+    # Parsing della risposta - migliora cattura spiegazione su più righe
     linee = risposta.strip().split('\n')
     emozione = None
     spiegazione = None
+    in_spiegazione = False
+    spiegazione_parts = []
 
     for linea in linee:
         linea_stripped = linea.strip()
         if linea_stripped.lower().startswith('emozione:'):
             emozione = linea_stripped.split(':', 1)[1].strip().lower().rstrip('.!?,;:')
+            in_spiegazione = False
         elif linea_stripped.lower().startswith('spiegazione:'):
-            spiegazione = linea_stripped.split(':', 1)[1].strip()
+            spiegazione_parts.append(linea_stripped.split(':', 1)[1].strip())
+            in_spiegazione = True
+        elif in_spiegazione and linea_stripped:
+            # Continua a catturare la spiegazione se è su più righe
+            spiegazione_parts.append(linea_stripped)
+
+    if spiegazione_parts:
+        spiegazione = ' '.join(spiegazione_parts)
 
     # Validazione e normalizzazione dell'emozione
     if emozione and emozione in EMOZIONI_EMOJI:
@@ -909,8 +933,19 @@ def analizza_sentiment(testo, paziente=None):
         if emozione and emozione in sinonimi:
             emozione_validata = sinonimi[emozione]
 
-    if not spiegazione:
-        spiegazione = "Emozione rilevata in base al contenuto generale del testo."
+    # Migliora il fallback della spiegazione
+    if not spiegazione or (spiegazione and len(spiegazione) < 10):
+        # Prova a estrarre una spiegazione dalla risposta grezza se non è stata trovata
+        if 'perché' in risposta.lower() or 'indica' in risposta.lower() or 'esprime' in risposta.lower():
+            # C'è del contenuto utile nella risposta, usalo
+            spiegazione = risposta.replace('\n', ' ').strip()
+            # Rimuovi la parte dell'emozione se presente
+            if 'emozione:' in spiegazione.lower():
+                parti = spiegazione.lower().split('spiegazione:')
+                if len(parti) > 1:
+                    spiegazione = parti[1].strip()
+        else:
+            spiegazione = f"Il testo esprime un vissuto emotivo riconducibile a {emozione_validata}."
 
     print(f"Emozione rilevata: {emozione_validata}, Spiegazione: {spiegazione}")
 
@@ -934,16 +969,34 @@ def _genera_prompt_strutturato_breve(testo, parametri_strutturati, tipo_parametr
     if paziente:
         nome_completo = f"{paziente.nome} {paziente.cognome}"
         info_paziente = f"""INFORMAZIONE IMPORTANTE SULL'AUTORE:
-    L'autore di questo testo è {nome_completo}.
-    Questo testo è scritto in prima persona da {nome_completo}.
-    Qualsiasi altro nome menzionato (anche se uguale a "{paziente.nome}") si riferisce ad altre persone (amici, familiari, colleghi, ecc.), NON al paziente.
-    
-    """
+        L'autore di questo testo è {nome_completo}.
+        Questo testo è scritto in prima persona da {nome_completo}.
+        Qualsiasi altro nome menzionato (anche se uguale a "{paziente.nome}") si riferisce ad altre persone (amici, familiari, colleghi, ecc.), NON al paziente.
+        
+        """
+
+    # Sezione contesto note precedenti (solo se esistono)
+    ha_note_precedenti = contesto_precedente != "Nessuna nota precedente disponibile."
+    sezione_contesto = ""
+    regole_note_precedenti = ""
+
+    if ha_note_precedenti:
+        sezione_contesto = f"""CONTESTO - Note precedenti del paziente (SOLO per riferimento, NON descrivere ogni nota):
+            {contesto_precedente}
+            """
+        regole_note_precedenti = """
+            2. Le note precedenti sono SOLO contesto di supporto (10%) - NON descriverle una per una
+            3. Puoi fare riferimenti generici tipo "rispetto alle note precedenti", "in continuità con pattern emersi in precedenza"
+            4. Se menzioni una nota specifica, USA SOLO la data e l'orario (es: "come emerso il 15/12/2025 alle 14:30")
+            5. VIETATO ASSOLUTO: MAI scrivere "Nota 1", "Nota 2", "Nota 3", "(Nota 2)" o simili - il medico non sa cosa significano
+            6. NON elencare o riassumere ogni singola nota precedente"""
+    else:
+        regole_note_precedenti = """
+            2. Questa è la PRIMA nota del paziente - NON fare riferimenti a note precedenti inesistenti"""
+
     return f"""Sei un assistente per uno psicoterapeuta. Analizza il seguente testo e fornisci una valutazione clinica strutturata e CONCISA.
 
-    {info_paziente}CONTESTO - Note precedenti del paziente (SOLO per riferimento, NON descrivere ogni nota):
-    {contesto_precedente}
-    
+    {info_paziente}{sezione_contesto}
     Esempio:
     Testo: "Oggi ho fallito il mio esame e ho voglia di arrendermi."
     Risposta:
@@ -958,12 +1011,7 @@ def _genera_prompt_strutturato_breve(testo, parametri_strutturati, tipo_parametr
     - Vai a capo dopo ogni parametro
     
     REGOLE PER L'ANALISI:
-    1. CONCENTRATI AL 90% SULLA NOTA CORRENTE - analizza principalmente il testo attuale
-    2. Le note precedenti sono SOLO contesto di supporto - NON descriverle una per una
-    3. Puoi fare riferimenti generici tipo "rispetto alle note precedenti", "in continuità con pattern emersi in precedenza"
-    4. Se menzioni una nota specifica precedente, cita SEMPRE la data completa (es: "come nella nota del 15/12/2025 alle ore 14:30")
-    5. NON elencare o riassumere ogni singola nota precedente
-    6. NON usare espressioni come "La nota 1", "La nota 2", "La nota 3" senza data e orario
+    1. CONCENTRATI AL 90% SULLA NOTA CORRENTE - analizza principalmente il testo attuale {regole_note_precedenti}
     
     COSA FARE:
     ✓ Analizzare gli aspetti emotivi, cognitivi e comportamentali della NOTA CORRENTE
@@ -971,9 +1019,6 @@ def _genera_prompt_strutturato_breve(testo, parametri_strutturati, tipo_parametr
     ✓ Focalizzarsi su ciò che emerge OGGI nel testo
     
     COSA NON FARE:
-    ✗ NON descrivere in dettaglio le note precedenti
-    ✗ NON fare un riassunto di ogni nota precedente
-    ✗ NON citare numeri di note senza date
     ✗ NON usare markdown, elenchi puntati o simboli
     ✗ NON usare frasi introduttive come "Ecco la nota clinica", "Ecco l'analisi"
     
@@ -989,16 +1034,35 @@ def _genera_prompt_strutturato_lungo(testo, parametri_strutturati, tipo_parametr
     if paziente:
         nome_completo = f"{paziente.nome} {paziente.cognome}"
         info_paziente = f"""INFORMAZIONE IMPORTANTE SULL'AUTORE:
-    L'autore di questo testo è {nome_completo}.
-    Questo testo è scritto in prima persona da {nome_completo}.
-    Qualsiasi altro nome menzionato (anche se uguale a "{paziente.nome}") si riferisce ad altre persone (amici, familiari, colleghi, ecc.), NON al paziente.
-    
-    """
+            L'autore di questo testo è {nome_completo}.
+            Questo testo è scritto in prima persona da {nome_completo}.
+            Qualsiasi altro nome menzionato (anche se uguale a "{paziente.nome}") si riferisce ad altre persone (amici, familiari, colleghi, ecc.), NON al paziente.
+            
+            """
+
+    # Sezione contesto note precedenti (solo se esistono)
+    ha_note_precedenti = contesto_precedente != "Nessuna nota precedente disponibile."
+    sezione_contesto = ""
+    regole_note_precedenti = ""
+
+    if ha_note_precedenti:
+        sezione_contesto = f"""CONTESTO - Note precedenti del paziente (SOLO per riferimento, NON descrivere ogni nota):
+            {contesto_precedente}
+            """
+        regole_note_precedenti = """
+            2. Le note precedenti sono SOLO contesto di supporto (20%) - NON descriverle una per una
+            3. Puoi fare riferimenti come 'Si nota un miglioramento rispetto al pattern ansioso emerso nelle settimane precedenti'
+            4. Se menzioni una nota specifica, USA SOLO la data e l'orario (es: 'diversamente da quanto emerso il 15/12/2025 alle 14:30')
+            5. VIETATO ASSOLUTO: MAI scrivere 'Nota 1', 'Nota 2', 'Nota 3', '(Nota 2)' o simili - il medico non sa cosa significano
+            6. NON elencare o riassumere ogni singola nota precedente
+            7. Puoi usare espressioni generiche come 'nelle note precedenti', 'in passato', 'rispetto a situazioni simili'"""
+    else:
+        regole_note_precedenti = """
+            2. Questa è la PRIMA nota del paziente - NON fare riferimenti a note precedenti inesistenti"""
+
     return f"""Sei un assistente per uno psicoterapeuta. Analizza il seguente testo e fornisci una valutazione clinica strutturata e DETTAGLIATA.
 
-    {info_paziente}CONTESTO - Note precedenti del paziente (SOLO per riferimento, NON descrivere ogni nota):
-    {contesto_precedente}
-    
+    {info_paziente}{sezione_contesto}
     Esempio:
     Testo: "Oggi ho fallito il mio esame e ho voglia di arrendermi."
     Risposta:
@@ -1014,13 +1078,7 @@ def _genera_prompt_strutturato_lungo(testo, parametri_strutturati, tipo_parametr
     - Fornisci analisi complete per ogni parametro
     
     REGOLE PER L'ANALISI:
-    1. CONCENTRATI AL 80% SULLA NOTA CORRENTE - analizza principalmente il testo attuale in profondità
-    2. Le note precedenti sono SOLO contesto di supporto - NON descriverle una per una
-    3. Puoi fare riferimenti come "Si nota un miglioramento rispetto al pattern ansioso emerso nelle settimane precedenti"
-    4. Se menzioni una nota specifica precedente, cita SEMPRE la data completa (es: "diversamente da quanto emerso nella nota del 15/12/2025 alle ore 14:30")
-    5. NON elencare o riassumere ogni singola nota precedente
-    6. NON usare espressioni come "Nella nota 1", "La nota 2 mostra", "Nella nota 3" senza data e orario
-    7. Puoi usare espressioni generiche come "nelle note precedenti", "in passato", "rispetto a situazioni simili"
+    1. CONCENTRATI AL 80% SULLA NOTA CORRENTE - analizza principalmente il testo attuale in profondità {regole_note_precedenti}
     
     COSA FARE:
     ✓ Analizzare in profondità la NOTA CORRENTE: emozioni, pensieri, comportamenti
@@ -1029,9 +1087,6 @@ def _genera_prompt_strutturato_lungo(testo, parametri_strutturati, tipo_parametr
     ✓ Fornire osservazioni cliniche dettagliate sulla situazione ATTUALE
     
     COSA NON FARE:
-    ✗ NON dedicare paragrafi interi a descrivere le note precedenti
-    ✗ NON fare un riassunto cronologico delle note passate
-    ✗ NON citare numeri di note senza date complete
     ✗ NON usare markdown, elenchi puntati o simboli
     ✗ NON usare frasi introduttive come "Ecco la nota clinica"
     
@@ -1047,28 +1102,41 @@ def _genera_prompt_non_strutturato_breve(testo, max_chars, contesto_precedente, 
     if paziente:
         nome_completo = f"{paziente.nome} {paziente.cognome}"
         info_paziente = f"""INFORMAZIONE IMPORTANTE SULL'AUTORE:
-    L'autore di questo testo è {nome_completo}.
-    Questo testo è scritto in prima persona da {nome_completo}.
-    Qualsiasi altro nome menzionato (anche se uguale a "{paziente.nome}") si riferisce ad altre persone (amici, familiari, colleghi, ecc.), NON al paziente.
-    
-    """
+            L'autore di questo testo è {nome_completo}.
+            Questo testo è scritto in prima persona da {nome_completo}.
+            Qualsiasi altro nome menzionato (anche se uguale a "{paziente.nome}") si riferisce ad altre persone (amici, familiari, colleghi, ecc.), NON al paziente.
+            
+            """
+
+    # Sezione contesto note precedenti (solo se esistono)
+    ha_note_precedenti = contesto_precedente != "Nessuna nota precedente disponibile."
+    sezione_contesto = ""
+    regole_note_precedenti = ""
+
+    if ha_note_precedenti:
+        sezione_contesto = f"""CONTESTO - Note precedenti del paziente (SOLO per riferimento, NON descrivere ogni nota):
+            {contesto_precedente}
+            """
+        regole_note_precedenti = """
+            2. Le note precedenti sono SOLO contesto (10%) - menzionale brevemente se utile
+            3. Usa espressioni generiche come "rispetto alle note precedenti", "diversamente da prima"
+            4. Se menzioni una nota specifica, USA SOLO la data e l'orario (es: "rispetto al 15/12/2025 alle 14:30")
+            5. VIETATO ASSOLUTO: MAI scrivere "Nota 1", "Nota 2", "(Nota 3)" o simili - il medico non sa cosa significano
+            6. NON dedicare frasi intere a riassumere le note precedenti"""
+    else:
+        regole_note_precedenti = """
+            2. Questa è la PRIMA nota del paziente - NON fare riferimenti a note precedenti inesistenti"""
+
     return f"""Sei un assistente di uno psicoterapeuta specializzato. Analizza il seguente testo e fornisci una valutazione clinica discorsiva BREVE.
 
-    {info_paziente}CONTESTO - Note precedenti del paziente (SOLO per riferimento, NON descrivere ogni nota):
-    {contesto_precedente}
-    
+    {info_paziente}{sezione_contesto}
     ISTRUZIONI FONDAMENTALI:
     - La risposta deve essere BREVE e SINTETICA (massimo {max_chars} caratteri)
     - Scrivi in modo discorsivo, come un commento clinico professionale
     - NON usare elenchi, grassetti, markdown, simboli o titoli
     
     REGOLE PER L'ANALISI:
-    1. CONCENTRATI AL 90% SULLA NOTA CORRENTE - analizza principalmente il testo attuale
-    2. Le note precedenti sono SOLO contesto - menzionale brevemente se utile
-    3. Usa espressioni generiche come "rispetto alle note precedenti", "diversamente da prima"
-    4. Se menzioni una nota specifica, cita SEMPRE la data completa (es: "rispetto alla nota del 15/12/2025 alle ore 14:30")
-    5. NON dedicare frasi intere a riassumere le note precedenti
-    6. NON usare "La nota 1", "La nota 2", "Nella nota 3" senza date
+    1. CONCENTRATI AL 90% SULLA NOTA CORRENTE - analizza principalmente il testo attuale {regole_note_precedenti}
     
     COSA FARE:
     ✓ Analizzare il contenuto emotivo e psicologico della NOTA CORRENTE
@@ -1077,9 +1145,6 @@ def _genera_prompt_non_strutturato_breve(testo, max_chars, contesto_precedente, 
     ✓ Scrivere in modo fluido e professionale
     
     COSA NON FARE:
-    ✗ NON descrivere le note precedenti una per una
-    ✗ NON fare un elenco delle emozioni passate
-    ✗ NON citare numeri di note senza date
     ✗ NON usare frasi introduttive come "Ecco la nota clinica", "La valutazione è"
     
     Inizia DIRETTAMENTE con l'analisi del contenuto emotivo/psicologico. Completa sempre la frase.
@@ -1094,16 +1159,35 @@ def _genera_prompt_non_strutturato_lungo(testo, max_chars, contesto_precedente, 
     if paziente:
         nome_completo = f"{paziente.nome} {paziente.cognome}"
         info_paziente = f"""INFORMAZIONE IMPORTANTE SULL'AUTORE:
-    L'autore di questo testo è {nome_completo}.
-    Questo testo è scritto in prima persona da {nome_completo}.
-    Qualsiasi altro nome menzionato (anche se uguale a "{paziente.nome}") si riferisce ad altre persone (amici, familiari, colleghi, ecc.), NON al paziente.
-    
-    """
+            L'autore di questo testo è {nome_completo}.
+            Questo testo è scritto in prima persona da {nome_completo}.
+            Qualsiasi altro nome menzionato (anche se uguale a "{paziente.nome}") si riferisce ad altre persone (amici, familiari, colleghi, ecc.), NON al paziente.
+            
+            """
+
+    # Sezione contesto note precedenti (solo se esistono)
+    ha_note_precedenti = contesto_precedente != "Nessuna nota precedente disponibile."
+    sezione_contesto = ""
+    regole_note_precedenti = ""
+
+    if ha_note_precedenti:
+        sezione_contesto = f"""CONTESTO - Note precedenti del paziente (SOLO per riferimento, NON descrivere ogni nota):
+            {contesto_precedente}
+            """
+        regole_note_precedenti = """
+            2. Le note precedenti sono SOLO contesto di supporto (20%) - NON descriverle una per una
+            3. Puoi fare riferimenti come 'Si osserva un evoluzione rispetto al pattern precedente', 'Diversamente dalle situazioni passate'
+            4. Se menzioni una nota specifica, USA SOLO la data e l'orario (es: 'come emerso il 15/12/2025 alle 14:30')
+            5. VIETATO ASSOLUTO: MAI scrivere 'Nota 1', 'Nota 2', '(Nota 3)' o simili - il medico non sa cosa significano
+            6. NON dedicare paragrafi interi a riassumere le note precedenti
+            7. Puoi usare espressioni generiche come 'nelle note precedenti', 'in passato', 'rispetto a situazioni simili'"""
+    else:
+        regole_note_precedenti = """
+            2. Questa è la PRIMA nota del paziente - NON fare riferimenti a note precedenti inesistenti"""
+
     return f"""Sei un assistente di uno psicoterapeuta specializzato. Analizza il seguente testo e fornisci una valutazione clinica discorsiva DETTAGLIATA e APPROFONDITA.
 
-    {info_paziente}CONTESTO - Note precedenti del paziente (SOLO per riferimento, NON descrivere ogni nota):
-    {contesto_precedente}
-    
+    {info_paziente}{sezione_contesto}
     ISTRUZIONI FONDAMENTALI:
     - La risposta deve essere DETTAGLIATA e COMPLETA (massimo {max_chars} caratteri)
     - Scrivi in modo discorsivo e professionale, come una nota clinica narrativa
@@ -1111,13 +1195,7 @@ def _genera_prompt_non_strutturato_lungo(testo, max_chars, contesto_precedente, 
     - NON usare elenchi, grassetti, markdown, simboli o titoli
     
     REGOLE PER L'ANALISI:
-    1. CONCENTRATI AL 80% SULLA NOTA CORRENTE - analizza in profondità il testo attuale
-    2. Le note precedenti sono SOLO contesto di supporto - NON descriverle una per una
-    3. Puoi fare riferimenti come "Si osserva un'evoluzione rispetto al pattern precedente", "Diversamente dalle situazioni passate"
-    4. Se menzioni una nota specifica, cita SEMPRE la data completa (es: "come emerso nella nota del 15/12/2025 alle ore 14:30")
-    5. NON dedicare paragrafi interi a riassumere le note precedenti
-    6. NON usare "La nota 1 descrive", "Nella nota 2", "La nota 3 rivela" senza date
-    7. Puoi usare espressioni generiche come "nelle note precedenti", "in passato", "rispetto a situazioni simili"
+    1. CONCENTRATI AL 80% SULLA NOTA CORRENTE - analizza in profondità il testo attuale {regole_note_precedenti}
     
     COSA FARE:
     ✓ Analizzare in profondità il contenuto emotivo della NOTA CORRENTE
@@ -1127,10 +1205,6 @@ def _genera_prompt_non_strutturato_lungo(testo, max_chars, contesto_precedente, 
     ✓ Scrivere in modo fluido, professionale e clinicamente accurato
     
     COSA NON FARE:
-    ✗ NON fare un riassunto cronologico dettagliato delle note passate
-    ✗ NON descrivere ogni singola nota precedente con paragrafi dedicati
-    ✗ NON citare numeri di note senza date e orari completi
-    ✗ NON usare espressioni come "Nella nota 1...", "La nota 2 mostra..." senza date
     ✗ NON usare frasi introduttive come "Ecco la nota clinica", "La valutazione è"
     
     Inizia DIRETTAMENTE con l'analisi del contenuto emotivo/psicologico ATTUALE. Completa sempre la frase.
@@ -1151,14 +1225,21 @@ def _recupera_contesto_note_precedenti(paziente, limite=5, escludi_nota_id=None)
     Returns:
         String con il riepilogo delle note precedenti
     """
+    from django.utils import timezone
+
     # Filtra le note del paziente
     query = NotaDiario.objects.filter(paz=paziente)
 
-    # Escludi la nota corrente se specificata
+    # Escludi la nota corrente se specificata e filtra solo note PRECEDENTI
     if escludi_nota_id is not None:
-        query = query.exclude(id=escludi_nota_id)
+        try:
+            nota_corrente = NotaDiario.objects.get(id=escludi_nota_id)
+            # Filtra solo le note con data PRECEDENTE alla nota corrente
+            query = query.filter(data_nota__lt=nota_corrente.data_nota)
+        except NotaDiario.DoesNotExist:
+            query = query.exclude(id=escludi_nota_id)
 
-    # Prendi le ultime 'limite' note
+    # Prendi le ultime 'limite' note (le più recenti tra quelle precedenti)
     note_precedenti = query.order_by('-data_nota')[:limite]
 
     if not note_precedenti.exists():
@@ -1166,10 +1247,12 @@ def _recupera_contesto_note_precedenti(paziente, limite=5, escludi_nota_id=None)
 
     contesto = []
     for i, nota in enumerate(reversed(list(note_precedenti)), 1):
-        data_ora_formattata = nota.data_nota.strftime('%d/%m/%Y alle ore %H:%M')
+        # Converti al timezone locale per la formattazione
+        data_locale = timezone.localtime(nota.data_nota)
+        data_ora_formattata = data_locale.strftime('%d/%m/%Y alle %H:%M')
         emozione = nota.emozione_predominante or "non specificata"
         testo_breve = nota.testo_paziente[:150] + "..." if len(nota.testo_paziente) > 150 else nota.testo_paziente
-        contesto.append(f"Nota {i} (scritta il {data_ora_formattata}) - Emozione: {emozione}\nTesto: {testo_breve}")
+        contesto.append(f"[{data_ora_formattata}] - Emozione: {emozione}\nTesto: {testo_breve}")
 
     return "\n\n".join(contesto)
 
@@ -1239,8 +1322,8 @@ def genera_analisi_in_background(nota_id, testo_paziente, medico, paziente):
     """
     from django.db import connection
     try:
-        # Genera le analisi
-        testo_clinico = genera_frasi_cliniche(testo_paziente, medico, paziente)
+        # Genera le analisi (passa nota_id per escludere la nota corrente dal contesto)
+        testo_clinico = genera_frasi_cliniche(testo_paziente, medico, paziente, nota_id=nota_id)
         emozione_predominante, spiegazione_emozione = analizza_sentiment(testo_paziente, paziente)
         contesto_sociale, spiegazione_contesto = analizza_contesto_sociale(testo_paziente, paziente)
 

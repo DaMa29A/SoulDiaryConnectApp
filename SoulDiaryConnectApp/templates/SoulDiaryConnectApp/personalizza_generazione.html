@@ -87,7 +87,7 @@
 
                             <label class="radio-option">
                                 <input type="radio" name="lunghezza_nota" value="breve" id="breve"
-                                       {% if medico.lunghezza_nota is not None and not medico.lunghezza_nota %}checked{% endif %}>
+                                       {% if not medico.lunghezza_nota %}checked{% endif %}>
                                 <span>Analisi Breve</span>
                             </label>
                         </div>
