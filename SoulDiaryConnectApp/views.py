@@ -512,7 +512,6 @@ EMOZIONI_CATEGORIE = {
     # Emozioni negative (rosso)
     'tristezza': 'negative',
     'rabbia': 'negative',
-    'paura': 'negative',
     'disgusto': 'negative',
     'frustrazione': 'negative',
     'solitudine': 'negative',
@@ -520,18 +519,19 @@ EMOZIONI_CATEGORIE = {
     'malinconia': 'negative',
     'disperazione': 'negative',
     'inadeguatezza': 'negative',
+    'vergogna': 'negative',
+    'colpa': 'negative',
+    'imbarazzo': 'negative',
+    'stanchezza': 'negative',
     # Emozioni ansiose (giallo/ambra)
     'ansia': 'anxious',
     'preoccupazione': 'anxious',
     'nervosismo': 'anxious',
-    'stanchezza': 'anxious',
-    # Emozioni neutre (lilla)
+    'paura': 'anxious',
+    # Emozioni neutre/ambivalenti (lilla)
     'sorpresa': 'neutral',
-    'vergogna': 'neutral',
-    'colpa': 'neutral',
     'confusione': 'neutral',
     'nostalgia': 'neutral',
-    'imbarazzo': 'neutral',
 }
 
 # Dizionario dei contesti sociali con le relative emoji
