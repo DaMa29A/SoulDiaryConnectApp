@@ -4,9 +4,11 @@ from django.contrib import messages
 from django.contrib.auth import logout
 from django.utils import timezone
 from django.http import JsonResponse
+from django.db import connection
 from django.core.cache import cache
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
+from datetime import timedelta
 import requests
 import logging
 import re
@@ -1236,7 +1238,6 @@ def _recupera_contesto_note_precedenti(paziente, limite=5, escludi_nota_id=None)
     Returns:
         String con il riepilogo delle note precedenti
     """
-    from django.utils import timezone
 
     # Filtra le note del paziente
     query = NotaDiario.objects.filter(paz=paziente)
@@ -1331,7 +1332,6 @@ def genera_analisi_in_background(nota_id, testo_paziente, medico, paziente):
     Funzione che viene eseguita in un thread separato per generare
     l'analisi clinica, sentiment e contesto sociale in background.
     """
-    from django.db import connection
     try:
         # Genera le analisi (passa nota_id per escludere la nota corrente dal contesto)
         testo_clinico = genera_frasi_cliniche(testo_paziente, medico, paziente, nota_id=nota_id)
@@ -1763,7 +1763,6 @@ def riassunto_caso_clinico(request):
         return redirect('medico_home')
 
     # Calcola la data di inizio in base al periodo selezionato
-    from datetime import timedelta
     oggi = timezone.now()
 
     if periodo == '7days':
