@@ -38,7 +38,7 @@ export default function IndexScreen({ navigation }: Props) {
             title="Registrati"
             variant="outline"
             iconName="person-add-outline"
-            onPress={() => console.log('Vai alla Registrazione')}
+            onPress={() => navigation.navigate('Register')}
           />
         </View>
       </View>

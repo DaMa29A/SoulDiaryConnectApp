@@ -74,7 +74,7 @@ export default function LoginScreen({ navigation }: Props) {
             <View style={{ marginTop: 10 }}>
                 <AuthButton 
                   title="Accedi" 
-                  onPress={() => console.log("Logica di login qui")}
+                  onPress={() => navigation.navigate('PatientHome')}
                   variant="primary"
                 />
             </View>
@@ -82,9 +82,9 @@ export default function LoginScreen({ navigation }: Props) {
             {/* LINK SIGN UP */}
             <View style={loginStyles.registerContainer}>
               <Text style={loginStyles.registerText}>Non hai un account? </Text>
-              <TouchableOpacity onPress={() => console.log("Vai a Registrazione")}>
-                <Text style={commonStyles.textLink}>Registrati</Text>
-              </TouchableOpacity>
+                <TouchableOpacity onPress={() => navigation.navigate('Register')}>
+                  <Text style={commonStyles.textLink}>Registrati</Text>
+                </TouchableOpacity>
             </View>
           </View>
         </View>
