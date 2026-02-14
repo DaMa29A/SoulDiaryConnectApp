@@ -1,12 +1,12 @@
 import React from 'react';
 import { TouchableOpacity, Text, StyleSheet, View } from 'react-native';
-import { Ionicons } from '@expo/vector-icons'; // Assicurati di aver installato le icone
-import { Colors } from '../styles/IndexStyles';
+import { Ionicons } from '@expo/vector-icons';
+import { Colors } from '../constants/Colors';
 
 interface AuthButtonProps {
   title: string;
   onPress: () => void;
-  variant?: 'primary' | 'outline'; // 'primary' è quello blu pieno, 'outline' quello bianco
+  variant?: 'primary' | 'outline';
   iconName?: keyof typeof Ionicons.glyphMap;
 }
 
@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
   button: {
     width: '100%',
     height: 56,
-    borderRadius: 16, // Bordi arrotondati come nell'immagine
+    borderRadius: 16, 
     justifyContent: 'center',
     alignItems: 'center',
   },

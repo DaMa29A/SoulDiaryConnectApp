@@ -14,15 +14,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 export default function App() {
   return (
     <NavigationContainer>
-      <Stack.Navigator 
-        initialRouteName="Index"
-        screenOptions={{
-          headerTintColor: '#fff',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-          },
-        }}
-      >
+      <Stack.Navigator initialRouteName="Index">
         <Stack.Screen 
           name="Index" 
           component={IndexScreen} 
@@ -31,10 +23,7 @@ export default function App() {
         <Stack.Screen 
           name="Login" 
           component={LoginScreen} 
-          options={{ 
-            headerShown: false, // Nascondiamo l'header per farlo custom come nell'immagine
-            // Oppure metti true se vuoi la freccia "indietro" standard in alto
-          }} 
+          options={{ headerShown: false }} 
         />
       </Stack.Navigator>
     </NavigationContainer>

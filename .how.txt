@@ -1,0 +1,12 @@
+Download:
+Node.js
+Expo Go app on smartphone
+
+Install frontend:
+cd .\frontend\
+npm install
+
+Run frontend:
+npx expo start
+Android: qrcode in app
+Ios: qrcode in camera

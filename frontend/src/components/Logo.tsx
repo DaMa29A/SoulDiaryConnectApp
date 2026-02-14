@@ -1,26 +1,24 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, ViewStyle } from 'react-native';
-import { Colors } from '../styles/IndexStyles'; // Importiamo i colori centralizzati
+import { Colors } from '../constants/Colors';
 
 interface LogoProps {
-  scale?: number; // 1 = grandezza originale, 0.8 = più piccolo, etc.
-  style?: ViewStyle; // Per aggiungere margini esterni se serve
+  scale?: number; // 1 = ORIGINAL SIZE, 0.8 = SMALLER, etc.
+  style?: ViewStyle;
 }
 
 export default function Logo({ scale = 1, style }: LogoProps) {
-  
-  // Calcoliamo le dimensioni in base alla scala
   const containerSize = 120 * scale;
   const imageSize = 90 * scale;
-  const fontSize = 28 * scale;
+  const fontSize = 30 * scale;
   const connectWidth = 160 * scale;
   const connectHeight = 50 * scale;
-  const borderRadius = 24 * scale;
+  const borderRadius = 32 * scale;
 
   return (
     <View style={[styles.container, style]}>
       
-      {/* --- RETTANGOLO CON LOGO --- */}
+      {/* --- BLUE RECTANGLE --- */}
       <View style={[
         styles.logoContainer, 
         { 
@@ -36,7 +34,7 @@ export default function Logo({ scale = 1, style }: LogoProps) {
         />
       </View>
       
-      {/* --- TITOLO --- */}
+      {/* --- TITLE --- */}
       <Text style={[styles.appTitle, { fontSize: fontSize }]}>SoulDiary</Text>
 
       {/* --- LOGO 2 (CONNECT) --- */}
@@ -65,17 +63,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 10,
-    
-    // Ombreggiatura
     shadowColor: Colors.primary,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 8,
-    elevation: 5,
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.4,
+    shadowRadius: 15,
+    elevation: 10,
   },
   appTitle: {
     fontWeight: 'bold',
-    color: Colors.textDark,
+    color: Colors.deepBlue,
     textAlign: 'center',
     marginBottom: 0, 
     lineHeight: 34,
