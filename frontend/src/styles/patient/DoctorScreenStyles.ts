@@ -1,5 +1,5 @@
 import { StyleSheet, Platform } from 'react-native';
-import { Colors } from '../constants/Colors'; // Assicurati che il percorso sia corretto
+import { Colors } from '../../constants/Colors'; // Assicurati che il percorso sia corretto
 
 export const doctorScreenStyles = StyleSheet.create({
   container: {

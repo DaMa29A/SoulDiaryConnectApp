@@ -4,8 +4,8 @@ import { Ionicons } from '@expo/vector-icons';
 import { Platform, View, Text } from 'react-native';
 
 // Importa la schermata principale
-// Nota: Se il file si trova in '../screens/PatientHomeScreen', aggiusta il percorso
-import PatientHomeScreen from './PatientHomeScreen';
+// Nota: Se il file si trova in '../screens/DiaryScreen', aggiusta il percorso
+import DiaryScreen from './DiaryScreen';
 import DoctorScreen from './DoctorScreen';
 import ProfileScreen from './ProfileScreen';
 
@@ -62,7 +62,7 @@ export default function PatientTabs() {
       {/* 1. DIARIO (Uso la PatientHome qui come dashboard principale) */}
       <Tab.Screen 
         name="Diario" 
-        component={PatientHomeScreen} 
+        component={DiaryScreen} 
       />
 
       {/* 2. MEDICO */}

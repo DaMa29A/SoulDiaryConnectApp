@@ -1,5 +1,5 @@
 import { StyleSheet, Platform } from 'react-native';
-import { Colors } from '../constants/Colors';
+import { Colors } from '../../constants/Colors';
 
 export const patientHomeStyles = StyleSheet.create({
   container: {
@@ -15,7 +15,7 @@ export const patientHomeStyles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingTop: Platform.OS === 'ios' ? 60 : 50,
     paddingBottom: 20,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background,
     alignItems: 'center', // Centra tutto orizzontalmente
     borderBottomWidth: 1,
     borderBottomColor: '#f9f9f9',
@@ -31,7 +31,7 @@ export const patientHomeStyles = StyleSheet.create({
   subGreeting: {
     fontSize: 16,
     color: '#666',
-    textAlign: 'center',
+    textAlign: 'left',
     paddingHorizontal: 20,
     lineHeight: 22,
   },

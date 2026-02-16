@@ -5,12 +5,15 @@ import IndexScreen from './src/screens/IndexScreen';
 import LoginScreen from './src/screens/LoginScreen';
 import RegisterScreen from './src/screens/RegisterScreen'; 
 import PatientTabs from './src/screens/patient/PatientTabs';
+import NoteDetailScreen from './src/screens/patient/NoteDetailScreen';
+
 
 export type RootStackParamList = {
   Index: undefined;
   Login: undefined;
   Register: undefined;
   PatientHome: undefined;
+  NoteDetail: { noteId: string | number };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -38,6 +41,11 @@ export default function App() {
           name="PatientHome" 
           component={PatientTabs} 
           options={{ headerShown: false }} 
+        />
+        <Stack.Screen 
+          name="NoteDetail" 
+          component={NoteDetailScreen} 
+          options={{ headerShown: false }}
         />
       </Stack.Navigator>
     </NavigationContainer>

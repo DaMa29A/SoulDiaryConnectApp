@@ -4,15 +4,16 @@ import {
   Text, 
   ScrollView, 
   TouchableOpacity, 
-  SafeAreaView, 
   StatusBar,
   Linking // Utile per aprire email e telefono
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { doctorScreenStyles } from '../../styles/DoctorScreenStyles';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { doctorScreenStyles } from '../../styles/patient/DoctorScreenStyles';
 import Footer from '../../components/Footer';
 import Logo from '../../components/Logo'; 
 import { Colors } from '../../constants/Colors';
+import Navbar from '../../components/Navbar';
 
 export default function DoctorScreen() {
   // Dati finti del medico (da sostituire con dati reali)
@@ -34,22 +35,14 @@ export default function DoctorScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }} edges={['top', 'left', 'right']}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-      
+      <Navbar />
       <ScrollView 
         style={doctorScreenStyles.container} 
         contentContainerStyle={doctorScreenStyles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        
-        {/* HEADER */}
-        <View style={doctorScreenStyles.header}>
-          <Text style={doctorScreenStyles.title}>Il tuo medico</Text>
-          <Text style={doctorScreenStyles.subtitle}>
-            Informazioni e contatti del professionista che ti segue.
-          </Text>
-        </View>
 
         {/* CARD PROFILO */}
         <View style={doctorScreenStyles.profileCard}>

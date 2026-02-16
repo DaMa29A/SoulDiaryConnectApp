@@ -4,7 +4,6 @@ import {
   Text, 
   ScrollView, 
   TouchableOpacity, 
-  SafeAreaView, 
   StatusBar,
   Alert
 } from 'react-native';
@@ -12,10 +11,12 @@ import { Ionicons } from '@expo/vector-icons';
 import { useNavigation } from '@react-navigation/native';
 
 // Import personalizzati
-import { profileScreenStyles } from '../../styles/ProfileScreenStyles';
+import { profileScreenStyles } from '../../styles/patient/ProfileScreenStyles';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import Footer from '../../components/Footer';
 import Logo from '../../components/Logo'; 
 import { Colors } from '../../constants/Colors';
+import Navbar from '../../components/Navbar';
 
 export default function ProfileScreen() {
   const navigation = useNavigation<any>();
@@ -52,25 +53,16 @@ export default function ProfileScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }} edges={['top', 'left', 'right']}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
-      
+      <Navbar />
       <ScrollView 
         style={profileScreenStyles.container} 
         contentContainerStyle={profileScreenStyles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
-        
-        {/* HEADER */}
-        <View style={profileScreenStyles.header}>
-          <Text style={profileScreenStyles.title}>Il tuo profilo</Text>
-          <Text style={profileScreenStyles.subtitle}>
-            Le tue informazioni personali.
-          </Text>
-        </View>
 
         {/* --- SEZIONE 1: INFO PAZIENTE --- */}
-        <Text style={profileScreenStyles.sectionLabel}>Dati Personali</Text>
         <View style={profileScreenStyles.card}>
           
           {/* Avatar */}
@@ -98,26 +90,7 @@ export default function ProfileScreen() {
             <Text style={profileScreenStyles.infoValue}>{patientInfo.telefono}</Text>
           </View>
         </View>
-
-        {/* --- SEZIONE 2: MEDICO ASSEGNATO --- */}
-        <Text style={profileScreenStyles.sectionLabel}>Medico Assegnato</Text>
-        <TouchableOpacity 
-          style={profileScreenStyles.card} 
-          onPress={() => navigation.navigate('Medico')} // Porta alla tab del medico
-          activeOpacity={0.7}
-        >
-          <View style={profileScreenStyles.doctorRow}>
-            <View style={profileScreenStyles.doctorAvatar}>
-              <Ionicons name="medkit" size={24} color={Colors.primary || '#4A90E2'} />
-            </View>
-            <View style={profileScreenStyles.doctorInfo}>
-              <Text style={profileScreenStyles.doctorLabel}>{assignedDoctor.specializzazione}</Text>
-              <Text style={profileScreenStyles.doctorNameText}>{assignedDoctor.nome}</Text>
-            </View>
-            <Ionicons name="chevron-forward" size={20} color="#ccc" />
-          </View>
-        </TouchableOpacity>
-
+        
         {/* --- LOGOUT --- */}
         <TouchableOpacity style={profileScreenStyles.logoutButton} onPress={handleLogout}>
           <Ionicons name="log-out-outline" size={20} color="#D93025" />
