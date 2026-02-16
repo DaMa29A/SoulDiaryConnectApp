@@ -96,13 +96,8 @@ export default function ProfileScreen() {
           <Ionicons name="log-out-outline" size={20} color="#D93025" />
           <Text style={profileScreenStyles.logoutText}>Esci dal profilo</Text>
         </TouchableOpacity>
-
-        {/* FOOTER */}
-        <View style={{ marginTop: 30 }}>
-          <Footer />
-        </View>
-
       </ScrollView>
+      <Footer />
     </SafeAreaView>
   );
 }

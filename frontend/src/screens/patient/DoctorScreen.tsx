@@ -92,15 +92,9 @@ export default function DoctorScreen() {
               <Text style={doctorScreenStyles.contactValue}>{doctorInfo.phone}</Text>
             </View>
             <Ionicons name="chevron-forward" size={16} color="#ccc" />
-          </TouchableOpacity>
-
+          </TouchableOpacity> 
         </View>
-
-        {/* FOOTER */}
-        <View style={{ marginTop: 30 }}>
-          <Footer />
-        </View>
-
+        <Footer />
       </ScrollView>
     </SafeAreaView>
   );

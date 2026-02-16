@@ -13,11 +13,11 @@ import {
   Alert
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import { SafeAreaView } from 'react-native-safe-area-context'; // Importa da qui
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Ionicons } from '@expo/vector-icons';
 
-// Assicurati che i percorsi siano corretti in base alla tua struttura
 import { RootStackParamList } from '../../App'; 
 import { loginStyles } from '../styles/LoginStyles';
 import { commonStyles } from '../styles/CommonStyles';
@@ -65,272 +65,269 @@ export default function RegisterScreen({ navigation }: Props) {
       return;
     }
     console.log(`Registrazione ${userType}:`, form);
-    // Qui andrà la logica API
   };
 
   return (
-    <KeyboardAvoidingView 
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={{ flex: 1 }}
-    >
-      <StatusBar style="dark" />
-      
-      {/* ScrollView è necessario perché il form è lungo */}
-      <ScrollView 
-        contentContainerStyle={{ flexGrow: 1 }} 
-        keyboardShouldPersistTaps="handled"
-        showsVerticalScrollIndicator={false}
+    // SafeAreaView protegge la zona alta (Notch)
+    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }} edges={['top', 'left', 'right']}>
+      <KeyboardAvoidingView 
+        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        style={{ flex: 1 }}
       >
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View style={commonStyles.container}>
-            
-            {/* HEADER */}
-            <Logo scale={0.75} />
+        <StatusBar style="dark" />
+        
+        <ScrollView 
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }} // Padding sotto per lo scroll
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={false}
+        >
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View style={[commonStyles.container, { paddingTop: 10 }]}> {/* PaddingTop extra opzionale */}
+              
+              {/* HEADER */}
+              <Logo scale={0.75} />
 
-            {/* WHITE CARD */}
-            <View style={commonStyles.card}>
-              <Text style={commonStyles.welcomeTitle}>Crea Account</Text>
-              <Text style={commonStyles.welcomeSub}>Seleziona il tuo profilo e registrati</Text>
+              {/* WHITE CARD */}
+              <View style={commonStyles.card}>
+                <Text style={commonStyles.welcomeTitle}>Crea Account</Text>
+                <Text style={commonStyles.welcomeSub}>Seleziona il tuo profilo e registrati</Text>
 
-              {/* --- SELETTORE MEDICO / PAZIENTE --- */}
-              <View style={localStyles.selectionContainer}>
-                <TouchableOpacity 
-                  style={[localStyles.selectionBox, userType === 'medico' && localStyles.selectedBox]}
-                  onPress={() => setUserType('medico')}
-                  activeOpacity={0.7}
-                >
-                  <Ionicons 
-                    name="medkit-outline" 
-                    size={24} 
-                    color={userType === 'medico' ? Colors.primary || '#007AFF' : Colors.textGray} 
-                    style={{ marginBottom: 4 }}
-                  />
-                  <Text style={[localStyles.boxText, userType === 'medico' && localStyles.selectedBoxText]}>
-                    Medico
-                  </Text>
-                </TouchableOpacity>
-
-                <TouchableOpacity 
-                  style={[localStyles.selectionBox, userType === 'paziente' && localStyles.selectedBox]}
-                  onPress={() => setUserType('paziente')}
-                  activeOpacity={0.7}
-                >
-                  <Ionicons 
-                    name="person-outline" 
-                    size={24} 
-                    color={userType === 'paziente' ? Colors.primary || '#007AFF' : Colors.textGray} 
-                    style={{ marginBottom: 4 }}
-                  />
-                  <Text style={[localStyles.boxText, userType === 'paziente' && localStyles.selectedBoxText]}>
-                    Paziente
-                  </Text>
-                </TouchableOpacity>
-              </View>
-
-              {/* --- CAMPI COMUNI --- */}
-              <View style={localStyles.row}>
-                <View style={{ width: '48%' }}>
-                  <Text style={commonStyles.inputLabel}>Nome</Text>
-                  <View style={commonStyles.inputContainer}>
-                    <TextInput 
-                      style={commonStyles.input}
-                      placeholder="Nome"
-                      placeholderTextColor={Colors.placeholderInput}
-                      value={form.nome}
-                      onChangeText={(t) => updateForm('nome', t)}
+                {/* --- SELETTORE MEDICO / PAZIENTE --- */}
+                <View style={localStyles.selectionContainer}>
+                  <TouchableOpacity 
+                    style={[localStyles.selectionBox, userType === 'medico' && localStyles.selectedBox]}
+                    onPress={() => setUserType('medico')}
+                    activeOpacity={0.7}
+                  >
+                    <Ionicons 
+                      name="medkit-outline" 
+                      size={24} 
+                      color={userType === 'medico' ? Colors.primary || '#007AFF' : Colors.textGray} 
+                      style={{ marginBottom: 4 }}
                     />
-                  </View>
-                </View>
-                <View style={{ width: '48%' }}>
-                  <Text style={commonStyles.inputLabel}>Cognome</Text>
-                  <View style={commonStyles.inputContainer}>
-                    <TextInput 
-                      style={commonStyles.input}
-                      placeholder="Cognome"
-                      placeholderTextColor={Colors.placeholderInput}
-                      value={form.cognome}
-                      onChangeText={(t) => updateForm('cognome', t)}
-                    />
-                  </View>
-                </View>
-              </View>
-
-              <Text style={commonStyles.inputLabel}>Email</Text>
-              <View style={commonStyles.inputContainer}>
-                <TextInput 
-                  style={commonStyles.input}
-                  placeholder="la-tua@email.com"
-                  placeholderTextColor={Colors.placeholderInput}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  value={form.email}
-                  onChangeText={(t) => updateForm('email', t)}
-                />
-              </View>
-
-              <Text style={commonStyles.inputLabel}>Password</Text>
-              <View style={commonStyles.inputContainer}>
-                <TextInput 
-                  style={commonStyles.input}
-                  placeholder="Crea una password"
-                  placeholderTextColor={Colors.placeholderInput} 
-                  value={form.password}
-                  onChangeText={(t) => updateForm('password', t)}
-                  secureTextEntry={!isPasswordVisible}
-                />
-                <TouchableOpacity onPress={() => setPasswordVisible(!isPasswordVisible)}>
-                  <Ionicons 
-                    name={isPasswordVisible ? "eye-off-outline" : "eye-outline"} 
-                    size={20} 
-                    color={Colors.textGray} 
-                  />
-                </TouchableOpacity>
-              </View>
-
-              {/* --- CAMPI SPECIFICI MEDICO --- */}
-              {userType === 'medico' && (
-                <>
-                  <View style={localStyles.row}>
-                    <View style={{ width: '65%' }}>
-                      <Text style={commonStyles.inputLabel}>Indirizzo Studio</Text>
-                      <View style={commonStyles.inputContainer}>
-                        <TextInput 
-                          style={commonStyles.input}
-                          placeholder="Via Roma"
-                          value={form.indirizzoStudio}
-                          onChangeText={(t) => updateForm('indirizzoStudio', t)}
-                        />
-                      </View>
-                    </View>
-                    <View style={{ width: '30%' }}>
-                      <Text style={commonStyles.inputLabel}>N°</Text>
-                      <View style={commonStyles.inputContainer}>
-                        <TextInput 
-                          style={commonStyles.input}
-                          placeholder="10"
-                          value={form.numeroCivico}
-                          onChangeText={(t) => updateForm('numeroCivico', t)}
-                        />
-                      </View>
-                    </View>
-                  </View>
-
-                  <Text style={commonStyles.inputLabel}>Città</Text>
-                  <View style={commonStyles.inputContainer}>
-                    <TextInput 
-                      style={commonStyles.input}
-                      placeholder="Roma"
-                      value={form.citta}
-                      onChangeText={(t) => updateForm('citta', t)}
-                    />
-                  </View>
-
-                  <Text style={commonStyles.inputLabel}>Telefono Studio</Text>
-                  <View style={commonStyles.inputContainer}>
-                    <TextInput 
-                      style={commonStyles.input}
-                      placeholder="06 12345678"
-                      keyboardType="phone-pad"
-                      value={form.telefonoStudio}
-                      onChangeText={(t) => updateForm('telefonoStudio', t)}
-                    />
-                  </View>
-
-                  <Text style={commonStyles.inputLabel}>Cellulare</Text>
-                  <View style={commonStyles.inputContainer}>
-                    <TextInput 
-                      style={commonStyles.input}
-                      placeholder="333 1234567"
-                      keyboardType="phone-pad"
-                      value={form.telefonoCellulare}
-                      onChangeText={(t) => updateForm('telefonoCellulare', t)}
-                    />
-                  </View>
-                </>
-              )}
-
-              {/* --- CAMPI SPECIFICI PAZIENTE --- */}
-              {userType === 'paziente' && (
-                <>
-                  <Text style={commonStyles.inputLabel}>Codice Fiscale</Text>
-                  <View style={commonStyles.inputContainer}>
-                    <TextInput 
-                      style={commonStyles.input}
-                      placeholder="Codice Fiscale"
-                      autoCapitalize="characters"
-                      value={form.codiceFiscale}
-                      onChangeText={(t) => updateForm('codiceFiscale', t)}
-                    />
-                  </View>
-
-                  <Text style={commonStyles.inputLabel}>Data di Nascita</Text>
-                  <TouchableOpacity onPress={() => setShowDatePicker(true)}>
-                    <View style={commonStyles.inputContainer}>
-                      <TextInput
-                        style={[commonStyles.input, { color: Colors.textDark || '#000' }]}
-                        placeholder="Seleziona data"
-                        value={form.dataNascita.toLocaleDateString('it-IT')}
-                        editable={false} // Rende l'input non modificabile manualmente
-                        pointerEvents="none" // Passa il tocco al contenitore Touchable
-                      />
-                      <Ionicons name="calendar-outline" size={20} color={Colors.textGray} />
-                    </View>
+                    <Text style={[localStyles.boxText, userType === 'medico' && localStyles.selectedBoxText]}>
+                      Medico
+                    </Text>
                   </TouchableOpacity>
-                  {showDatePicker && (
-                    <DateTimePicker
-                      testID="dateTimePicker"
-                      value={form.dataNascita}
-                      mode="date"
-                      display="default"
-                      onChange={onDateChange}
-                      maximumDate={new Date()}
-                    />
-                  )}
 
-                  <Text style={commonStyles.inputLabel}>Medico di Riferimento</Text>
-                  <View style={commonStyles.inputContainer}>
-                    <TextInput 
-                      style={commonStyles.input}
-                      placeholder="Cerca nome..."
-                      value={form.medicoRiferimento}
-                      onChangeText={(t) => updateForm('medicoRiferimento', t)}
+                  <TouchableOpacity 
+                    style={[localStyles.selectionBox, userType === 'paziente' && localStyles.selectedBox]}
+                    onPress={() => setUserType('paziente')}
+                    activeOpacity={0.7}
+                  >
+                    <Ionicons 
+                      name="person-outline" 
+                      size={24} 
+                      color={userType === 'paziente' ? Colors.primary || '#007AFF' : Colors.textGray} 
+                      style={{ marginBottom: 4 }}
                     />
+                    <Text style={[localStyles.boxText, userType === 'paziente' && localStyles.selectedBoxText]}>
+                      Paziente
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+
+                {/* --- CAMPI COMUNI --- */}
+                <View style={localStyles.row}>
+                  <View style={{ width: '48%' }}>
+                    <Text style={commonStyles.inputLabel}>Nome</Text>
+                    <View style={commonStyles.inputContainer}>
+                      <TextInput 
+                        style={commonStyles.input}
+                        placeholder="Nome"
+                        placeholderTextColor={Colors.placeholderInput}
+                        value={form.nome}
+                        onChangeText={(t) => updateForm('nome', t)}
+                      />
+                    </View>
                   </View>
-                </>
-              )}
+                  <View style={{ width: '48%' }}>
+                    <Text style={commonStyles.inputLabel}>Cognome</Text>
+                    <View style={commonStyles.inputContainer}>
+                      <TextInput 
+                        style={commonStyles.input}
+                        placeholder="Cognome"
+                        placeholderTextColor={Colors.placeholderInput}
+                        value={form.cognome}
+                        onChangeText={(t) => updateForm('cognome', t)}
+                      />
+                    </View>
+                  </View>
+                </View>
 
-              {/* BUTTON */}
-              <View style={{ marginTop: 20 }}>
-                <AuthButton 
-                  title="Registrati" 
-                  onPress={handleRegister}
-                  variant="primary"
-                />
-              </View>
+                <Text style={commonStyles.inputLabel}>Email</Text>
+                <View style={commonStyles.inputContainer}>
+                  <TextInput 
+                    style={commonStyles.input}
+                    placeholder="la-tua@email.com"
+                    placeholderTextColor={Colors.placeholderInput}
+                    keyboardType="email-address"
+                    autoCapitalize="none"
+                    value={form.email}
+                    onChangeText={(t) => updateForm('email', t)}
+                  />
+                </View>
 
-              {/* LINK LOGIN */}
-              <View style={loginStyles.registerContainer}>
-                <Text style={loginStyles.registerText}>Hai già un account? </Text>
-                <TouchableOpacity onPress={() => navigation.navigate('Login')}>
-                  <Text style={commonStyles.textLink}>Accedi</Text>
-                </TouchableOpacity>
-              </View>
+                <Text style={commonStyles.inputLabel}>Password</Text>
+                <View style={commonStyles.inputContainer}>
+                  <TextInput 
+                    style={commonStyles.input}
+                    placeholder="Crea una password"
+                    placeholderTextColor={Colors.placeholderInput} 
+                    value={form.password}
+                    onChangeText={(t) => updateForm('password', t)}
+                    secureTextEntry={!isPasswordVisible}
+                  />
+                  <TouchableOpacity onPress={() => setPasswordVisible(!isPasswordVisible)}>
+                    <Ionicons 
+                      name={isPasswordVisible ? "eye-off-outline" : "eye-outline"} 
+                      size={20} 
+                      color={Colors.textGray} 
+                    />
+                  </TouchableOpacity>
+                </View>
 
-            </View> 
-            {/* End of Card */}
-          
-          </View>
-        </TouchableWithoutFeedback>
-      </ScrollView>
+                {/* --- CAMPI SPECIFICI MEDICO --- */}
+                {userType === 'medico' && (
+                  <>
+                    <View style={localStyles.row}>
+                      <View style={{ width: '65%' }}>
+                        <Text style={commonStyles.inputLabel}>Indirizzo Studio</Text>
+                        <View style={commonStyles.inputContainer}>
+                          <TextInput 
+                            style={commonStyles.input}
+                            placeholder="Via Roma"
+                            value={form.indirizzoStudio}
+                            onChangeText={(t) => updateForm('indirizzoStudio', t)}
+                          />
+                        </View>
+                      </View>
+                      <View style={{ width: '30%' }}>
+                        <Text style={commonStyles.inputLabel}>N°</Text>
+                        <View style={commonStyles.inputContainer}>
+                          <TextInput 
+                            style={commonStyles.input}
+                            placeholder="10"
+                            value={form.numeroCivico}
+                            onChangeText={(t) => updateForm('numeroCivico', t)}
+                          />
+                        </View>
+                      </View>
+                    </View>
 
-      {/* Footer fisso fuori dalla ScrollView o in fondo */}
-      <Footer />
-      
-    </KeyboardAvoidingView>
+                    <Text style={commonStyles.inputLabel}>Città</Text>
+                    <View style={commonStyles.inputContainer}>
+                      <TextInput 
+                        style={commonStyles.input}
+                        placeholder="Roma"
+                        value={form.citta}
+                        onChangeText={(t) => updateForm('citta', t)}
+                      />
+                    </View>
+
+                    <Text style={commonStyles.inputLabel}>Telefono Studio</Text>
+                    <View style={commonStyles.inputContainer}>
+                      <TextInput 
+                        style={commonStyles.input}
+                        placeholder="06 12345678"
+                        keyboardType="phone-pad"
+                        value={form.telefonoStudio}
+                        onChangeText={(t) => updateForm('telefonoStudio', t)}
+                      />
+                    </View>
+
+                    <Text style={commonStyles.inputLabel}>Cellulare</Text>
+                    <View style={commonStyles.inputContainer}>
+                      <TextInput 
+                        style={commonStyles.input}
+                        placeholder="333 1234567"
+                        keyboardType="phone-pad"
+                        value={form.telefonoCellulare}
+                        onChangeText={(t) => updateForm('telefonoCellulare', t)}
+                      />
+                    </View>
+                  </>
+                )}
+
+                {/* --- CAMPI SPECIFICI PAZIENTE --- */}
+                {userType === 'paziente' && (
+                  <>
+                    <Text style={commonStyles.inputLabel}>Codice Fiscale</Text>
+                    <View style={commonStyles.inputContainer}>
+                      <TextInput 
+                        style={commonStyles.input}
+                        placeholder="Codice Fiscale"
+                        autoCapitalize="characters"
+                        value={form.codiceFiscale}
+                        onChangeText={(t) => updateForm('codiceFiscale', t)}
+                      />
+                    </View>
+
+                    <Text style={commonStyles.inputLabel}>Data di Nascita</Text>
+                    <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+                      <View style={commonStyles.inputContainer}>
+                        <TextInput
+                          style={[commonStyles.input, { color: Colors.textDark || '#000' }]}
+                          placeholder="Seleziona data"
+                          value={form.dataNascita.toLocaleDateString('it-IT')}
+                          editable={false}
+                          pointerEvents="none"
+                        />
+                        <Ionicons name="calendar-outline" size={20} color={Colors.textGray} />
+                      </View>
+                    </TouchableOpacity>
+                    {showDatePicker && (
+                      <DateTimePicker
+                        testID="dateTimePicker"
+                        value={form.dataNascita}
+                        mode="date"
+                        display="default"
+                        onChange={onDateChange}
+                        maximumDate={new Date()}
+                      />
+                    )}
+
+                    <Text style={commonStyles.inputLabel}>Medico di Riferimento</Text>
+                    <View style={commonStyles.inputContainer}>
+                      <TextInput 
+                        style={commonStyles.input}
+                        placeholder="Cerca nome..."
+                        value={form.medicoRiferimento}
+                        onChangeText={(t) => updateForm('medicoRiferimento', t)}
+                      />
+                    </View>
+                  </>
+                )}
+
+                {/* BUTTON */}
+                <View style={{ marginTop: 20 }}>
+                  <AuthButton 
+                    title="Registrati" 
+                    onPress={handleRegister}
+                    variant="primary"
+                  />
+                </View>
+
+                {/* LINK LOGIN */}
+                <View style={loginStyles.registerContainer}>
+                  <Text style={loginStyles.registerText}>Hai già un account? </Text>
+                  <TouchableOpacity onPress={() => navigation.navigate('Login')}>
+                    <Text style={commonStyles.textLink}>Accedi</Text>
+                  </TouchableOpacity>
+                </View>
+
+              </View> 
+            </View>
+          </TouchableWithoutFeedback>
+        </ScrollView>
+
+        <Footer />
+        
+      </KeyboardAvoidingView>
+    </SafeAreaView>
   );
 }
 
-// Stili locali solo per i riquadri di selezione che non sono in CommonStyles
 const localStyles = StyleSheet.create({
   selectionContainer: {
     flexDirection: 'row',
@@ -350,7 +347,7 @@ const localStyles = StyleSheet.create({
     justifyContent: 'center',
   },
   selectedBox: {
-    borderColor: Colors.primary || '#4A90E2', // Usa il colore primario definito nei tuoi constants
+    borderColor: Colors.primary || '#4A90E2',
     backgroundColor: '#F0F8FF',
   },
   boxText: {
@@ -365,6 +362,6 @@ const localStyles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 0, // Lo spaziamo gestito dai singoli inputContainer
+    marginBottom: 0,
   }
 });

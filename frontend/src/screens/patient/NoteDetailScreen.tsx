@@ -14,6 +14,7 @@ import { Colors } from '../../constants/Colors';
 import PatientNoteCard from './note/PatientNoteCard';
 import AiInsightCard from './note/AiInsightCard';
 import DoctorCommentCard from './note/DoctorCommentCard';
+import Footer from '../../components/Footer';
 // --- TIPO PER I PARAMETRI DELLA ROTTA ---
 type ParamList = {
   NoteDetail: { noteId: string | number };
@@ -101,7 +102,7 @@ export default function NoteDetailScreen() {
         )}
 
         <View style={{ height: 40 }} />
-
+        <Footer />
       </ScrollView>
     </SafeAreaView>
   );

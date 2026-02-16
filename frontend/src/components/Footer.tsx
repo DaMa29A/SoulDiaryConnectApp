@@ -5,7 +5,7 @@ import { Colors } from '../constants/Colors';
 
 export default function Footer() {
   return (
-    <View style={[styles.container]}>
+    <View style={styles.container}>
       <Text style={styles.text}>
         <Ionicons name="alert-circle-outline" size={13} color={Colors.textGray} />
         {'  '}L'IA può commettere errori.
@@ -16,18 +16,17 @@ export default function Footer() {
 
 const styles = StyleSheet.create({
   container: {
-    position: 'absolute', 
-    bottom: 20,  // distance from the bottom of the screen   
-    left: 0,  // align to the left edge
-    right: 0, // align to the right edge
+    // Rimosso absolute, bottom, left, right
+    width: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 5,
-    opacity: 0.8,
-    zIndex: 10,
+    paddingVertical: 10, // Un po' di spazio
+    backgroundColor: '#fff', // Sfondo bianco per coprire il contenuto che scorre sotto (opzionale)
+    borderTopWidth: 1, // Opzionale: linea separatrice sottile
+    borderTopColor: '#F5F5F5',
   },
   text: {
-    fontSize: 13,
-    color: Colors.textGray
+    fontSize: 12,
+    color: Colors.textGray || '#999',
   },
 });

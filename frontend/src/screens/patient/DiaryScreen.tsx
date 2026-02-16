@@ -90,13 +90,9 @@ export default function DiaryScreen() {
           notes={mockDiaryHistory} 
           onNotePress={handleNotePress} 
         />
-
-        {/* FOOTER */}
-        <View style={{ marginTop: 20, marginBottom: 20 }}>
-          <Footer />
-        </View>
-
+        <Footer />
       </ScrollView>
+      
     </SafeAreaView>
   );
 }
