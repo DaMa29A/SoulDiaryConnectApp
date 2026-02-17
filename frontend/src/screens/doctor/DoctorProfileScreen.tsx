@@ -13,6 +13,7 @@ import { useNavigation } from '@react-navigation/native';
 import { profileScreenStyles } from '../../styles/patient/ProfileScreenStyles'; // Riutilizziamo gli stili del profilo
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
+import { commonStyles } from '../../styles/CommonStyles';
 
 export default function DoctorProfileScreen() {
   const navigation = useNavigation<any>();
@@ -42,16 +43,13 @@ export default function DoctorProfileScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }} edges={['top', 'left', 'right', 'bottom']}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+    <SafeAreaView style={commonStyles.containerPage} edges={['top']}>
+      <StatusBar barStyle="dark-content" />
       <Navbar />
 
-      <ScrollView 
-        style={profileScreenStyles.container} 
-        contentContainerStyle={profileScreenStyles.scrollContent}
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={profileScreenStyles.card}>
+      <View style={commonStyles.containerPage}>
+      
+        <View style={[commonStyles.profileCard]}>
           
           {/* Avatar */}
           <View style={profileScreenStyles.avatarContainer}>
@@ -82,7 +80,7 @@ export default function DoctorProfileScreen() {
           <Text style={profileScreenStyles.logoutText}>Esci</Text>
         </TouchableOpacity>
 
-      </ScrollView>
+      </View>
       <Footer />
     </SafeAreaView>
   );

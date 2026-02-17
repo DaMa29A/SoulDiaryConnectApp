@@ -3,25 +3,32 @@ import { View, Text, ScrollView, StyleSheet } from 'react-native';
 import { createMaterialTopTabNavigator } from '@react-navigation/material-top-tabs';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../../constants/Colors';
+import NotesList from '../../../components/NotesList';
+import { useNavigation } from '@react-navigation/native';
 
 const Tab = createMaterialTopTabNavigator();
 
 function PatientNotesScreen() {
+  
+  const navigation = useNavigation<any>();
+  const mockDiaryHistory = [
+    { id: 1, day: '14', month: 'OTT', text: 'Oggi mi sento molto meglio rispetto a ieri. Ho fatto una passeggiata al parco.', time: '18:30' },
+    { id: 2, day: '12', month: 'OTT', text: 'Ho avuto un momento di ansia nel pomeriggio, ma è passato dopo aver parlato con Laura.', time: '09:15' },
+    { id: 3, day: '10', month: 'OTT', text: 'Iniziato il nuovo piano terapeutico prescritto dal Dott. Veronesi.', time: '21:00' },
+  ];
+
+    const handleNotePress = (id: number | string) => {
+    console.log('Hai cliccato sulla nota:', id);
+    navigation.navigate('NoteDetail', { noteId: id });
+  };
+
   return (
     <ScrollView style={styles.tabContainer} showsVerticalScrollIndicator={false}>
       <Text style={styles.sectionTitle}>Ultimi Diari</Text>
-      <View style={styles.noteCard}>
-        <Text style={styles.noteDate}>16 Ottobre, 14:30</Text>
-        <Text style={styles.noteText}>Oggi mi sento un po' meglio rispetto a ieri. Ho fatto una passeggiata e l'ansia è diminuita.</Text>
-      </View>
-      <View style={[styles.noteCard, { borderLeftColor: '#FFD166' }]}>
-        <Text style={styles.noteDate}>15 Ottobre, 09:15</Text>
-        <Text style={styles.noteText}>Risveglio difficile, tachicardia leggera. Ho praticato la respirazione.</Text>
-      </View>
-      <View style={styles.noteCard}>
-        <Text style={styles.noteDate}>12 Ottobre, 21:00</Text>
-        <Text style={styles.noteText}>Giornata tranquilla. Ho incontrato un amico.</Text>
-      </View>
+      <NotesList 
+          notes={mockDiaryHistory} 
+          onNotePress={handleNotePress} 
+        />
     </ScrollView>
   );
 }
@@ -101,12 +108,12 @@ export default function DoctorPatientTabs() {
 }
 
 const styles = StyleSheet.create({
-  tabContainer: { flex: 1, backgroundColor: '#fff', padding: 20 },
-  sectionTitle: { fontSize: 18, fontWeight: 'bold', color: '#333', marginBottom: 15 },
+  tabContainer: { flex: 1, backgroundColor: Colors.white },
+  sectionTitle: { fontSize: 18, fontWeight: 'bold', color: '#333', marginBottom: 15, marginHorizontal: 12, marginTop: 20 },
   noteCard: { backgroundColor: '#F9F9F9', padding: 15, borderRadius: 12, marginBottom: 15, borderLeftWidth: 4, borderLeftColor: '#4A90E2' },
   noteDate: { fontSize: 12, color: '#888', marginBottom: 4 },
   noteText: { fontSize: 14, color: '#444', lineHeight: 20 },
-  infoBox: { marginBottom: 20, borderBottomWidth: 1, borderBottomColor: '#F0F0F0', paddingBottom: 15 },
+  infoBox: { marginBottom: 20, marginHorizontal: 12, borderBottomWidth: 1, borderBottomColor: '#F0F0F0', paddingBottom: 15 },
   label: { fontSize: 12, color: '#999', fontWeight: 'bold', textTransform: 'uppercase' },
   value: { fontSize: 16, color: '#333', marginTop: 4 },
   chartContainer: { flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', height: 200, marginTop: 30, paddingHorizontal: 10 },

@@ -69,7 +69,7 @@ export default function LoginScreen({ navigation }: Props) {
               <View style={{ marginTop: 10 }}>
                   <AuthButton 
                     title="Accedi" 
-                    onPress={() => navigation.navigate('PatientHome')}
+                    onPress={() => navigation.navigate('DoctorHome')}
                     variant="primary"
                   />
               </View>

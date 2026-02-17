@@ -13,6 +13,7 @@ import { doctorHomeStyles } from '../../styles/doctor/DoctorHomeStyles';
 import Navbar from '../../components/Navbar';
 import Footer from '../../components/Footer';
 import { Colors } from '../../constants/Colors';
+import { commonStyles } from '../../styles/CommonStyles';
 
 const MOCK_PATIENTS = [
   { id: '1', name: 'Mario Rossi', lastUpdate: 'Oggi, 14:30', hasNew: true },
@@ -30,8 +31,8 @@ export default function DoctorHomeScreen({ navigation }: any) {
   );
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#F4F6F8' }} edges={['top', 'left', 'right', 'bottom']}>
-      <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+    <SafeAreaView style={commonStyles.containerPage} edges={['top']}>
+      <StatusBar barStyle="dark-content" />
       <Navbar />
 
       <ScrollView 
@@ -45,11 +46,11 @@ export default function DoctorHomeScreen({ navigation }: any) {
         </View>
 
         <View style={doctorHomeStyles.searchContainer}>
-          <Ionicons name="search-outline" size={20} color="#999" />
+          <Ionicons name="search-outline" size={20} color={Colors.grey} />
           <TextInput 
             style={doctorHomeStyles.searchInput}
             placeholder="Cerca paziente..."
-            placeholderTextColor="#999"
+            placeholderTextColor={Colors.placeholderInput}
             value={searchText}
             onChangeText={setSearchText}
           />
@@ -76,12 +77,12 @@ export default function DoctorHomeScreen({ navigation }: any) {
               {patient.hasNew && (
                 <View style={doctorHomeStyles.statusIndicator} />
               )}
-              <Ionicons name="chevron-forward" size={20} color="#CCC" style={{ marginLeft: 10 }} />
+              <Ionicons name="chevron-forward" size={20} color={Colors.grey} style={{ marginLeft: 10 }} />
             </TouchableOpacity>
           ))}
           
           {filteredPatients.length === 0 && (
-            <Text style={{ textAlign: 'center', color: '#999', marginTop: 20 }}>
+            <Text style={{ textAlign: 'center', color: Colors.grey, marginTop: 20 }}>
               Nessun paziente trovato.
             </Text>
           )}
