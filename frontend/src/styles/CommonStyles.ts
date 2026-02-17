@@ -7,7 +7,7 @@ export const commonStyles = StyleSheet.create({
     width: '100%',
     backgroundColor: Colors.background,
     paddingVertical: 24,
-    paddingHorizontal: 24,
+    paddingHorizontal: 10,
     justifyContent: 'center', // VERTICAL CENTER
   },
 

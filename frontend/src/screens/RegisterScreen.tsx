@@ -15,9 +15,7 @@ import {
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context'; 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import DateTimePicker from '@react-native-community/datetimepicker';
 import { Ionicons } from '@expo/vector-icons';
-
 import { RootStackParamList } from '../../App'; 
 import { loginStyles } from '../styles/LoginStyles';
 import { commonStyles } from '../styles/CommonStyles';
@@ -45,7 +43,7 @@ export default function RegisterScreen({ navigation }: Props) {
     telefonoStudio: '',
     telefonoCellulare: '',
     codiceFiscale: '',
-    dataNascita: new Date(),
+    dataNascita: '',
     medicoRiferimento: '',
   });
 
@@ -68,33 +66,32 @@ export default function RegisterScreen({ navigation }: Props) {
   };
 
   return (
-    // AGGIUNTO 'bottom' agli edges per evitare che il footer finisca sotto la barra home su iPhone
-    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }} edges={['top', 'left', 'right', 'bottom']}>
+    <SafeAreaView style={commonStyles.container} edges={['top']}>
+      <StatusBar style="dark" />
+
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
       >
-        <StatusBar style="dark" />
-        
-        {/* AGGIUNTO style={{ flex: 1 }} per occupare tutto lo spazio e spingere il footer in fondo */}
         <ScrollView 
           style={{ flex: 1 }}
           contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }} 
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
+          {/* HEADER */}
+          <Logo scale={0.75} />
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <View style={[commonStyles.container, { paddingTop: 10 }]}> 
+            <View> 
               
-              {/* HEADER */}
-              <Logo scale={0.75} />
+              
 
               {/* WHITE CARD */}
               <View style={commonStyles.card}>
                 <Text style={commonStyles.welcomeTitle}>Crea Account</Text>
                 <Text style={commonStyles.welcomeSub}>Seleziona il tuo profilo e registrati</Text>
 
-                {/* --- SELETTORE MEDICO / PAZIENTE --- */}
+                {/* --- SELECTOR --- */}
                 <View style={localStyles.selectionContainer}>
                   <TouchableOpacity 
                     style={[localStyles.selectionBox, userType === 'medico' && localStyles.selectedBox]}
@@ -104,7 +101,7 @@ export default function RegisterScreen({ navigation }: Props) {
                     <Ionicons 
                       name="medkit-outline" 
                       size={24} 
-                      color={userType === 'medico' ? Colors.primary || '#007AFF' : Colors.textGray} 
+                      color={userType === 'medico' ? Colors.primary  : Colors.textGray} 
                       style={{ marginBottom: 4 }}
                     />
                     <Text style={[localStyles.boxText, userType === 'medico' && localStyles.selectedBoxText]}>
@@ -120,7 +117,7 @@ export default function RegisterScreen({ navigation }: Props) {
                     <Ionicons 
                       name="person-outline" 
                       size={24} 
-                      color={userType === 'paziente' ? Colors.primary || '#007AFF' : Colors.textGray} 
+                      color={userType === 'paziente' ? Colors.primary : Colors.textGray} 
                       style={{ marginBottom: 4 }}
                     />
                     <Text style={[localStyles.boxText, userType === 'paziente' && localStyles.selectedBoxText]}>
@@ -129,7 +126,7 @@ export default function RegisterScreen({ navigation }: Props) {
                   </TouchableOpacity>
                 </View>
 
-                {/* --- CAMPI COMUNI --- */}
+                {/* --- FIELDS --- */}
                 <View style={localStyles.row}>
                   <View style={{ width: '48%' }}>
                     <Text style={commonStyles.inputLabel}>Nome</Text>
@@ -189,7 +186,7 @@ export default function RegisterScreen({ navigation }: Props) {
                   </TouchableOpacity>
                 </View>
 
-                {/* --- CAMPI SPECIFICI MEDICO --- */}
+                {/* --- DOCTOR FIELDS --- */}
                 {userType === 'medico' && (
                   <>
                     <View style={localStyles.row}>
@@ -251,7 +248,7 @@ export default function RegisterScreen({ navigation }: Props) {
                   </>
                 )}
 
-                {/* --- CAMPI SPECIFICI PAZIENTE --- */}
+                {/* --- PATIENT FIELDS --- */}
                 {userType === 'paziente' && (
                   <>
                     <Text style={commonStyles.inputLabel}>Codice Fiscale</Text>
@@ -265,29 +262,16 @@ export default function RegisterScreen({ navigation }: Props) {
                       />
                     </View>
 
-                    <Text style={commonStyles.inputLabel}>Data di Nascita</Text>
-                    <TouchableOpacity onPress={() => setShowDatePicker(true)}>
-                      <View style={commonStyles.inputContainer}>
-                        <TextInput
-                          style={[commonStyles.input, { color: Colors.textDark || '#000' }]}
-                          placeholder="Seleziona data"
-                          value={form.dataNascita.toLocaleDateString('it-IT')}
-                          editable={false}
-                          pointerEvents="none"
-                        />
-                        <Ionicons name="calendar-outline" size={20} color={Colors.textGray} />
-                      </View>
-                    </TouchableOpacity>
-                    {showDatePicker && (
-                      <DateTimePicker
-                        testID="dateTimePicker"
+                    <Text style={commonStyles.inputLabel}>Data di nascita</Text>
+                    <View style={commonStyles.inputContainer}>
+                      <TextInput 
+                        style={commonStyles.input}
+                        placeholder="GG/MM/AAAA"
                         value={form.dataNascita}
-                        mode="date"
-                        display="default"
-                        onChange={onDateChange}
-                        maximumDate={new Date()}
+                        onChangeText={(t) => updateForm('dataNascita', t)}
                       />
-                    )}
+                    </View>
+
 
                     <Text style={commonStyles.inputLabel}>Medico di Riferimento</Text>
                     <View style={commonStyles.inputContainer}>
@@ -310,7 +294,7 @@ export default function RegisterScreen({ navigation }: Props) {
                   />
                 </View>
 
-                {/* LINK LOGIN */}
+                {/* LOGIN LINK */}
                 <View style={loginStyles.registerContainer}>
                   <Text style={loginStyles.registerText}>Hai già un account? </Text>
                   <TouchableOpacity onPress={() => navigation.navigate('Login')}>
@@ -321,10 +305,8 @@ export default function RegisterScreen({ navigation }: Props) {
               </View> 
             </View>
           </TouchableWithoutFeedback>
+          <Footer />
         </ScrollView>
-
-        <Footer />
-        
       </KeyboardAvoidingView>
     </SafeAreaView>
   );

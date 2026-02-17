@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, KeyboardAvoidingView, Platform, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { SafeAreaView } from 'react-native-safe-area-context'; // AGGIUNTO IMPORT
+import { SafeAreaView } from 'react-native-safe-area-context'; 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { RootStackParamList } from '../../App';
 import { Ionicons } from '@expo/vector-icons';
@@ -20,15 +20,14 @@ export default function LoginScreen({ navigation }: Props) {
   const [isPasswordVisible, setPasswordVisible] = useState(false);
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }} edges={['top', 'left', 'right', 'bottom']}>
+    <SafeAreaView style={commonStyles.container} edges={['top']}>
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
       >
+        <StatusBar style="dark" />
         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-          <View style={commonStyles.container}>
-            <StatusBar style="dark" />
-
+          <View>
             {/* HEADER */}
             <Logo scale={0.75}/>
 
@@ -91,7 +90,6 @@ export default function LoginScreen({ navigation }: Props) {
           </View>
         </TouchableWithoutFeedback>
         <Footer/>
-
       </KeyboardAvoidingView>
     </SafeAreaView>
   );
