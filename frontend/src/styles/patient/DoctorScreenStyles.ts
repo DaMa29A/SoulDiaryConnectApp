@@ -1,5 +1,5 @@
 import { StyleSheet, Platform } from 'react-native';
-import { Colors } from '../../constants/Colors'; // Assicurati che il percorso sia corretto
+import { Colors } from '../../constants/Colors';
 
 export const doctorScreenStyles = StyleSheet.create({
   container: {
@@ -7,10 +7,12 @@ export const doctorScreenStyles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   scrollContent: {
-    paddingBottom: 100, // Spazio per il footer
+    flexGrow: 1, // Fondamentale per il centramento
+    justifyContent: 'center', // Centra la card verticalmente
+    paddingBottom: 24, // Spazio standard dal footer
   },
   
-  // HEADER
+  // HEADER (Opzionale, lasciato per compatibilità)
   header: {
     paddingHorizontal: 24,
     paddingTop: Platform.OS === 'ios' ? 60 : 50,
@@ -20,27 +22,13 @@ export const doctorScreenStyles = StyleSheet.create({
     borderBottomColor: '#f9f9f9',
     alignItems: 'center',
   },
-  title: {
-    fontSize: 26,
-    fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 8,
-    textAlign: 'center',
-  },
-  subtitle: {
-    fontSize: 16,
-    color: '#666',
-    textAlign: 'center',
-    paddingHorizontal: 30,
-    lineHeight: 22,
-  },
 
   // CARD PROFILO MEDICO
   profileCard: {
     backgroundColor: '#fff',
     borderRadius: 20,
     marginHorizontal: 24,
-    marginTop: 30,
+    // marginTop: 30, // RIMOSSO per permettere il centramento automatico
     padding: 24,
     alignItems: 'center',
     // Ombra stile "Soul Diary"
@@ -70,6 +58,7 @@ export const doctorScreenStyles = StyleSheet.create({
     fontWeight: 'bold',
     color: '#333',
     marginBottom: 4,
+    textAlign: 'center',
   },
   doctorSpecialization: {
     fontSize: 16,
@@ -78,6 +67,7 @@ export const doctorScreenStyles = StyleSheet.create({
     marginBottom: 24,
     textTransform: 'uppercase',
     letterSpacing: 0.5,
+    textAlign: 'center',
   },
 
   // DIVISORE
@@ -119,27 +109,5 @@ export const doctorScreenStyles = StyleSheet.create({
     fontSize: 16,
     color: '#333',
     fontWeight: '500',
-  },
-  
-  // BOTTONE CHIAMATA (Opzionale, per rendere la UX migliore)
-  callButton: {
-    marginTop: 10,
-    backgroundColor: Colors.primary || '#4A90E2',
-    paddingVertical: 14,
-    paddingHorizontal: 30,
-    borderRadius: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    shadowColor: Colors.primary || '#4A90E2',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  callButtonText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 16,
-    marginLeft: 8,
   },
 });

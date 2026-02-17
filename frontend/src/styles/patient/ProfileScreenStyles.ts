@@ -4,13 +4,16 @@ import { Colors } from '../../constants/Colors';
 export const profileScreenStyles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.background || '#fff', // Rimossi 'yellow'
   },
   scrollContent: {
-    paddingBottom: 100, // Spazio per il footer
+    flexGrow: 1, // Fondamentale per il centramento nello ScrollView
+    justifyContent: 'center', // Centra verticalmente il contenuto
+    paddingBottom: 24, 
+    // Rimossi 'green' e padding esagerato
   },
   
-  // HEADER
+  // HEADER (Opzionale se usi la Navbar esterna, ma lasciato per compatibilità)
   header: {
     paddingHorizontal: 24,
     paddingTop: Platform.OS === 'ios' ? 60 : 50,

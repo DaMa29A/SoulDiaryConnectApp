@@ -5,13 +5,12 @@ import {
   ScrollView, 
   TouchableOpacity, 
   StatusBar,
-  Linking // Utile per aprire email e telefono
+  Linking 
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { doctorScreenStyles } from '../../styles/patient/DoctorScreenStyles';
 import Footer from '../../components/Footer';
-import Logo from '../../components/Logo'; 
 import { Colors } from '../../constants/Colors';
 import Navbar from '../../components/Navbar';
 
@@ -23,7 +22,7 @@ export default function DoctorScreen() {
     email: 'giuseppe.veronesi@studio.it',
     address: 'Via dei Mille 45, Roma',
     phone: '06 12345678',
-    mobile: '333 9876543' // Opzionale
+    mobile: '333 9876543' 
   };
 
   const handleEmailPress = () => {
@@ -35,16 +34,20 @@ export default function DoctorScreen() {
   };
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }} edges={['top', 'left', 'right']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: '#fff' }} edges={['top', 'left', 'right', 'bottom']}>
       <StatusBar barStyle="dark-content" backgroundColor="#fff" />
+      
+      {/* Navbar fissa in alto */}
       <Navbar />
+
+      {/* ScrollView che occupa lo spazio centrale */}
       <ScrollView 
         style={doctorScreenStyles.container} 
         contentContainerStyle={doctorScreenStyles.scrollContent}
         showsVerticalScrollIndicator={false}
       >
 
-        {/* CARD PROFILO */}
+        {/* CARD PROFILO (Ora sarà centrata verticalmente) */}
         <View style={doctorScreenStyles.profileCard}>
           
           {/* Avatar / Icona */}
@@ -94,8 +97,11 @@ export default function DoctorScreen() {
             <Ionicons name="chevron-forward" size={16} color="#ccc" />
           </TouchableOpacity> 
         </View>
-        <Footer />
+
       </ScrollView>
+
+      {/* Footer fisso in basso, fuori dalla ScrollView */}
+      <Footer />
     </SafeAreaView>
   );
-}
+} 

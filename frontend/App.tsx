@@ -6,6 +6,8 @@ import LoginScreen from './src/screens/LoginScreen';
 import RegisterScreen from './src/screens/RegisterScreen'; 
 import PatientTabs from './src/screens/patient/PatientTabs';
 import NoteDetailScreen from './src/screens/patient/NoteDetailScreen';
+import DoctorTabs from './src/screens/doctor/DoctorTabs';
+import DoctorPatientScreen from './src/screens/doctor/patient_details/DoctorPatientScreen';
 
 
 export type RootStackParamList = {
@@ -13,6 +15,9 @@ export type RootStackParamList = {
   Login: undefined;
   Register: undefined;
   PatientHome: undefined;
+  DoctorHome: undefined;
+  // Assicurati che il nome qui corrisponda a quello nel Stack.Screen sotto
+  DoctorPatientScreen: { patientId: string; patientName: string };
   NoteDetail: { noteId: string | number };
 };
 
@@ -46,6 +51,18 @@ export default function App() {
           name="NoteDetail" 
           component={NoteDetailScreen} 
           options={{ headerShown: false }}
+        />
+        <Stack.Screen 
+          name="DoctorHome" 
+          component={DoctorTabs} 
+          options={{ headerShown: false }} 
+        />
+        
+        {/* AGGIUNTA ROTTA MANCANTE */}
+        <Stack.Screen 
+          name="DoctorPatientScreen" 
+          component={DoctorPatientScreen} 
+          options={{ headerShown: false }} // Usiamo l'header personalizzato interno
         />
       </Stack.Navigator>
     </NavigationContainer>

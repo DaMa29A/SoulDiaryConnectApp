@@ -13,7 +13,7 @@ import {
   Alert
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { SafeAreaView } from 'react-native-safe-area-context'; // Importa da qui
+import { SafeAreaView } from 'react-native-safe-area-context'; 
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Ionicons } from '@expo/vector-icons';
@@ -68,21 +68,23 @@ export default function RegisterScreen({ navigation }: Props) {
   };
 
   return (
-    // SafeAreaView protegge la zona alta (Notch)
-    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }} edges={['top', 'left', 'right']}>
+    // AGGIUNTO 'bottom' agli edges per evitare che il footer finisca sotto la barra home su iPhone
+    <SafeAreaView style={{ flex: 1, backgroundColor: Colors.background }} edges={['top', 'left', 'right', 'bottom']}>
       <KeyboardAvoidingView 
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
       >
         <StatusBar style="dark" />
         
+        {/* AGGIUNTO style={{ flex: 1 }} per occupare tutto lo spazio e spingere il footer in fondo */}
         <ScrollView 
-          contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }} // Padding sotto per lo scroll
+          style={{ flex: 1 }}
+          contentContainerStyle={{ flexGrow: 1, paddingBottom: 20 }} 
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
         >
           <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <View style={[commonStyles.container, { paddingTop: 10 }]}> {/* PaddingTop extra opzionale */}
+            <View style={[commonStyles.container, { paddingTop: 10 }]}> 
               
               {/* HEADER */}
               <Logo scale={0.75} />
