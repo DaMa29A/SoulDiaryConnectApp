@@ -8,7 +8,13 @@ export const commonStyles = StyleSheet.create({
     backgroundColor: Colors.background,
     paddingVertical: 24,
     paddingHorizontal: 10,
-    justifyContent: 'center', // VERTICAL CENTER
+    justifyContent: 'center', 
+  },
+
+  containerPage: {
+    flex: 1,
+    width: '100%',
+    backgroundColor: Colors.white,
   },
 
   // --- WHITE CARD ---
