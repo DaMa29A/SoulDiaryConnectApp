@@ -138,6 +138,7 @@ export default NoteCard;
 const styles = StyleSheet.create({
   sectionContainer: {
     marginBottom: 30,
+    width: '100%', // <-- AGGIUNTO: forza l'intero blocco al 100%
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -163,6 +164,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   cardBase: {
+    width: '100%', // <-- AGGIUNTO: forza la card visiva al 100%
     backgroundColor: Colors.white,
     borderRadius: 16,
     padding: 20,

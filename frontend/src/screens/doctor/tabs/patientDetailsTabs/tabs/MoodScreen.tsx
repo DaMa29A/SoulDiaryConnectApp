@@ -5,14 +5,20 @@ import { commonStyles } from '../../../../../styles/CommonStyles';
 import { Colors } from '../../../../../constants/Colors';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import Footer from '../../../../../components/Footer';
+import StatsCard from '../../../../../components/stats/StatsCard';
+import EmotionLegendCard from '../../../../../components/stats/EmotionLegendCard';
+import EmotionalTrendChart from '../../../../../components/stats/EmotionalTrendChart';
+import MoodContextCorrelation from '../../../../../components/stats/MoodContextCorrelation';
+import MoodContextAverage from '../../../../../components/stats/MoodContextAverage';
 
 export default function MoodScreen() {
-  const stats = {
-    totalNotes: 24,
-    averageScore: '2.8/4',
-    topEmotion: 'Frustrazione',
-    topEmotionCount: '12',
-    isCritical: true 
+
+  const mockStats = {
+    totalNotes: 42,
+    averageScore: "7.5 / 10",
+    topEmotion: "Serenità",
+    topEmotionCount: 15,
+    isCritical: true
   };
 
   const chartData = [
@@ -41,53 +47,16 @@ export default function MoodScreen() {
     >
       <View style={[commonStyles.page_left, { marginTop: 20 }]}>
         
-        {/* --- SEZIONE STATISTICHE (Ridisegnata) --- */}
+        {/* --- SEZIONE STATISTICHE --- */}
         <View style={styles.sectionHeader}>
           <Ionicons name="stats-chart" size={20} color={Colors.primary} />
           <Text style={styles.sectionTitle}>Statistiche Periodo</Text>
         </View>
 
-        <View style={styles.statsWrapper}>
-          
-          {/* Riga Note Totali */}
-          <View style={styles.statRow}>
-            <View style={styles.labelGroup}>
-              <Ionicons name="document-text-outline" size={18} color={Colors.grey} />
-              <Text style={styles.rowLabel}>Note totali</Text>
-            </View>
-            <View style={styles.valueBox}>
-              <Text style={styles.valueTextMain}>{stats.totalNotes}</Text>
-            </View>
-          </View>
-
-          {/* Riga Media Emotività */}
-          <View style={styles.statRow}>
-            <View style={styles.labelGroup}>
-              <Ionicons name="analytics-outline" size={18} color={Colors.grey} />
-              <Text style={styles.rowLabel}>Media emotività</Text>
-            </View>
-            <View style={styles.valueBox}>
-              <Text style={styles.valueTextScore}>{stats.averageScore}</Text>
-            </View>
-          </View>
-
-          {/* Riga Emozione Prevalente */}
-          <View style={styles.statRow}>
-            <View style={styles.labelGroup}>
-              <Ionicons name="trending-down-outline" size={18} color={Colors.grey} />
-              <Text style={styles.rowLabel}>Emozione prevalente</Text>
-            </View>
-            <View style={[styles.valueBox, { minWidth: 140 }]}>
-              <Text style={styles.valueTextEmotion}>
-                {stats.topEmotion} <Text style={styles.countText}>({stats.topEmotionCount}x)</Text>
-              </Text>
-            </View>
-          </View>
-
-        </View>
+        <StatsCard stats={mockStats} />
 
         {/* --- NOTA STATO CRITICO --- */}
-        {stats.isCritical && (
+        {mockStats.isCritical && (
           <View style={styles.criticalCard}>
             <View style={styles.criticalHeader}>
               <MaterialCommunityIcons name="alert-decagram" size={20} color="#D32F2F" />
@@ -99,40 +68,17 @@ export default function MoodScreen() {
           </View>
         )}
 
+        <EmotionLegendCard />
+
         {/* --- GRAFICO --- */}
         <View style={[styles.sectionHeader, { marginTop: 30 }]}>
           <MaterialCommunityIcons name="chart-bell-curve-cumulative" size={22} color={Colors.primary} />
           <Text style={styles.sectionTitle}>Andamento Emotivo</Text>
         </View>
 
-        <View style={styles.chartContainer}>
-          <View style={styles.chartBars}>
-            {chartData.map((item, index) => (
-              <View key={index} style={styles.barColumn}>
-                <View 
-                  style={[
-                    styles.barFill, 
-                    { height: item.val * 25, backgroundColor: item.color }
-                  ]} 
-                />
-                <Text style={styles.barDay}>{item.day}</Text>
-              </View>
-            ))}
-          </View>
-          
-          <View style={styles.legendWrapper}>
-            <View style={styles.legendGrid}>
-              {legend.map((item, index) => (
-                <View key={index} style={styles.legendItem}>
-                  <View style={[styles.dot, { backgroundColor: item.color }]} />
-                  <Text style={styles.legendLabel}>
-                    <Text style={{fontWeight: '800'}}>{item.value}</Text> {item.label}
-                  </Text>
-                </View>
-              ))}
-            </View>
-          </View>
-        </View>
+        <EmotionalTrendChart />
+        <MoodContextCorrelation />
+        <MoodContextAverage />
 
       </View>
       <Footer />
@@ -153,70 +99,16 @@ const styles = StyleSheet.create({
     color: Colors.textDark,
     letterSpacing: -0.5,
   },
-  // --- Nuove Statistiche ---
-  statsWrapper: {
-    backgroundColor: Colors.white,
-    borderRadius: 20,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: Colors.borderInput,
-    marginBottom: 16,
-  },
-  statRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingVertical: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F0F2F5',
-  },
-  labelGroup: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-  },
-  rowLabel: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#666',
-  },
-  valueBox: {
-    backgroundColor: '#F8F9FA',
-    paddingVertical: 8,
-    paddingHorizontal: 14,
-    borderRadius: 10,
-    borderWidth: 1,
-    borderColor: '#E9ECEF',
-    alignItems: 'center',
-    minWidth: 60,
-  },
-  valueTextMain: {
-    fontSize: 18,
-    fontWeight: '800',
-    color: Colors.primary,
-  },
-  valueTextScore: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: Colors.textDark,
-  },
-  valueTextEmotion: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#D32F2F', // Un colore che attira l'attenzione se negativo
-  },
-  countText: {
-    fontSize: 12,
-    color: '#999',
-    fontWeight: '400',
-  },
+
   // --- Nota Critica ---
   criticalCard: {
+    width: '100%', // <-- AGGIUNTO per forzare l'occupazione dell'intero spazio orizzontale
     backgroundColor: '#FFF5F5',
     borderRadius: 16,
     padding: 16,
     borderWidth: 1,
     borderColor: '#FFE3E3',
+    marginBottom: 10, // Aggiunto un leggero margine inferiore
   },
   criticalHeader: {
     flexDirection: 'row',
@@ -234,8 +126,10 @@ const styles = StyleSheet.create({
     fontSize: 13,
     lineHeight: 19,
   },
+
   // --- Grafico ---
   chartContainer: {
+    width: '100%', // <-- Assicuriamoci che anche il grafico occupi il 100%
     backgroundColor: Colors.white,
     borderRadius: 24,
     padding: 24,

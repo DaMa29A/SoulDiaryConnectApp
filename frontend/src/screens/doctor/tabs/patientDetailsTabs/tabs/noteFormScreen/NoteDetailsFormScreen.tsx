@@ -1,15 +1,14 @@
 import React, { useState } from 'react';
 import { 
-  View, 
-  ScrollView, 
-  TextInput, 
-  TouchableOpacity, 
-  Text, 
-  StyleSheet, 
-  KeyboardAvoidingView,
-  Platform,
-  TouchableWithoutFeedback,
-  Keyboard
+    View, 
+    ScrollView, 
+    TextInput, 
+    Text, 
+    StyleSheet, 
+    KeyboardAvoidingView,
+    Platform,
+    TouchableWithoutFeedback,
+    Keyboard
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
@@ -20,6 +19,7 @@ import Navbar from '../../../../../../components/nav/Navbar';
 import NoteCard from '../../../../../../components/notes/cards/NoteCard';
 import Footer from '../../../../../../components/Footer';
 import AuthButton from '../../../../../../components/buttons/AuthButton';
+import KeywordList, { KeywordItem } from '../../../../../../components/keywords/KeywordList';
 
 export default function NoteDetailsFormScreen() {
     const [newDoctorComment, setNewDoctorComment] = useState('');
@@ -49,8 +49,19 @@ export default function NoteDetailsFormScreen() {
         }
     };
 
+    const mockKeywords: KeywordItem[] = [
+    { id: '1', word: 'Tristezza', emoji: '😢', description: 'Uno stato emotivo caratterizzato da sentimenti di svantaggio, perdita e impotenza.' },
+    { id: '2', word: 'Studio', emoji: '📚', description: 'Attività dedicata all\'apprendimento, che in questo contesto può essere fonte di stress o concentrazione.' },
+    { id: '3', word: 'Ansia', emoji: '⚡', description: 'Stato di agitazione o forte apprensione per eventi futuri o situazioni di incertezza.' },
+    { id: '4', word: 'Natura', emoji: '🌿', description: 'Elemento ambientale che ha favorito il rilassamento e la riduzione del battito cardiaco.' },
+    ];
+
     const handleSaveComment = () => {
         console.log("Nuovo commento salvato:", newDoctorComment);
+    };
+
+    const handleRegenerateAnalysis = () => {
+        console.log("Chiamata API per rigenerare l'analisi clinica...");
     };
 
     return (
@@ -59,7 +70,7 @@ export default function NoteDetailsFormScreen() {
             behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
             style={{ flex: 1 }}
             >
-                <Navbar/>
+                <Navbar showBackArrow={true}/>
                 <View style={commonStyles.container_log}>
                     <ScrollView 
                         style={{ flex: 1 }}
@@ -70,6 +81,8 @@ export default function NoteDetailsFormScreen() {
                         <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
                             <View style={[commonStyles.page_left, {paddingHorizontal: 15, paddingVertical: 20}]}>
                             
+                                <KeywordList keywords={mockKeywords} />
+                                
                                 {/* --- PATIENT --- */}
                                 <NoteCard 
                                     text={note_details.patientNote.text} 
@@ -88,12 +101,25 @@ export default function NoteDetailsFormScreen() {
 
                                 {/* --- CLINICAL --- */}
                                 {note_details.clinicalAnalysis.hasAnalysis && (
-                                    <NoteCard 
-                                        text={note_details.clinicalAnalysis.text} 
-                                        time={note_details.clinicalAnalysis.date}
-                                        result={note_details.clinicalAnalysis.result}
-                                        type='clinical_analysis'
-                                    />
+                                    <View style={styles.analysisContainer}>
+                                        <NoteCard 
+                                            text={note_details.clinicalAnalysis.text} 
+                                            time={note_details.clinicalAnalysis.date}
+                                            result={note_details.clinicalAnalysis.result}
+                                            type='clinical_analysis'
+                                        />
+                                        
+                                        {/* --- REGERATE CLINICAL ANALYSIS --- */}
+                                        <View style={styles.regenerateButtonWrapper}>
+                                            <AuthButton 
+                                                title='Rigenera analisi clinica' 
+                                                onPress={handleRegenerateAnalysis}
+                                                variant='outline' 
+                                                iconName='refresh-outline'
+                                                iconFamily='ionicons' 
+                                            />
+                                        </View>
+                                    </View>
                                 )}
 
                                 {/* --- DOCTOR --- */}
@@ -126,7 +152,7 @@ export default function NoteDetailsFormScreen() {
                                     
                                     <AuthButton
                                         title='Pubblica'
-                                        onPress={()=>{}}
+                                        onPress={handleSaveComment} 
                                         variant='primary'
                                         iconName='checkmark'
                                     />
@@ -154,5 +180,14 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
         color: Colors.textDark,
         marginLeft: 8,
+    },
+    analysisContainer: {
+        width: '100%',
+        marginBottom: 15, // Dà spazio tra questo blocco intero e la nota successiva (del dottore)
+    },
+    regenerateButtonWrapper: {
+        marginTop: -15, // Tira leggermente su il bottone per avvicinarlo alla card soprastante
+        marginBottom: 15,
+        width: '100%',
     }
 });

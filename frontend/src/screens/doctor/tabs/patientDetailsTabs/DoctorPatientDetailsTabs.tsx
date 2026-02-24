@@ -89,7 +89,7 @@ export default function DoctorPatientDetailsTabs() {
 
   return (
     <SafeAreaView style={commonStyles.safe_container_log} edges={['top', 'bottom']}>
-        <Navbar/>
+        <Navbar showBackArrow={true}/>
         
         {/* --- HEADER PATIENT --- */}
         <View style={styles.patientHeader}>
