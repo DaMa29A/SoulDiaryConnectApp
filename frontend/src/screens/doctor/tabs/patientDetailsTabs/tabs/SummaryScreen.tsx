@@ -3,14 +3,15 @@ import {
   View, 
   Text, 
   StyleSheet, 
-  ScrollView, 
-  TouchableOpacity 
+  ScrollView 
 } from 'react-native';
 import { commonStyles } from '../../../../../styles/CommonStyles';
 import { Colors } from '../../../../../constants/Colors';
 import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons';
 import Footer from '../../../../../components/Footer';
 import AuthButton from '../../../../../components/buttons/AuthButton';
+// 1. IMPORTA IL COMPONENTE CHIP
+import Chip from '../../../../../components/buttons/Chip'; 
 
 export default function SummaryScreen() {
   const [selectedPeriod, setSelectedPeriod] = useState('7_days');
@@ -22,10 +23,10 @@ export default function SummaryScreen() {
   };
 
   const periods = [
-    { id: '7_days', label: 'Ultimi 7 giorni' },
-    { id: '1_month', label: 'Ultimo mese' },
-    { id: '3_months', label: 'Ultimi 3 mesi' },
-    { id: '1_year', label: 'Ultimo anno' },
+    { id: '7_days', label: 'Ultimi 7 giorni', emoji: '' },
+    { id: '1_month', label: 'Ultimo mese', emoji: '' },
+    { id: '3_months', label: 'Ultimi 3 mesi', emoji: '' },
+    { id: '1_year', label: 'Ultimo anno', emoji: '' },
   ];
 
   return (
@@ -59,31 +60,25 @@ export default function SummaryScreen() {
       </View>
 
       <View style={[commonStyles.page_left, { marginTop: 10 }]}>
+        
         {/* --- FORM --- */}
         <View style={styles.formSection}>
           <Text style={styles.sectionLabel}>Seleziona intervallo temporale</Text>
-          {/* --- Chips --- */}
+          
           <View style={styles.chipsContainer}>
             {periods.map((period) => (
-              <TouchableOpacity
+              <Chip
                 key={period.id}
-                style={[
-                  styles.chip,
-                  selectedPeriod === period.id && styles.chipActive
-                ]}
+                label={period.label}
+                emoji={period.emoji}
+                isActive={selectedPeriod === period.id}
                 onPress={() => setSelectedPeriod(period.id)}
-              >
-                <Text style={[
-                  styles.chipText,
-                  selectedPeriod === period.id && styles.chipTextActive
-                ]}>
-                  {period.label}
-                </Text>
-              </TouchableOpacity>
+                hasInfo={false} 
+              />
             ))}
           </View>
 
-          {/* Button */}
+          {/* --- BUTTON --- */}
           <View style={styles.buttonWrapper}>
             <AuthButton 
               title="Genera Nuovo Riassunto" 
@@ -95,13 +90,13 @@ export default function SummaryScreen() {
           </View>
         </View>
 
-        {/* --- RISULTATO ANALISI --- */}
+        {/* --- RESULT --- */}
         <View style={styles.resultHeader}>
            <Ionicons name="document-text-outline" size={20} color={Colors.grey} />
            <Text style={styles.resultTitle}>Risultato Analisi</Text>
         </View>
 
-        <View style={styles.summaryCard}>
+        <View style={commonStyles.border_card}>
           <Text style={styles.summaryText}>
             Il paziente Mario Rossi mostra un quadro clinico in progressivo miglioramento. 
             Dall'analisi del periodo selezionato, si evince una riduzione dei picchi d'ansia del 30% grazie alla 
@@ -118,7 +113,6 @@ export default function SummaryScreen() {
 }
 
 const styles = StyleSheet.create({
-  // --- HEADER ---
   headerContainer: {
     backgroundColor: Colors.backgroundInput,
     paddingHorizontal: 20,
@@ -144,7 +138,6 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
     letterSpacing: 0.5,
   },
-
   mainTitle: {
     fontSize: 28,
     fontWeight: '900',
@@ -184,8 +177,6 @@ const styles = StyleSheet.create({
     color: Colors.textGray,
     marginTop: 2,
   },
-
-  // --- FORM ---
   formSection: {
     paddingVertical: 10,
     width: '100%',
@@ -200,39 +191,17 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 10,
-    marginBottom: 10,
-  },
-  chip: {
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 25,
-    backgroundColor: Colors.white,
-    borderWidth: 1,
-    borderColor: Colors.borderInput,
-  },
-  chipActive: {
-    backgroundColor: Colors.primary,
-    borderColor: Colors.primary,
-  },
-  chipText: {
-    fontSize: 13,
-    color: Colors.grey,
-  },
-  chipTextActive: {
-    color: Colors.white,
-    fontWeight: '700',
+    marginBottom: 15, 
   },
   buttonWrapper: {
     width: '100%',
     marginTop: 5,
   },
-
-  // --- RESULT ---
   resultHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 15,
-    marginTop:20,
+    marginTop: 20,
     gap: 8,
   },
   resultTitle: {
@@ -240,19 +209,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: Colors.textDark,
     textTransform: 'uppercase',
-  },
-  summaryCard: {
-    backgroundColor: Colors.white,
-    borderRadius: 20,
-    padding: 24,
-    borderWidth: 1,
-    borderColor: Colors.borderInput,
-    shadowColor: Colors.shadow,
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 10,
-    elevation: 2,
-    marginBottom: 30,
   },
   summaryText: {
     fontSize: 16,

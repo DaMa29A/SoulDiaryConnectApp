@@ -42,6 +42,20 @@ export const commonStyles = StyleSheet.create({
         shadowRadius: 10,
         elevation: 5,
     },
+    border_card:{
+        width: '100%',
+        backgroundColor: Colors.white,
+        borderRadius: 20,
+        padding: 20,
+        borderWidth: 1,
+        borderColor: Colors.borderInput,
+        shadowColor: Colors.shadow,
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.05,
+        shadowRadius: 8,
+        elevation: 3,
+        marginBottom: 20,
+    },
 
     // --- WELCOME ---
     welcomeTitle: {

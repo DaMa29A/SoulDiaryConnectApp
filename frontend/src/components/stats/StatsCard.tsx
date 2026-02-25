@@ -2,6 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { Colors } from '../../constants/Colors'; 
+import { commonStyles } from '../../styles/CommonStyles';
 
 export interface StatsData {
   totalNotes: number | string;
@@ -16,12 +17,11 @@ interface StatsCardProps {
 
 export default function StatsCard({ stats }: StatsCardProps) {
   return (
-    <View style={styles.statsWrapper}>
-          
-      {/* Riga Note Totali */}
+    <View style={commonStyles.border_card}>
+      {/* Notes */}
       <View style={styles.statRow}>
         <View style={styles.labelGroup}>
-          <Ionicons name="document-text-outline" size={20} color={Colors.textGray || '#6b7280'} />
+          <Ionicons name="document-text-outline" size={20} color={Colors.textGray} />
           <Text style={styles.rowLabel}>Note totali</Text>
         </View>
         <View style={styles.valueBox}>
@@ -29,7 +29,7 @@ export default function StatsCard({ stats }: StatsCardProps) {
         </View>
       </View>
 
-      {/* Riga Media Emotività */}
+      {/* Average Emotions */}
       <View style={styles.statRow}>
         <View style={styles.labelGroup}>
           <Ionicons name="analytics-outline" size={20} color={Colors.textGray || '#6b7280'} />
@@ -40,13 +40,13 @@ export default function StatsCard({ stats }: StatsCardProps) {
         </View>
       </View>
 
-      {/* Riga Emozione Prevalente */}
+      {/* Top Emotion */}
       <View style={[styles.statRow, styles.lastRow]}>
         <View style={styles.labelGroup}>
-          <Ionicons name="trending-down-outline" size={20} color={Colors.textGray || '#6b7280'} />
+          <Ionicons name="happy" size={20} color={Colors.textGray || '#6b7280'} />
           <Text style={styles.rowLabel}>Emozione prevalente</Text>
         </View>
-        <View style={[styles.valueBox, { minWidth: 140 }]}>
+        <View style={[styles.valueBox]}>
           <Text style={styles.valueTextEmotion}>
             {stats.topEmotion} <Text style={styles.countText}>({stats.topEmotionCount}x)</Text>
           </Text>
@@ -58,28 +58,13 @@ export default function StatsCard({ stats }: StatsCardProps) {
 }
 
 const styles = StyleSheet.create({
-  statsWrapper: {
-    width: '100%', 
-    backgroundColor: Colors.white,
-    borderRadius: 16,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    elevation: 3, 
-    shadowColor: '#000', 
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    borderWidth: 1,
-    borderColor: Colors.borderInput || '#f3f4f6',
-    marginBottom: 20,
-  },
   statRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    paddingVertical: 16,
+    paddingVertical: 8,
     borderBottomWidth: 1,
-    borderBottomColor: Colors.borderInput || '#f3f4f6', 
+    borderBottomColor: Colors.borderInput, 
   },
   lastRow: {
     borderBottomWidth: 0, 
@@ -90,13 +75,13 @@ const styles = StyleSheet.create({
   },
   rowLabel: {
     fontSize: 16,
-    color: Colors.textDark || '#374151',
-    fontWeight: '500',
+    color: Colors.textDark,
+    fontWeight: 'bold',
     marginLeft: 12, 
   },
   valueBox: {
-    backgroundColor: Colors.backgroundInput || '#f3f4f6', 
-    paddingHorizontal: 14,
+    backgroundColor: Colors.backgroundInput, 
+    paddingHorizontal: 10,
     paddingVertical: 6,
     borderRadius: 12,
     alignItems: 'center',
@@ -110,16 +95,16 @@ const styles = StyleSheet.create({
   valueTextScore: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: Colors.violet || '#8b5cf6', 
+    color: Colors.primary, 
   },
   valueTextEmotion: {
     fontSize: 15,
-    fontWeight: '600',
-    color: Colors.textDark || '#374151',
+    fontWeight: '500',
+    color: Colors.textDark,
   },
   countText: {
     fontSize: 14,
     fontWeight: 'normal',
-    color: Colors.textGray || '#6b7280',
+    color: Colors.textGray,
   }
 });
