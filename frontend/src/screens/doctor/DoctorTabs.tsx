@@ -5,6 +5,7 @@ import { Platform } from 'react-native';
 import { Colors } from '../../constants/Colors';
 import DoctorListPatientsScreen from './tabs/DoctorListPatientsScreen';
 import DoctorProfileScreen from './tabs/DoctorProfileScreen';
+import DoctorParametersScreen from './tabs/DoctorParametersScreen';
 
 const Tab = createBottomTabNavigator();
 
@@ -38,6 +39,8 @@ export default function DoctorTabs() {
             iconName = focused ? 'people' : 'people-outline';
           } else if (route.name === 'Profilo') {
             iconName = focused ? 'person' : 'person-outline';
+          } else if (route.name === 'Parametri') {
+            iconName = focused ? 'cog' : 'cog-outline';
           }
           return <Ionicons name={iconName} size={size} color={color} />;
         },
@@ -51,6 +54,11 @@ export default function DoctorTabs() {
       <Tab.Screen 
         name="Profilo" 
         component={DoctorProfileScreen} 
+      />
+
+      <Tab.Screen 
+        name="Parametri" 
+        component={DoctorParametersScreen} 
       />
 
     </Tab.Navigator>

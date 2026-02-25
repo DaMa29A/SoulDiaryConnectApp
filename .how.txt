@@ -1,0 +1,27 @@
+################## Frontend ##################
+Download: Node.js, Expo Go app on smartphone
+
+Create frontend:
+npx create-expo-app@latest frontend --template blank-typescript
+
+Install frontend:
+cd .\frontend\
+npm install
+
+Run frontend:
+npx expo start
+Android: qrcode in app
+Ios: qrcode in camera
+
+
+################## Backend ##################
+cd .\backend\
+.venv\Scripts\activate
+
+In prompt:
+ollama pull llama3.1:8b
+ollama serve
+ollama list
+
+To start server:
+python manage.py runserver

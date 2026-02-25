@@ -9,6 +9,7 @@ import EmotionLegendCard from '../../../../../components/stats/EmotionLegendCard
 import EmotionalTrendChart from '../../../../../components/stats/EmotionalTrendChart';
 import MoodContextCorrelation from '../../../../../components/stats/MoodContextCorrelation';
 import MoodContextAverage from '../../../../../components/stats/MoodContextAverage';
+import { AlertCard } from '../../../../../components/AlertCard';
 
 export default function MoodScreen() {
   const mockStats = {
@@ -30,15 +31,12 @@ export default function MoodScreen() {
 
         {/* --- CRITIC --- */}
         {mockStats.isCritical && (
-          <View style={styles.criticalCard}>
-            <View style={styles.criticalHeader}>
-              <MaterialCommunityIcons name="alert-decagram" size={20} color={Colors.red} />
-              <Text style={styles.criticalTitle}>Rilevato Stato Critico</Text>
-            </View>
-            <Text style={styles.criticalBody}>
-              Il periodo selezionato mostra una flessione marcata. Si consiglia un colloquio di approfondimento immediato.
-            </Text>
-          </View>
+          <AlertCard 
+            isCritic= {true}
+            title="Rilevato Stato Critico"
+            iconName="alert-decagram"
+            text="Il periodo selezionato mostra una flessione marcata. Si consiglia un colloquio di approfondimento immediato."
+          />
         )}
         
 
@@ -93,32 +91,5 @@ const styles = StyleSheet.create({
     fontSize: 19,
     fontWeight: 'bold',
     color: Colors.textDark,
-  },
-
-  // --- Critic ---
-  criticalCard: {
-    width: '100%',
-    backgroundColor: Colors.lightRed,
-    borderRadius: 16,
-    padding: 16,
-    borderWidth: 1,
-    borderColor: Colors.borderRed,
-    marginBottom: 10,
-  },
-  criticalHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    marginBottom: 6,
-  },
-  criticalTitle: {
-    color: Colors.red,
-    fontWeight: 'bold',
-    fontSize: 15,
-  },
-  criticalBody: {
-    color: Colors.textDark,
-    fontSize: 13,
-    lineHeight: 19,
-  },
+  }
 });
