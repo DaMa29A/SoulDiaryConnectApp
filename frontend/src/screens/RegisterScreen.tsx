@@ -11,10 +11,13 @@ import { Colors } from '../constants/Colors';
 import Footer from '../components/Footer';
 import Ionicons from '@expo/vector-icons/build/Ionicons';
 import TypeSelector, { UserRole } from '../components/TypeSelector';
+import { useAccess } from '../hooks/useAccess';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Register'>;
 
 export default function RegisterScreen({ navigation }: Props) {
+    const { handleRegister, loading } = useAccess(navigation);
+
     const [userType, setUserType] = useState<UserRole>('patient');
     const [isPasswordVisible, setPasswordVisible] = useState(false);
     const [form, setForm] = useState({
@@ -225,10 +228,16 @@ export default function RegisterScreen({ navigation }: Props) {
 
                         { /* --- REGISTER BUTTON --- */ }
                         {/* TODO: onPress Registrati */}
-                        <AuthButton 
+                        {/* <AuthButton 
                             title="Registrati" 
                             onPress={() => navigation.navigate('DoctorTabs')}
                             variant="primary"
+                        /> */}
+                        <AuthButton 
+                            title={loading ? "Registrazione..." : "Registrati"} 
+                            onPress={() => handleRegister(userType, form)} // CHIAMATA REALE
+                            variant="primary"
+                            // disabled={loading}
                         />
 
                         { /* --- LOGIN LINK --- */ }

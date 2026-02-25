@@ -39,3 +39,6 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# Configurazione API (contiene IP privati)
+src/constants/Config.ts

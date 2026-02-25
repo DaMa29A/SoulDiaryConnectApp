@@ -98,8 +98,8 @@ export default function DoctorParametersScreen() {
                         
                     
                         {/* 3. CARD 2: Parameters */}
-                        <View style={[commonStyles.card, {width: '100%', marginTop:20}]}>
-                            {analysisType === 'structured' && (
+                        {analysisType === 'structured' && (
+                            <View style={[commonStyles.card, {width: '100%', marginTop:20}]}>
                                 <View style={{ marginTop: 10 }}>
                                     <Text style={styles.labelTitle}>Parametri Personalizzati</Text>
                                 
@@ -149,8 +149,8 @@ export default function DoctorParametersScreen() {
                                     />
 
                                 </View>
-                            )}
-                        </View>
+                            </View>
+                        )}
                         
 
                         <View style={styles.footerDivider} />

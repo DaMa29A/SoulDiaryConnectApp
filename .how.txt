@@ -8,20 +8,43 @@ Install frontend:
 cd .\frontend\
 npm install
 
+crea file Config.ts in .\costants e inserisci :
+export const API_URL = 'http://172.19.160.87:8000';
+[per ip avviare ipconfig in terminale e selezionare IPv4 da scheda Lan wireless]
+
 Run frontend:
 npx expo start
 Android: qrcode in app
 Ios: qrcode in camera
 
 
+
 ################## Backend ##################
 cd .\backend\
+
+# Installa ambiente
+py -3.13 -m venv .venv
 .venv\Scripts\activate
 
-In prompt:
+# Installa librerie
+pip install -r requirements.txt     [Prompt come amministratore]
+
+# DB
+in SoulDiaryConnect/settings.py                         [cambia password db]
+createdb -U postgres -h localhost souldiaryconnect      [Crea db SoulDiaryConnect]
+python manage.py dbshell                                [Entra in dbshell]
+\i souldiaryconnect.sql                                 [In prompt dbshell lancia questo comando]
+\q                                                      [Esci da db]
+python manage.py makemigrations                         [Elimina files in SoulDiaryConnectApp/migrations se da errore]
+python manage.py migrate
+
+**Ricorda**
+Aggiungere ALLOWED_HOSTS = ['*'] in backend/SouldDiaryConnect/settings.py
+
+# OLLAMA (In prompt)
 ollama pull llama3.1:8b
 ollama serve
 ollama list
 
-To start server:
+# To start server:
 python manage.py runserver

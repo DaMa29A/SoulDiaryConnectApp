@@ -315,9 +315,11 @@ def login_view(request):
 
     return render(request, 'SoulDiaryConnectApp/login.html')
 
-
+@csrf_exempt
 def register_view(request):
+    print("Sono qui fuori")
     if request.method == 'POST':
+        print("Sono qui")
         user_type = request.POST['user_type']
 
         nome = request.POST['nome']
@@ -380,6 +382,7 @@ def register_view(request):
         return redirect('login')
 
     # Recupera tutti i medici per il dropdown
+    print("Sono qui")
     medici = Medico.objects.all().order_by('cognome', 'nome')
     return render(request, 'SoulDiaryConnectApp/register.html', {'medici': medici})
 
