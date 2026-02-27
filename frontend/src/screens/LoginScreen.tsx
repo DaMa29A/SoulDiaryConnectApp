@@ -10,10 +10,13 @@ import AuthButton from '../components/buttons/AuthButton';
 import { Colors } from '../constants/Colors';
 import Footer from '../components/Footer';
 import Ionicons from '@expo/vector-icons/build/Ionicons';
+import { useAccess } from '../hooks/useAccess';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
 
 export default function LoginScreen({ navigation }: Props) {
+  const { handleLogin, loading } = useAccess(navigation);
+
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isPasswordVisible, setPasswordVisible] = useState(false);
@@ -71,10 +74,9 @@ export default function LoginScreen({ navigation }: Props) {
                   </View>
 
                   { /* --- LOGIN BUTTON --- */ }
-                  {/* TODO: onPress Login */}
                   <AuthButton 
-                    title="Accedi" 
-                    onPress={() => navigation.navigate('PatientTabs')}
+                    title={loading ? "Accesso..." : "Accedi"} 
+                    onPress={() =>handleLogin(email,password)}
                     variant="primary"
                   />
 

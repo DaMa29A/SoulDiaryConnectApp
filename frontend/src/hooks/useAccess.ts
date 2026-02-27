@@ -3,22 +3,23 @@ import axios from 'axios';
 import { Alert } from 'react-native';
 import { API_URL } from '../constants/Config';
 import { UserRole } from '../components/TypeSelector';
+import * as SecureStore from 'expo-secure-store';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export const useAccess = (navigation: any) => {
     const [loading, setLoading] = useState(false);
-
 
     // ----- REGISTRAZIONE ------
     const handleRegister = async (userType: UserRole, form: any) => {
         setLoading(true);
 
-        // Mappatura dei dati dal frontend (camelCase) al backend (snake_case di Django)
         const data = new FormData();
         data.append('user_type', userType === 'doctor' ? 'medico' : 'paziente');
         data.append('nome', form.nome);
         data.append('cognome', form.cognome);
         data.append('email', form.email);
         data.append('password', form.password);
+        console.log('Registrazione: '+form.email)
 
         if (userType === 'doctor') {
             data.append('indirizzo_studio', form.indirizzoStudio);
@@ -29,10 +30,8 @@ export const useAccess = (navigation: any) => {
         } else {
             data.append('codice_fiscale', form.codiceFiscale);
             data.append('data_di_nascita', form.dataNascita);
-            data.append('med', form.medicoRiferimento); // Il codice identificativo del medico
+            data.append('med', form.medicoRiferimento);
         }
-
-        console.log(`${API_URL}/register/`)
 
         try {
             const response = await axios.post(`${API_URL}/register/`, data, {
@@ -41,21 +40,82 @@ export const useAccess = (navigation: any) => {
                 },
             });
 
-            console.log("Response: "+response)
-
-            Alert.alert("Successo", "Registrazione completata!");
-            navigation.navigate('Login');
+            // Controlliamo lo status inviato da Django
+            if (response.data.status === 'success') {
+                Alert.alert("Successo", "Registrazione completata!");
+                navigation.navigate('Login');
+            } else {
+                Alert.alert("Errore", response.data.message || "Errore sconosciuto");
+            }
         } catch (error: any) {
             console.error(error);
-            console.log("Error: "+error)
-            Alert.alert("Errore", "Si è verificato un problema durante la registrazione.");
+            const errorMsg = error.response?.data?.message || "Si è verificato un problema durante la registrazione.";
+            Alert.alert("Errore", errorMsg);
         } finally {
             setLoading(false);
         }
     };
 
+    // ----- LOGIN ------
+    const handleLogin = async (email: string, password: string) => {
+        setLoading(true);
+
+        const data = new FormData();
+        data.append('email', email);
+        data.append('password', password);
+
+        try {
+            const response = await axios.post(`${API_URL}/login/`, data, {
+                headers: {
+                    'Content-Type': 'multipart/form-data',
+                },
+            });
+
+            if (response.data.status === 'success') {
+                // 1. Salva il Token JWT nella "cassaforte" del telefono
+                await SecureStore.setItemAsync('userToken', response.data.token);
+                
+                // 2. Salva il tipo e l'ID utente per sapere come impostare l'interfaccia
+                await AsyncStorage.setItem('user_type', response.data.user_type);
+                await AsyncStorage.setItem('user_id', response.data.user_id);
+
+                // 3. Reindirizza l'utente alla schermata corretta in base al ruolo
+                if (response.data.user_type === 'medico') {
+                    navigation.navigate('DoctorTabs'); 
+                } else {
+                    navigation.navigate('PatientTabs');
+                }
+            } else {
+                Alert.alert("Accesso Negato", response.data.message);
+            }
+        } catch (error: any) {
+            console.error(error);
+            const errorMsg = error.response?.data?.message || "Credenziali non valide o errore di rete.";
+            Alert.alert("Errore di Login", errorMsg);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // ----- LOGOUT ------
+    const handleLogout = async () => {
+        try {
+            // Rimuovi i dati dal telefono
+            await SecureStore.deleteItemAsync('userToken');
+            await AsyncStorage.removeItem('user_type');
+            await AsyncStorage.removeItem('user_id');
+            
+            // Torna alla schermata di Login
+            navigation.navigate('Index');
+        } catch (error) {
+            console.error("Errore durante il logout", error);
+        }
+    };
+
     return {
         handleRegister,
+        handleLogin,
+        handleLogout,
         loading
     };
 };

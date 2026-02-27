@@ -312,10 +312,9 @@ def login_view(request):
         else:
             print("Login fallito")
             messages.error(request, 'Email o password non validi.')
-
     return render(request, 'SoulDiaryConnectApp/login.html')
 
-@csrf_exempt
+
 def register_view(request):
     print("Sono qui fuori")
     if request.method == 'POST':

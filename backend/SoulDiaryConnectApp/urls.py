@@ -4,20 +4,22 @@ from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
-    path('', views.home, name='home'),  # Home page
-    path('login/', views.login_view, name='login'),  # Login page
-    path('register/', views.register_view, name='register'),  # Registration page
+    path('', views.home, name='home'),  
+    path('login/', views.login_view, name='login'),  
+    path('register/', views.register_view, name='register'), 
     path('logout/', views.home, name='logout'),
-    path('medico/home/', views.medico_home, name='medico_home'),
-    path('medico/analisi/', views.analisi_paziente, name='analisi_paziente'),
-    path('medico/riassunto/', views.riassunto_caso_clinico, name='riassunto_caso_clinico'),
-    path('paziente/home/', views.paziente_home, name='paziente_home'),
-    path('medico/note/<int:nota_id>/modifica/', views.modifica_testo_medico, name='modifica_testo_medico'),
-    path('medico/personalizza/', views.personalizza_generazione, name='personalizza_generazione'),
-    path('paziente/note/<int:nota_id>/elimina/', views.elimina_nota, name='elimina_nota'),
-    path('paziente/note/<int:nota_id>/genera-supporto/', views.genera_frase_supporto_nota, name='genera_frase_supporto_nota'),
-    path('medico/rigenera_frase_clinica/', views.rigenera_frase_clinica, name='rigenera_frase_clinica'),
-    path('api/nota/<int:nota_id>/stato/', views.controlla_stato_generazione, name='controlla_stato_generazione'),
+    path('doctor/profile/', views.get_doctor_profile, name='doctor_profile'),
+
+    # path('medico/home/', views.medico_home, name='medico_home'),
+    # path('medico/analisi/', views.analisi_paziente, name='analisi_paziente'),
+    # path('medico/riassunto/', views.riassunto_caso_clinico, name='riassunto_caso_clinico'),
+    # path('paziente/home/', views.paziente_home, name='paziente_home'),
+    # path('medico/note/<int:nota_id>/modifica/', views.modifica_testo_medico, name='modifica_testo_medico'),
+    # path('medico/personalizza/', views.personalizza_generazione, name='personalizza_generazione'),
+    # path('paziente/note/<int:nota_id>/elimina/', views.elimina_nota, name='elimina_nota'),
+    # path('paziente/note/<int:nota_id>/genera-supporto/', views.genera_frase_supporto_nota, name='genera_frase_supporto_nota'),
+    # path('medico/rigenera_frase_clinica/', views.rigenera_frase_clinica, name='rigenera_frase_clinica'),
+    # path('api/nota/<int:nota_id>/stato/', views.controlla_stato_generazione, name='controlla_stato_generazione'),
 ]
 
 if settings.DEBUG:
