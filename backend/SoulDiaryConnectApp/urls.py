@@ -17,6 +17,8 @@ urlpatterns = [
     path('patient/doctor/', views.get_doctor_info, name='get_doctor_info'),
     path('patient/note/<int:pk>/', views.get_note_details, name='get_note_details'),
     path('patient/note/<int:pk>/delete/', views.delete_nota, name='delete_nota'),
+    path('doctor/patients/<str:codice_fiscale>/notes/', views.get_patient_notes, name='get_patient_notes'),
+    
 
     # path('medico/home/', views.medico_home, name='medico_home'),
     # path('medico/analisi/', views.analisi_paziente, name='analisi_paziente'),

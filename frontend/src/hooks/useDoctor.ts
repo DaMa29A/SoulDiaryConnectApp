@@ -1,108 +1,57 @@
 import { useState, useCallback } from 'react';
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
-import { API_URL } from '../constants/Config'; // Assicurati che il percorso sia corretto
+import { API_URL } from '../constants/Config';
 
 export const useDoctor = () => {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-
-    const [profile, setProfile] = useState<any>(null);
-    const [patients, setPatients] = useState<any[]>([]);
-
+    const [patientNotes, setPatientNotes] = useState<any[]>([]);
     const [selectedPatient, setSelectedPatient] = useState<any>(null);
 
-    // Get doctor profile
-    const fetchProfile = useCallback(async () => {
+    // Funzione per caricare le note di un paziente specifico
+    const fetchPatientNotes = useCallback(async (codiceFiscale: string) => {
         setLoading(true);
         setError(null);
-        
         try {
             const token = await SecureStore.getItemAsync('userToken');
-            if (!token) throw new Error("Nessun token di accesso trovato.");
-
-            const response = await axios.get(`${API_URL}/doctor/profile/`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
+            const response = await axios.get(`${API_URL}/doctor/patients/${codiceFiscale}/notes/`, {
+                headers: { Authorization: `Bearer ${token}` }
             });
-
             if (response.data.status === 'success') {
-                setProfile(response.data.data);
-            } else {
-                setError(response.data.message);
+                setPatientNotes(response.data.data);
             }
         } catch (err: any) {
-            console.error("Errore fetchProfile:", err);
-            setError(err.response?.data?.message || "Errore di connessione al server");
+            setError(err.response?.data?.message || "Errore nel caricamento note");
         } finally {
             setLoading(false);
         }
     }, []);
 
-    // Get doctor's patien list
-    const fetchPatients = useCallback(async () => {
+    // Funzione per caricare i dettagli anagrafici del paziente (Header)
+    const fetchPatientDetails = useCallback(async (codiceFiscale: string) => {
         setLoading(true);
-        setError(null);
-        
         try {
             const token = await SecureStore.getItemAsync('userToken');
-            if (!token) throw new Error("Nessun token di accesso trovato.");
-
-            const response = await axios.get(`${API_URL}/doctor/patients/`, {
+            const response = await axios.get(`${API_URL}/doctor/patients/${codiceFiscale}/`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-
-            if (response.data.status === 'success') {
-                setPatients(response.data.data);
-            } else {
-                setError(response.data.message);
-            }
-        } catch (err: any) {
-            console.error("Errore fetchPatients:", err);
-            setError(err.response?.data?.message || "Errore di connessione al server");
-        } finally {
-            setLoading(false);
-        }
-    }, []);
-
-    // Recover single patient
-    const fetchPatientDetails = useCallback(async (codice_fiscale: string) => {
-        setLoading(true);
-        setError(null);
-        
-        try {
-            const token = await SecureStore.getItemAsync('userToken');
-            if (!token) throw new Error("Nessun token.");
-
-            const response = await axios.get(`${API_URL}/doctor/patients/${codice_fiscale}/`, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
-
             if (response.data.status === 'success') {
                 setSelectedPatient(response.data.data);
-            } else {
-                setError(response.data.message);
             }
-        } catch (err: any) {
-            console.error("Errore fetchPatientDetails:", err);
-            setError(err.response?.data?.message || "Errore di connessione al server");
+        } catch (err) {
+            console.error(err);
         } finally {
             setLoading(false);
         }
     }, []);
 
-    // Exports
-    return { 
-        profile, 
-        patients, 
-        selectedPatient, 
-
-        loading, 
-        error, 
-
-        fetchProfile,
-        fetchPatients,
+    return {
+        loading,
+        error,
+        patientNotes,
+        selectedPatient,
+        fetchPatientNotes,
         fetchPatientDetails
     };
 };

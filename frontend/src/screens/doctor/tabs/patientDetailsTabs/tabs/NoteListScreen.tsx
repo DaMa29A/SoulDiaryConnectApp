@@ -1,43 +1,59 @@
-import React from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
-import { commonStyles } from '../../../../../styles/CommonStyles';
-import { useNavigation } from '@react-navigation/native';
+import React, { useEffect, useMemo } from 'react';
+import { View, StyleSheet, ScrollView, ActivityIndicator, Text } from 'react-native';
+import { useRoute } from '@react-navigation/native';
 import { Colors } from '../../../../../constants/Colors';
-import Footer from '../../../../../components/Footer';
+import { commonStyles } from '../../../../../styles/CommonStyles';
 import NotesList from '../../../../../components/notes/NotesList';
+import { useDoctor } from '../../../../../hooks/useDoctor';
 
 export default function NoteListScreen() {
-  const navigation = useNavigation<any>();
+    const route = useRoute<any>();
+    // Leggiamo il patientId passato dal navigatore padre (DoctorPatientDetailsTabs)
+    const { patientId } = route.params || {};
+    
+    const { fetchPatientNotes, patientNotes, loading, error } = useDoctor();
 
-  const notes_list = [
-    { id: 1, day: '14', month: 'OTT', text: 'Oggi mi sento molto meglio rispetto a ieri. Ho fatto una passeggiata al parco.', time: '18:30' },
-    { id: 2, day: '12', month: 'OTT', text: 'Ho avuto un momento di ansia nel pomeriggio, ma è passato dopo aver parlato con Laura.', time: '09:15' },
-    { id: 3, day: '10', month: 'OTT', text: 'Iniziato il nuovo piano terapeutico prescritto dal Dott. Veronesi.', time: '21:00' },
-  ];
+    useEffect(() => {
+        if (patientId) {
+            fetchPatientNotes(patientId);
+        }
+    }, [patientId, fetchPatientNotes]);
 
-  const handleNotePress = (id: number | string) => {
-    console.log('Hai cliccato sulla nota:', id);
-    navigation.navigate('NoteDetailsForm', { noteId: id });
-  };
+    // Trasformiamo i dati per il componente grafico NotesList
+    const displayNotes = useMemo(() => {
+        const mesi = ['GEN', 'FEB', 'MAR', 'APR', 'MAG', 'GIU', 'LUG', 'AGO', 'SET', 'OTT', 'NOV', 'DIC'];
+        return patientNotes.map(n => {
+            const date = new Date(n.data_iso);
+            return {
+                id: n.id,
+                day: date.getDate().toString().padStart(2, '0'),
+                month: mesi[date.getMonth()],
+                text: n.testo,
+                time: `${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`
+            };
+        });
+    }, [patientNotes]);
 
+    if (loading && patientNotes.length === 0) {
+        return <ActivityIndicator size="large" color={Colors.primary} style={{marginTop: 50}} />;
+    }
 
-  return (
-    <ScrollView 
-    style={{ flex: 1, backgroundColor:Colors.white }}
-    contentContainerStyle={{ flexGrow: 1}} 
-    keyboardShouldPersistTaps="handled"
-    showsVerticalScrollIndicator={false}
-    >
-      <View style={[commonStyles.page_left, {marginTop:20}]}>
-        <NotesList 
-            notes={notes_list} 
-            onNotePress={handleNotePress} 
-          />  
-      </View>
-      <Footer />
-    </ScrollView>
-  );
+    return (
+        <ScrollView style={{ flex: 1, backgroundColor: Colors.white }} showsVerticalScrollIndicator={false}>
+            <View style={[commonStyles.page_left, {marginTop: 20}]}>
+                {displayNotes.length > 0 ? (
+                    <NotesList 
+                        notes={displayNotes} 
+                        onNotePress={(id) => console.log("Nota cliccata:", id)} 
+                    />
+                ) : (
+                    <Text style={styles.emptyText}>Nessuna nota trovata per questo paziente.</Text>
+                )}
+            </View>
+        </ScrollView>
+    );
 }
 
 const styles = StyleSheet.create({
+    emptyText: { textAlign: 'center', marginTop: 40, color: Colors.grey, fontStyle: 'italic' }
 });
