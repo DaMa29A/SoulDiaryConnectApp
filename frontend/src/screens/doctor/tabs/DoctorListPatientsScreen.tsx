@@ -1,14 +1,15 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react'; // NUOVO: Rimosso useEffect, aggiunto useCallback
 import { 
-  View, 
-  Text, 
-  ScrollView,
-  StyleSheet,
-  TextInput,
+    View, 
+    Text, 
+    ScrollView,
+    StyleSheet,
+    TextInput,
+    ActivityIndicator
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useFocusEffect } from '@react-navigation/native'; 
 import { commonStyles } from '../../../styles/CommonStyles';
 import { Colors } from '../../../constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
@@ -16,24 +17,30 @@ import Footer from '../../../components/Footer';
 import Navbar from '../../../components/nav/Navbar';
 import PatientsList from '../../../components/patients/PatientsList';
 
+import { useDoctor } from '../../../hooks/useDoctor';
 
 export default function DoctorListPatientsScreen() {
     const navigation = useNavigation<any>();
 
-    const patients_list = [
-        { id: '1', name: 'Mario Rossi', lastUpdate: 'Oggi, 14:30', hasNew: true },
-        { id: '2', name: 'Luigi Verdi', lastUpdate: 'Ieri, 09:15', hasNew: false },
-        { id: '3', name: 'Anna Bianchi', lastUpdate: '12 Ott, 18:00', hasNew: false },
-        { id: '4', name: 'Giulia Neri', lastUpdate: '10 Ott, 11:20', hasNew: true },
-        { id: '5', name: 'Francesco Gialli', lastUpdate: '05 Ott, 16:45', hasNew: false },
-    ];
-
+    const { patients, loading, error, fetchPatients } = useDoctor();
     const [searchText, setSearchText] = useState('');
 
-    const filteredPatients = patients_list.filter(p => 
-        p.name.toLowerCase().includes(searchText.toLowerCase())
+    useFocusEffect(
+        useCallback(() => {
+            fetchPatients();
+        }, [fetchPatients])
     );
 
+    const formattedPatients = patients.map((p: any) => ({
+        id: p.codice_fiscale,
+        name: `${p.nome} ${p.cognome}`,
+        lastUpdate: 'Paziente attivo', 
+        hasNew: false 
+    }));
+
+    const filteredPatients = formattedPatients.filter(p => 
+        p.name.toLowerCase().includes(searchText.toLowerCase())
+    );
 
     return ( 
         <SafeAreaView style={commonStyles.safe_container_log} edges={['top']}>
@@ -57,25 +64,34 @@ export default function DoctorListPatientsScreen() {
                     />
                 </View>
 
-                {/* --- SrollView --- */}
+                {/* --- ScrollView --- */}
                 <ScrollView 
-                style={{ flex: 1 }}
-                contentContainerStyle={{ flexGrow: 1}} 
-                keyboardShouldPersistTaps="handled"
-                showsVerticalScrollIndicator={false}
+                    style={{ flex: 1 }}
+                    contentContainerStyle={{ flexGrow: 1}} 
+                    keyboardShouldPersistTaps="handled"
+                    showsVerticalScrollIndicator={false}
                 >
                     <View style={[commonStyles.page_left]}>
-
-                        {/* --- Patients List --- */}
-                        <PatientsList 
-                            patients={filteredPatients} 
-                            onPatientPress={(id, name) => {
-                            navigation.navigate('DoctorPatientDetailsTabs', { 
-                                patientId: id, 
-                                patientName: name 
-                            });
-                            }} 
-                        />
+                        {loading && patients.length === 0 ? ( 
+                            <ActivityIndicator size="large" color={Colors.primary} style={{ marginTop: 50 }} />
+                        ) : error ? (
+                            <Text style={{ color: Colors.red, textAlign: 'center', marginTop: 50, alignSelf:'center' }}>{error}</Text>
+                        ) : filteredPatients.length === 0 ? (
+                            <Text style={{ textAlign: 'center', marginTop: 50, color: Colors.grey, alignSelf:'center' }}>
+                                {searchText ? "Nessun paziente trovato con questo nome." : "Non hai ancora nessun paziente assegnato."}
+                            </Text>
+                        ) : (
+                            /* --- Patients List --- */
+                            <PatientsList 
+                                patients={filteredPatients} 
+                                onPatientPress={(id, name) => {
+                                    navigation.navigate('DoctorPatientDetailsTabs', { 
+                                        patientId: id, 
+                                        patientName: name 
+                                    });
+                                }} 
+                            />
+                        )}
                         
                     </View>
                     <Footer />
@@ -97,7 +113,7 @@ const styles = StyleSheet.create({
     },
     subtitle: {
         fontSize: 16,
-        color: Colors.textGray,
+        color: Colors.grey,
         marginTop: 4,
     }  
 });

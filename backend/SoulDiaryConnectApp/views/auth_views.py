@@ -7,21 +7,21 @@ from django.views.decorators.csrf import csrf_exempt
 from ..models import Medico, Paziente
 
 # ============================================================================
-# DECORATORE DI SICUREZZA (IL "GUARDIANO")
+# SAFETY DECORATOR
 # ============================================================================
 def token_required(f):
     """
-    Decoratore che protegge le viste. Controlla che la richiesta
-    contenga un Token JWT valido nell'header 'Authorization'.
+    Decorator that protects views. Checks that the request
+    contains a valid JWT token in the 'Authorization' header.
     """
     @wraps(f)
     def decorated(request, *args, **kwargs):
         token = None
         
-        # Cerca il token nell'header della richiesta
+        # Search token in the request header
         if 'Authorization' in request.headers:
             auth_header = request.headers['Authorization']
-            # Il formato standard che React Native dovrà inviare è: "Bearer eyJhbGciOi..."
+            # The standard format that React Native should send is: "Bearer eyJhbGciOi..."
             if auth_header.startswith('Bearer '):
                 token = auth_header.split(" ")[1]
         
@@ -29,10 +29,10 @@ def token_required(f):
             return JsonResponse({'status': 'error', 'message': 'Token mancante! Accesso negato.'}, status=401)
         
         try:
-            # Decodifica e verifica matematicamente il token
+            # Decode and mathematically verify the token
             data = jwt.decode(token, settings.SECRET_KEY, algorithms=['HS256'])
             
-            # Attacca le info dell'utente alla request, così le altre view sanno chi è loggato!
+           # Attach user info to the request, so other views know who is logged in!
             request.user_id = data['user_id']
             request.user_type = data['user_type']
             
@@ -46,12 +46,12 @@ def token_required(f):
 
 
 # ============================================================================
-# VISTE DI AUTENTICAZIONE (API)
+# AUTHENTICATION VIEWS (API)
 # ============================================================================
 @csrf_exempt
 def login_view(request):
     """
-    Riceve email e password. Se corretti, restituisce un Token JWT.
+    Receives email and password. If correct, returns a JWT token.
     """
     print("Login")
     if request.method == 'POST':
@@ -67,15 +67,14 @@ def login_view(request):
         if user:
             user_id = user.codice_identificativo if medico else user.codice_fiscale
             
-            # Prepara il contenuto del token
+            # Prepare the token contents
             payload = {
                 'user_id': user_id,
                 'user_type': user_type,
-                # Il token scadrà tra 7 giorni esatti
-                'exp': datetime.now(timezone.utc) + timedelta(days=7) 
+                'exp': datetime.now(timezone.utc) + timedelta(days=7) # The token will expire in exactly 7 days
             }
 
-            # Genera il Token firmandolo con la SECRET_KEY del tuo progetto Django
+            # Generate the Token by signing it with the SECRET_KEY of your Django project
             token = jwt.encode(payload, settings.SECRET_KEY, algorithm='HS256')
 
             return JsonResponse({
@@ -93,7 +92,7 @@ def login_view(request):
 @csrf_exempt
 def register_view(request):
     """
-    Registra un nuovo Medico o Paziente da React Native.
+    Register a new Doctor or Patient from React Native.
     """
     print("Registrazione")
     if request.method == 'POST':
@@ -105,7 +104,7 @@ def register_view(request):
             password = request.POST.get('password')
 
             if user_type == 'medico':
-                # Generazione automatica del codice identificativo
+                # Automatic generation of the identification code
                 ultimo_medico = Medico.objects.all().order_by('-codice_identificativo').first()
                 if ultimo_medico:
                     try:
@@ -153,10 +152,10 @@ def register_view(request):
 @csrf_exempt
 def logout_view(request):
     """
-    Endpoint di logout.
-    NOTA BENE: Con i JWT, il vero logout avviene in React Native 
-    cancellando il token dal telefono (es. SecureStore.deleteItemAsync).
-    Questo endpoint serve solo a dare una conferma di successo all'app.
+    Logout endpoint.
+    **With JWTs, the actual logout in React Native occurs by
+    deleting the token from the phone. This endpoint is only used to
+    confirm the app's success.
     """
     return JsonResponse({
         'status': 'success', 

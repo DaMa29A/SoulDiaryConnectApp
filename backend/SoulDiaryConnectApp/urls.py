@@ -9,6 +9,8 @@ urlpatterns = [
     path('register/', views.register_view, name='register'), 
     path('logout/', views.home, name='logout'),
     path('doctor/profile/', views.get_doctor_profile, name='doctor_profile'),
+    path('doctor/patients/', views.get_doctor_patients, name='doctor_patients'),
+    path('doctor/patients/<str:codice_fiscale>/', views.get_patient_details, name='doctor_details_patient'),
 
     # path('medico/home/', views.medico_home, name='medico_home'),
     # path('medico/analisi/', views.analisi_paziente, name='analisi_paziente'),
