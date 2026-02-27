@@ -7,7 +7,7 @@ import {
   StyleSheet 
 } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { Colors } from '../../constants/Colors';
+import { Colors } from '../../constants/Colors'; // Assicurati che il path sia corretto
 import AuthButton from '../buttons/AuthButton';
 
 interface NoteFormProps {
@@ -17,6 +17,7 @@ interface NoteFormProps {
   setIsAiSupportEnabled: (enabled: boolean) => void;
   onSave: () => void;
   onVoiceInput: () => void;
+  loading: boolean; // Flag per lo stato di caricamento dal backend
 }
 
 const NoteForm = ({ 
@@ -25,50 +26,57 @@ const NoteForm = ({
   isAiSupportEnabled, 
   setIsAiSupportEnabled, 
   onSave, 
-  onVoiceInput 
+  onVoiceInput,
+  loading 
 }: NoteFormProps) => {
 
   return (
     <View style={styles.container}>
       
-      {/* INPUT AREA */}
+      {/* AREA DI TESTO DELLA NOTA */}
       <View style={styles.inputWrapper}>
         <TextInput
-          style={styles.textInput}
-          placeholder="Scrivi qui..."
+          style={[styles.textInput, loading && styles.textInputDisabled]} // Opacità ridotta se in caricamento
+          placeholder="Scrivi qui come ti senti..."
           placeholderTextColor="#999"
           multiline={true}
           value={noteText}
           onChangeText={setNoteText}
+          editable={!loading} // Blocca la tastiera durante il salvataggio
         />
         
-        {/* Microphone Icon */}
+        {/* Pulsante Microfono (Dettatura) */}
         <TouchableOpacity 
           style={styles.micButton} 
           onPress={onVoiceInput}
           activeOpacity={0.8}
+          disabled={loading} // Disabilita click durante salvataggio
         >
-          <Ionicons name="mic" size={22} color={Colors.primary} />
+          <Ionicons name="mic" size={22} color={loading ? Colors.grey : Colors.primary} />
         </TouchableOpacity>
       </View>
 
-      {/* CHECKBOX */}
+      {/* CHECKBOX SUPPORTO AI */}
       <TouchableOpacity 
         style={styles.checkboxContainer}
-        onPress={() => setIsAiSupportEnabled(!isAiSupportEnabled)}
+        onPress={() => !loading && setIsAiSupportEnabled(!isAiSupportEnabled)} // Cambia stato solo se non sta caricando
         activeOpacity={0.8}
+        disabled={loading}
       >
         <Ionicons 
           name={isAiSupportEnabled ? "checkbox" : "square-outline"} 
           size={24} 
-          color={isAiSupportEnabled ? (Colors.primary) : Colors.grey} 
+          color={loading ? Colors.grey : (isAiSupportEnabled ? Colors.primary : Colors.grey)} 
         />
-        <Text style={styles.checkboxLabel}>Genera automaticamente frasi di supporto</Text>
+        <Text style={[styles.checkboxLabel, loading && { color: Colors.grey }]}>
+          Genera automaticamente frasi di supporto
+        </Text>
       </TouchableOpacity>
       
-      {/* Save Note Button */}
+      {/* PULSANTE DI SALVATAGGIO */}
+      {/* Passiamo il testo "Salvataggio..." se loading è true */}
       <AuthButton 
-        title="Salva nota" 
+        title={loading ? "Salvataggio in corso..." : "Salva nota"} 
         onPress={onSave}
         variant="primary"
       />
@@ -78,49 +86,52 @@ const NoteForm = ({
 
 export default NoteForm;
 
-
 const styles = StyleSheet.create({
-  container: {
-    marginBottom: 20,
-    width: '100%',
+  container: { 
+    marginBottom: 20, 
+    width: '100%' 
   },
-  inputWrapper: {
-    position: 'relative',
-    marginBottom: 15,
+  inputWrapper: { 
+    position: 'relative', 
+    marginBottom: 15 
   },
   textInput: {
-    fontSize: 16,
-    color: Colors.textDark,
-    minHeight: 140,
+    fontSize: 16, 
+    color: Colors.textDark, 
+    minHeight: 140, 
     textAlignVertical: 'top',
-    backgroundColor: Colors.backgroundInput,
-    borderRadius: 16,
-    padding: 15,
-    paddingRight: 50, 
-    borderWidth: 1,
+    backgroundColor: Colors.backgroundInput, 
+    borderRadius: 16, 
+    padding: 15, 
+    paddingRight: 50, // Spazio per il pulsante del microfono
+    borderWidth: 1, 
     borderColor: Colors.borderInput,
   },
+  textInputDisabled: {
+    backgroundColor: '#F0F0F0',
+    color: '#888',
+  },
   micButton: {
-    position: 'absolute',
-    bottom: 15,
-    right: 15,
+    position: 'absolute', 
+    bottom: 15, 
+    right: 15, 
     backgroundColor: Colors.white,
-    padding: 8,
-    borderRadius: 20,
+    padding: 8, 
+    borderRadius: 20, 
     shadowColor: Colors.shadow,
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 3,
+    shadowOffset: { width: 0, height: 2 }, 
+    shadowOpacity: 0.1, 
+    shadowRadius: 3, 
     elevation: 2,
   },
-  checkboxContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 20,
+  checkboxContainer: { 
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    marginBottom: 20 
   },
-  checkboxLabel: {
-    fontSize: 14,
-    color: Colors.grey,
-    marginLeft: 10,
+  checkboxLabel: { 
+    fontSize: 14, 
+    color: Colors.textDark, 
+    marginLeft: 10 
   }
 });

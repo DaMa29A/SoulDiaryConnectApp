@@ -75,7 +75,7 @@ export const useDoctor = () => {
             const token = await SecureStore.getItemAsync('userToken');
             if (!token) throw new Error("Nessun token.");
 
-            const response = await axios.get(`${API_URL}doctor/patients/${codice_fiscale}/`, {
+            const response = await axios.get(`${API_URL}/doctor/patients/${codice_fiscale}/`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
 

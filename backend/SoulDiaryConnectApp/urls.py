@@ -11,6 +11,12 @@ urlpatterns = [
     path('doctor/profile/', views.get_doctor_profile, name='doctor_profile'),
     path('doctor/patients/', views.get_doctor_patients, name='doctor_patients'),
     path('doctor/patients/<str:codice_fiscale>/', views.get_patient_details, name='doctor_details_patient'),
+    path('patient/note/create/', views.create_nota, name='create_note'),
+    path('patient/note/', views.get_note, name='get_note'),
+    path('patient/info/', views.get_patient_info, name='get_patient_info'),
+    path('patient/doctor/', views.get_doctor_info, name='get_doctor_info'),
+    path('patient/note/<int:pk>/', views.get_note_details, name='get_note_details'),
+    path('patient/note/<int:pk>/delete/', views.delete_nota, name='delete_nota'),
 
     # path('medico/home/', views.medico_home, name='medico_home'),
     # path('medico/analisi/', views.analisi_paziente, name='analisi_paziente'),
@@ -26,3 +32,4 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    
