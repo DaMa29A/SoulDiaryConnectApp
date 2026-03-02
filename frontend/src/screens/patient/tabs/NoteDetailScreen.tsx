@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'; // Aggiunto useState
+import React, { useEffect, useState } from 'react'; 
 import { 
     View, 
     ScrollView, 
@@ -23,30 +23,22 @@ export default function NoteDetailScreen() {
     const route = useRoute<any>();
     const { noteId } = route.params;
 
-    // Estratta la funzione generateSupportText
     const { fetchNoteDetails, selectedNote, deleteNote, generateSupportText, loading, error } = usePatient();
-
-    // Nuovo stato per gestire il bottone di caricamento
     const [isGenerating, setIsGenerating] = useState(false);
 
     useEffect(() => {
         fetchNoteDetails(noteId);
     }, [noteId, fetchNoteDetails]);
 
-    // Funzione reale collegata al backend
     const handleGenerateSupport = async () => {
-        if (isGenerating) return; // Evita doppi click accidentali
+        if (isGenerating) return; 
 
-        setIsGenerating(true); // Cambia il bottone in "Sto Generando..."
-        
+        setIsGenerating(true); 
         const success = await generateSupportText(noteId);
-        
-        setIsGenerating(false); // Riporta il bottone allo stato normale se fallisce
+        setIsGenerating(false); 
 
         if (success) {
             Alert.alert("Generazione completata ✨", "L'intelligenza artificiale ha generato la tua frase di supporto.");
-            // Nota: se ha successo, la pagina si ricaricherà da sola grazie a fetchNoteDetails dentro l'hook, 
-            // facendo sparire il bottone e mostrando la NoteCard dell'IA!
         } else {
             Alert.alert("Ops...", "Non è stato possibile generare la frase di supporto in questo momento.");
         }
@@ -64,7 +56,7 @@ export default function NoteDetailScreen() {
                     onPress: async () => {
                         const success = await deleteNote(noteId);
                         if (success) {
-                            navigation.goBack(); // Torna al diario
+                            navigation.goBack(); 
                         } else {
                             Alert.alert("Errore", "Non è stato possibile eliminare la nota.");
                         }
@@ -74,8 +66,6 @@ export default function NoteDetailScreen() {
         );
     };
 
-    // Usiamo una logica speciale: se stiamo solo generando la frase, NON mostriamo il caricamento a tutto schermo
-    // ma mostriamo il caricamento solo se è il primissimo caricamento della pagina
     if (loading && !selectedNote && !isGenerating) {
         return (
             <View style={{flex:1, justifyContent:'center', backgroundColor: Colors.background}}>
@@ -107,8 +97,9 @@ export default function NoteDetailScreen() {
                     showsVerticalScrollIndicator={false}
                 >
                     <View style={[commonStyles.page_left, {paddingHorizontal: 15, paddingVertical: 20}]}>
-                        
-                        <Text style={styles.dateHeader}>{selectedNote.data_formattata}</Text>
+                        <Text style={styles.dateHeader}>
+                            {selectedNote.data_formattata}
+                        </Text>
                         
                         {/* --- TESTO PAZIENTE --- */}
                         <NoteCard 
@@ -124,25 +115,27 @@ export default function NoteDetailScreen() {
                                 time={selectedNote.ora} 
                                 type='ai'
                             />
-                        ) 
-                        // : selectedNote.generazione_in_corso ? (
-                        //     <View style={styles.aiPendingBox}>
-                        //         <ActivityIndicator size="small" color={Colors.primary} />
-                        //         <Text style={styles.aiPendingText}>L'intelligenza artificiale sta analizzando la nota...</Text>
-                        //     </View>
-                        // ) 
-                        : (
+                        ) : (
                             <View style={styles.noSupportBox}>
                                 <Text style={styles.noSupportText}>
                                     Questa nota non ha ancora una frase di supporto
                                 </Text>
-                                {/* Bottone dinamico in base allo stato isGenerating */}
                                 <AuthButton 
                                     title={isGenerating ? 'Sto Generando...' : 'Genera Frase di supporto'} 
                                     onPress={handleGenerateSupport} 
                                     iconName={isGenerating ? 'hourglass-outline' : 'sparkles'}
                                 />
                             </View>
+                        )}
+
+                        {/* --- VALUTAZIONE DEL MEDICO (AGGIUNTA ORA!) --- */}
+                        {selectedNote.commento_medico && (
+                            <NoteCard 
+                                doctorName={selectedNote.nome_medico}
+                                time={selectedNote.data_commento_formattata || ""}
+                                text={selectedNote.commento_medico}
+                                type='doctor'
+                            />
                         )}
 
                         {/* --- ELIMINAZIONE --- */}
@@ -170,7 +163,7 @@ const styles = StyleSheet.create({
         fontSize: 15,
         fontWeight: 'bold',
         color: Colors.textGray,
-        marginBottom: 30,
+        marginBottom: 20, // Leggermente ridotto per far spazio alle keywords
         marginLeft: 5
     },
     deleteContainer: {

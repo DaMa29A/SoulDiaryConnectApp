@@ -13,7 +13,7 @@ urlpatterns = [
     path('doctor/patients/<str:codice_fiscale>/', views.get_patient_details, name='doctor_details_patient'),
     path('doctor/patients/<str:codice_fiscale>/notes/', views.get_patient_notes, name='get_patient_notes'),
     path('doctor/patients/<str:codice_fiscale>/notes/<int:note_id>/', views.get_pat_note_details, name='get_patient_note_details'),
-
+    path('doctor/notes/<int:note_id>/comment/', views.add_clinical_comment, name='add_clinical_comment'),
     
     path('patient/note/create/', views.create_nota, name='create_note'),
     path('patient/note/', views.get_note, name='get_note'),

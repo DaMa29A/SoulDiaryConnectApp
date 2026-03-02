@@ -10,7 +10,8 @@ import {
     TouchableWithoutFeedback,
     Keyboard,
     ActivityIndicator,
-    TouchableOpacity
+    TouchableOpacity,
+    Alert
 } from 'react-native';
 import { useRoute, useNavigation } from '@react-navigation/native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -37,7 +38,8 @@ export default function NoteDetailsFormScreen() {
         selectedNote, 
         loading, 
         error, 
-        fetchNoteDetails 
+        fetchNoteDetails,
+        addClinicalComment 
     } = useDoctor();
 
     // Caricamento dati reali all'avvio
@@ -48,9 +50,20 @@ export default function NoteDetailsFormScreen() {
     }, [patientId, noteId, fetchNoteDetails]);
 
     // Funzione per salvare la nota clinica del medico
-    const handleSaveComment = () => {
-        console.log("Salvataggio commento per nota:", noteId, "Testo:", newDoctorComment);
-        // TODO: Implementare saveDoctorComment nell'hook useDoctor
+    const handleSaveComment = async () => {
+        if (!newDoctorComment.trim()) {
+            Alert.alert("Attenzione", "Inserisci un testo prima di pubblicare.");
+            return;
+        }
+
+        const success = await addClinicalComment(noteId, newDoctorComment);
+        
+        if (success) {
+            Alert.alert("Fatto", "Valutazione clinica salvata con successo!");
+            setNewDoctorComment(''); // Svuota il campo di input
+        } else {
+            Alert.alert("Errore", "Impossibile salvare la valutazione.");
+        }
     };
 
     const handleRegenerateAnalysis = () => {
@@ -163,11 +176,21 @@ export default function NoteDetailsFormScreen() {
                                     </View>
                                 )}
 
-                                {/* --- VALUTAZIONE MEDICA ESISTENTE --- */}
+                                {/* --- VALUTAZIONE MEDICA ESISTENTE ---
                                 {selectedNote.commento_medico && (
                                     <NoteCard 
                                         doctorName="Tua valutazione precedente"
-                                        time={selectedNote.data_commento_medico || ""}
+                                        time={selectedNote.data_commento_medico || "18:40"}
+                                        text={selectedNote.commento_medico}
+                                        type='doctor'
+                                    />
+                                )} */}
+
+                                {/* --- VALUTAZIONE MEDICA ESISTENTE --- */}
+                                {selectedNote.commento_medico && (
+                                    <NoteCard 
+                                        doctorName={selectedNote.nome_medico || "Il tuo commento"}
+                                        time={selectedNote.data_commento_formattata || ""}
                                         text={selectedNote.commento_medico}
                                         type='doctor'
                                     />

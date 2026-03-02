@@ -240,6 +240,38 @@ def get_doctor_info(request):
         return JsonResponse({"status": "error", "message": str(e)}, status=500)
     
 
+# @token_required
+# def get_note_details(request, pk):
+#     """Recupera i dettagli di una singola nota"""
+#     if request.method != 'GET':
+#         return JsonResponse({"status": "error", "message": "Metodo non consentito"}, status=405)
+    
+#     try:
+#         paziente = Paziente.objects.get(codice_fiscale=request.user_id)
+#         nota = NotaDiario.objects.get(pk=pk, paz=paziente)
+
+#         return JsonResponse({
+#             "status": "success",
+#             "data": {
+#                 "id": nota.id,
+#                 "data_formattata": nota.data_nota.strftime('%d/%m/%Y') if nota.data_nota else "",
+#                 "ora": nota.data_nota.strftime('%H:%M') if nota.data_nota else "",
+#                 "testo_paziente": nota.testo_paziente,
+#                 "testo_supporto": nota.testo_supporto,
+#                 "emozione": nota.emozione_predominante,
+#                 "spiegazione_emozione": nota.spiegazione_emozione,
+#                 "contesto": nota.contesto_sociale,
+#                 "spiegazione_contesto": nota.spiegazione_contesto,
+#                 "generazione_in_corso": nota.generazione_in_corso
+#             }
+#         })
+#     except NotaDiario.DoesNotExist:
+#         return JsonResponse({"status": "error", "message": "Nota non trovata"}, status=404)
+#     except Exception as e:
+#         return JsonResponse({"status": "error", "message": str(e)}, status=500)
+
+from .utils.utils import get_emoji_for_emotion, get_emoji_for_context # Ricorda questi import se servono
+
 @token_required
 def get_note_details(request, pk):
     """Recupera i dettagli di una singola nota"""
@@ -247,7 +279,8 @@ def get_note_details(request, pk):
         return JsonResponse({"status": "error", "message": "Metodo non consentito"}, status=405)
     
     try:
-        paziente = Paziente.objects.get(codice_fiscale=request.user_id)
+        # Usa select_related per ottimizzare la query del medico
+        paziente = Paziente.objects.select_related('med').get(codice_fiscale=request.user_id)
         nota = NotaDiario.objects.get(pk=pk, paz=paziente)
 
         return JsonResponse({
@@ -259,16 +292,25 @@ def get_note_details(request, pk):
                 "testo_paziente": nota.testo_paziente,
                 "testo_supporto": nota.testo_supporto,
                 "emozione": nota.emozione_predominante,
+                "emozione_emoji": get_emoji_for_emotion(nota.emozione_predominante), # Aggiunto
                 "spiegazione_emozione": nota.spiegazione_emozione,
                 "contesto": nota.contesto_sociale,
+                "contesto_emoji": get_emoji_for_context(nota.contesto_sociale), # Aggiunto
                 "spiegazione_contesto": nota.spiegazione_contesto,
-                "generazione_in_corso": nota.generazione_in_corso
+                "generazione_in_corso": nota.generazione_in_corso,
+                
+                # --- AGGIUNTE PER VISUALIZZARE IL COMMENTO DEL MEDICO ---
+                "commento_medico": nota.testo_medico or "",
+                "data_commento_formattata": nota.data_commento_medico.strftime('%d/%m/%Y alle %H:%M') if nota.data_commento_medico else "",
+                "nome_medico": f"Dott. {paziente.med.nome} {paziente.med.cognome}" if paziente.med else "Dottore"
+                # ---------------------------------------------------------
             }
         })
     except NotaDiario.DoesNotExist:
         return JsonResponse({"status": "error", "message": "Nota non trovata"}, status=404)
     except Exception as e:
         return JsonResponse({"status": "error", "message": str(e)}, status=500)
+
 
 @csrf_exempt
 @token_required

@@ -50,6 +50,7 @@ CREATE TABLE nota_diario (
     testo_supporto text,
     testo_clinico text,
     testo_medico text,
+    data_commento_medico timestamp with time zone NOT NULL, -- <-- LA NUOVA COLONNA
     emozione_predominante varchar(50),
     spiegazione_emozione text,
     contesto_sociale varchar(50),

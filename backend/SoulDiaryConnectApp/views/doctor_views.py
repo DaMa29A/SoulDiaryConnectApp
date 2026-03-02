@@ -5,6 +5,7 @@ from ..models import Medico, NotaDiario, Paziente
 import logging
 from django.views.decorators.csrf import csrf_exempt
 from .utils.utils import get_emoji_for_context, get_emoji_for_emotion
+import json
 
 logger = logging.getLogger(__name__)
 
@@ -166,7 +167,8 @@ def get_patient_notes(request, codice_fiscale):
 @token_required
 def get_pat_note_details(request, codice_fiscale, note_id):
     try:
-        nota = NotaDiario.objects.get(
+        # select_related('paz__med') è opzionale ma ottimizza la query per recuperare subito i dati del medico
+        nota = NotaDiario.objects.select_related('paz__med').get(
             id=note_id, 
             paz__codice_fiscale=codice_fiscale, 
             paz__med_id=request.user_id
@@ -190,7 +192,13 @@ def get_pat_note_details(request, codice_fiscale, note_id):
             
             "data_formattata": nota.data_nota.strftime('%d/%m/%Y') if nota.data_nota else "",
             "ora": nota.data_nota.strftime('%H:%M') if nota.data_nota else "",
+            
+            # --- CAMPI AGGIUNTI PER IL COMMENTO DEL MEDICO ---
             "commento_medico": nota.testo_medico or "",
+            "data_commento_formattata": nota.data_commento_medico.strftime('%d/%m/%Y alle %H:%M') if nota.data_commento_medico else "",
+            "nome_medico": f"Dott. {nota.paz.med.nome} {nota.paz.med.cognome}",
+            # -------------------------------------------------
+            
             "is_emergency": nota.is_emergency,
             "tipo_emergenza": nota.tipo_emergenza,
             "generazione_in_corso": nota.generazione_in_corso
@@ -203,3 +211,52 @@ def get_pat_note_details(request, codice_fiscale, note_id):
     except Exception as e:
         print(f"Errore caricamento nota: {str(e)}")
         return JsonResponse({"status": "error", "message": str(e)}, status=500)
+
+
+@csrf_exempt
+@token_required
+def add_clinical_comment(request, note_id):
+    if request.user_type != 'medico':
+        return JsonResponse({"status": "error", "message": "Non autorizzato"}, status=403)
+
+    if request.method == 'POST':
+        try:
+            # Estraiamo i dati dal JSON inviato dall'app
+            data = json.loads(request.body)
+            testo_medico = data.get('commento', '').strip()
+
+            # Recuperiamo la nota, assicurandoci che il paziente sia assegnato a questo medico
+            nota = NotaDiario.objects.get(
+                id=note_id, 
+                paz__med_id=request.user_id
+            )
+
+            # --- LA MAGIA AVVIENE QUI ---
+            # Aggiorniamo il commento e salviamo l'ora esatta
+            nota.testo_medico = testo_medico
+            nota.data_commento_medico = timezone.now() 
+            nota.save()
+
+            # Prepariamo i dati formattati da rispedire subito al frontend
+            data_formattata = nota.data_commento_medico.strftime('%d/%m/%Y alle %H:%M')
+            # Recuperiamo il nome del medico navigando la relazione (nota -> paziente -> medico)
+            nome_medico = f"Dott. {nota.paz.med.nome} {nota.paz.med.cognome}"
+
+            return JsonResponse({
+                "status": "success", 
+                "message": "Valutazione clinica salvata con successo",
+                "data": {
+                    "commento_medico": nota.testo_medico,
+                    "data_commento_formattata": data_formattata,
+                    "nome_medico": nome_medico
+                }
+            })
+
+        except NotaDiario.DoesNotExist:
+            return JsonResponse({"status": "error", "message": "Nota non trovata o non autorizzata"}, status=404)
+        except json.JSONDecodeError:
+            return JsonResponse({"status": "error", "message": "Formato JSON non valido"}, status=400)
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": str(e)}, status=500)
+            
+    return JsonResponse({"status": "error", "message": "Metodo non consentito"}, status=405)

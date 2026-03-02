@@ -111,6 +111,38 @@ export const useDoctor = () => {
         }
     }, []);
 
+    // 6. Add clinical comment
+    const addClinicalComment = useCallback(async (noteId: number, comment: string) => {
+        setLoading(true);
+        setError(null);
+        try {
+            const token = await SecureStore.getItemAsync('userToken');
+            const response = await axios.post(
+                `${API_URL}/doctor/notes/${noteId}/comment/`,
+                { commento: comment }, // Il payload JSON aspettato dalla view Django
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+
+            if (response.data.status === 'success') {
+                // Aggiorniamo istantaneamente la nota selezionata nel frontend
+                setSelectedNote((prevNote: any) => {
+                    if (!prevNote) return prevNote;
+                    return {
+                        ...prevNote,
+                        commento_medico: response.data.data.commento_medico
+                    };
+                });
+                return true; // Ritorna true per gestire eventuali alert nella UI
+            }
+            return false;
+        } catch (err: any) {
+            setError(err.response?.data?.message || "Errore nel salvataggio della valutazione");
+            return false;
+        } finally {
+            setLoading(false);
+        }
+    }, []);
+
     return {
         loading,
         error,
@@ -123,6 +155,7 @@ export const useDoctor = () => {
         fetchPatientDetails,
         fetchPatients,
         selectedNote,
-        fetchNoteDetails
+        fetchNoteDetails,
+        addClinicalComment
     };
 };

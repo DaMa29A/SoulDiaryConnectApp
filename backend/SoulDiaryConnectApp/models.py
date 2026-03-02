@@ -50,6 +50,7 @@ class NotaDiario(models.Model):
     testo_supporto = models.TextField(null=True, blank=True)
     testo_clinico = models.TextField(null=True, blank=True)
     testo_medico = models.TextField(null=True, blank=True)
+    data_commento_medico = models.DateTimeField(null=True, blank=True)
     emozione_predominante = models.CharField(max_length=50, null=True, blank=True)
     spiegazione_emozione = models.TextField(null=True, blank=True)
     contesto_sociale = models.CharField(max_length=50, null=True, blank=True)
