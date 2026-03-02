@@ -17,7 +17,7 @@ urlpatterns = [
     path('doctor/notes/<int:note_id>/comment/', views.add_clinical_comment, name='add_clinical_comment'),
     path('doctor/notes/<int:note_id>/regenerate-analysis/', views.regenerate_clinical_analysis, name='regenerate_clinical_analysis'),
     path('doctor/patients/<str:paziente_id>/mood-stats/', views.get_patient_mood_stats, name='get_patient_mood_stats'),
-    
+    path('doctor/ai-parameters/', views.personalize_parameters, name='personalize_parameters'),
     
     path('patient/note/create/', views.create_nota, name='create_note'),
     path('patient/note/', views.get_note, name='get_note'),

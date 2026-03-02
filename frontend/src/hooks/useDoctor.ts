@@ -3,6 +3,17 @@ import { API_URL } from '../constants/Config';
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 
+export interface AiParameter {
+  id?: string;
+  tipo: string;
+  descrizione: string;
+}
+
+export interface AiSettings {
+  tipo_nota: 'strutturato' | 'libero';
+  lunghezza_nota: 'lungo' | 'breve';
+  parametri: AiParameter[];
+}
 
 export const useDoctor = () => {
     const [loading, setLoading] = useState(false);
@@ -15,6 +26,7 @@ export const useDoctor = () => {
     const [selectedPatient, setSelectedPatient] = useState<any>(null);
     const [clinicalSummary, setClinicalSummary] = useState<any>(null);
     const [moodStats, setMoodStats] = useState<any>(null);
+    const [aiSettings, setAiSettings] = useState<AiSettings | null>(null);
 
     // 1. Doctor profile
     const fetchProfile = useCallback(async () => {
@@ -233,6 +245,59 @@ export const useDoctor = () => {
         }
     }, []);
 
+    // 10. Get Parameters
+    const fetchAiSettings = useCallback(async () => {
+        setLoading(true);
+        setError(null);
+        try {
+        const token = await SecureStore.getItemAsync('userToken');
+        
+        const response = await axios.get(`${API_URL}/doctor/ai-parameters/`, {
+            headers: { Authorization: `Bearer ${token}` }
+        });
+
+        if (response.data.status === 'success') {
+            setAiSettings(response.data.data);
+            return response.data.data;
+        }
+        return null;
+        } catch (err: any) {
+        setError(err.response?.data?.message || "Errore nel caricamento dei parametri IA");
+        return null;
+        } finally {
+        setLoading(false);
+        }
+    }, []);
+
+    // 10. Save Parameters
+    const updateAiSettings = useCallback(async (newSettings: AiSettings) => {
+        setLoading(true);
+        setError(null);
+        try {
+        const token = await SecureStore.getItemAsync('userToken');
+        
+        const response = await axios.post(`${API_URL}/doctor/ai-parameters/`, newSettings, {
+            headers: { 
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json'
+            }
+        });
+
+        if (response.data.status === 'success') {
+            // Aggiorniamo lo stato locale con i nuovi dati appena salvati con successo
+            setAiSettings(newSettings);
+            return true; 
+        }
+        return false;
+        } catch (err: any) {
+        setError(err.response?.data?.message || "Errore nel salvataggio dei parametri IA");
+        return false;
+        } finally {
+        setLoading(false);
+        }
+    }, []);
+
+
     return {
         loading,
         error,
@@ -251,6 +316,9 @@ export const useDoctor = () => {
         fetchClinicalSummary,
         clinicalSummary,
         fetchMoodStats,
-        moodStats
+        moodStats,
+        aiSettings,
+        fetchAiSettings,
+        updateAiSettings
     };
 };

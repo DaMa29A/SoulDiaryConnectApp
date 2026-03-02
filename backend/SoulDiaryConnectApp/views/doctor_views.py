@@ -577,3 +577,78 @@ def get_patient_mood_stats(request, paziente_id):
              return JsonResponse({"status": "error", "message": str(e)}, status=500)
 
     return JsonResponse({"status": "error", "message": "Metodo non consentito"}, status=405)
+
+
+
+@csrf_exempt
+@token_required
+def personalize_parameters(request):
+    """
+    API per recuperare (GET) e aggiornare (POST) i parametri 
+    di generazione IA personalizzati del medico.
+    """
+    # Sicurezza: solo i medici possono accedere
+    if request.user_type != 'medico':
+        return JsonResponse({"status": "error", "message": "Non autorizzato"}, status=403)
+
+    medico = get_object_or_404(Medico, codice_identificativo=request.user_id)
+
+    # --- RECUPERO PARAMETRI (GET) ---
+    if request.method == 'GET':
+        # Suddividiamo le stringhe concatenate in liste
+        tipo_parametri = medico.tipo_parametri.split(".:;!") if medico.tipo_parametri else []
+        testo_parametri = medico.testo_parametri.split(".:;!") if medico.testo_parametri else []
+        
+        # Uniamo i parametri in una lista di oggetti chiara per il frontend React Native
+        parametri_personalizzati = [
+            {"id": str(i), "tipo": t, "descrizione": d} 
+            for i, (t, d) in enumerate(zip(tipo_parametri, testo_parametri))
+        ]
+
+        return JsonResponse({
+            "status": "success",
+            "data": {
+                "tipo_nota": "strutturato" if medico.tipo_nota else "libero",
+                "lunghezza_nota": "lungo" if medico.lunghezza_nota else "breve",
+                "parametri": parametri_personalizzati
+            }
+        })
+
+    # --- AGGIORNAMENTO PARAMETRI (POST) ---
+    elif request.method == 'POST':
+        try:
+            data = json.loads(request.body)
+
+            # 1. Aggiorna Tipo e Lunghezza (se presenti nella richiesta)
+            if 'tipo_nota' in data:
+                medico.tipo_nota = (data['tipo_nota'] == 'strutturato')
+
+            if 'lunghezza_nota' in data:
+                medico.lunghezza_nota = (data['lunghezza_nota'] == 'lungo')
+
+            # 2. Aggiorna i Parametri Custom
+            if 'parametri' in data:
+                nuovi_parametri = data['parametri']
+                
+                # Estraiamo i tipi e i testi in due liste separate
+                tipi = [p.get('tipo', '') for p in nuovi_parametri]
+                testi = [p.get('descrizione', '') for p in nuovi_parametri]
+
+                # Ri-concateniamo tutto con il tuo separatore originale ".:;!" per salvare nel DB
+                medico.tipo_parametri = ".:;!".join(tipi)
+                medico.testo_parametri = ".:;!".join(testi)
+
+            medico.save()
+
+            return JsonResponse({
+                "status": "success",
+                "message": "Parametri di generazione aggiornati con successo."
+            })
+
+        except json.JSONDecodeError:
+            return JsonResponse({"status": "error", "message": "Dati JSON non validi."}, status=400)
+        except Exception as e:
+            return JsonResponse({"status": "error", "message": f"Errore durante il salvataggio: {str(e)}"}, status=500)
+
+    # Fallback per metodi HTTP non supportati
+    return JsonResponse({"status": "error", "message": "Metodo non consentito"}, status=405)

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   View, 
   Text, 
@@ -6,6 +6,8 @@ import {
   StyleSheet, 
   TouchableOpacity, 
   TextInput,
+  Alert,
+  ActivityIndicator
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -16,7 +18,7 @@ import Navbar from '../../../components/nav/Navbar';
 import Footer from '../../../components/Footer';
 import AuthButton from '../../../components/buttons/AuthButton';
 import Ionicons from '@expo/vector-icons/Ionicons';
-
+import { useDoctor } from '../../../hooks/useDoctor';
 
 interface Parameter {
   id: number;
@@ -25,12 +27,67 @@ interface Parameter {
 }
 
 export default function DoctorParametersScreen() { 
+    // Integriamo il nostro hook
+    const { fetchAiSettings, updateAiSettings, loading } = useDoctor();
+    const [isSaving, setIsSaving] = useState(false);
+
     const [analysisType, setAnalysisType] = useState<'structured' | 'unstructured'>('structured');
     const [analysisLength, setAnalysisLength] = useState<'long' | 'short'>('short');
     
     const [parameters, setParameters] = useState<Parameter[]>([
         { id: Date.now(), key: '', value: '' }
     ]);
+
+    // 1. Carica le impostazioni dal backend all'avvio
+    useEffect(() => {
+        const loadSettings = async () => {
+            const data = await fetchAiSettings();
+            if (data) {
+                // Traduciamo i valori del backend per il frontend
+                setAnalysisType(data.tipo_nota === 'strutturato' ? 'structured' : 'unstructured');
+                setAnalysisLength(data.lunghezza_nota === 'lungo' ? 'long' : 'short');
+                
+                if (data.parametri && data.parametri.length > 0) {
+                    setParameters(data.parametri.map((p: any, index: number) => ({
+                        id: Date.now() + index, // Generiamo un ID univoco locale per React
+                        key: p.tipo,
+                        value: p.descrizione
+                    })));
+                } else {
+                    // Se non ci sono parametri, lasciamo uno slot vuoto
+                    setParameters([{ id: Date.now(), key: '', value: '' }]);
+                }
+            }
+        };
+        loadSettings();
+    }, [fetchAiSettings]);
+
+    // 2. Salva le impostazioni sul backend
+    const handleSave = async () => {
+        setIsSaving(true);
+        
+        // Prepariamo il payload traducendolo per il backend
+        const payload: any = {
+            tipo_nota: analysisType === 'structured' ? 'strutturato' : 'libero',
+            lunghezza_nota: analysisLength === 'long' ? 'lungo' : 'breve',
+            // Filtriamo i parametri vuoti per non salvare spazzatura nel DB
+            parametri: parameters
+                .filter(p => p.key.trim() !== '' || p.value.trim() !== '')
+                .map(p => ({
+                    tipo: p.key.trim(),
+                    descrizione: p.value.trim()
+                }))
+        };
+
+        const success = await updateAiSettings(payload);
+        setIsSaving(false);
+
+        if (success) {
+            Alert.alert("Successo ✨", "La configurazione dell'IA è stata salvata correttamente.");
+        } else {
+            Alert.alert("Errore", "Impossibile salvare la configurazione. Riprova più tardi.");
+        }
+    };
 
     const addParameter = () => {
         setParameters([...parameters, { id: Date.now(), key: '', value: '' }]);
@@ -43,6 +100,18 @@ export default function DoctorParametersScreen() {
     const updateParameter = (id: number, field: 'key' | 'value', text: string) => {
         setParameters(parameters.map(p => p.id === id ? { ...p, [field]: text } : p));
     };
+
+    if (loading && !isSaving && parameters.length === 1 && parameters[0].key === '') {
+        return (
+            <SafeAreaView style={commonStyles.safe_container_log} edges={['top']}>
+                <Navbar/>
+                <View style={[commonStyles.container_log, { justifyContent: 'center', alignItems: 'center' }]}>
+                    <ActivityIndicator size="large" color={Colors.primary} />
+                    <Text style={{ marginTop: 10, color: Colors.textGray }}>Caricamento parametri...</Text>
+                </View>
+            </SafeAreaView>
+        );
+    }
 
     return ( 
         <SafeAreaView style={commonStyles.safe_container_log} edges={['top']}>
@@ -157,10 +226,11 @@ export default function DoctorParametersScreen() {
                         
                         <AuthButton 
                             variant='primary'
-                            title="Salva Configurazione" 
+                            title={isSaving ? "Salvataggio..." : "Salva Configurazione"} 
                             iconFamily='material'
-                            iconName='content-save'
-                            onPress={() => console.log("Configurazione salvata")} 
+                            iconName={isSaving ? 'cloud-upload' : 'content-save'}
+                            onPress={handleSave}
+                            // disabled={isSaving} <-- Puoi decommentarlo se AuthButton accetta la prop disabled
                         />
                     </View>
                     <Footer />
