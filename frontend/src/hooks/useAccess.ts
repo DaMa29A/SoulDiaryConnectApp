@@ -10,6 +10,38 @@ export const useAccess = (navigation: any) => {
     const [loading, setLoading] = useState(false);
 
     // ==========================================
+    // ----- CONTROLLO SESSIONE (NUOVO) ------
+    // ==========================================
+    const checkSession = async () => {
+        setLoading(true);
+        try {
+            // Controlla se c'è un token salvato
+            const token = await SecureStore.getItemAsync('userToken');
+            const userType = await AsyncStorage.getItem('user_type');
+
+            if (token && userType) {
+                // L'utente è già loggato! Lo reindirizziamo subito
+                if (userType === 'medico') {
+                    navigation.reset({
+                        index: 0,
+                        routes: [{ name: 'DoctorTabs' }],
+                    });
+                } else {
+                    navigation.reset({
+                        index: 0,
+                        routes: [{ name: 'PatientTabs' }],
+                    });
+                }
+            }
+            // Se non c'è token, non fa nulla e lascia l'utente nella pagina di Login
+        } catch (error) {
+            console.error("Errore nel recupero della sessione", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // ==========================================
     // ----- REGISTRAZIONE ------
     // ==========================================
     const handleRegister = async (userType: UserRole, form: any) => {
@@ -43,7 +75,6 @@ export const useAccess = (navigation: any) => {
 
             if (response.data.status === 'success') {
                 Alert.alert("Successo", "Registrazione completata!");
-                // Dopo la registrazione mandiamo l'utente al Login normalmente
                 navigation.navigate('Login');
             } else {
                 Alert.alert("Errore", response.data.message || "Errore sconosciuto");
@@ -80,8 +111,7 @@ export const useAccess = (navigation: any) => {
                 await AsyncStorage.setItem('user_type', response.data.user_type);
                 await AsyncStorage.setItem('user_id', response.data.user_id);
 
-                // 2. Resetta lo stack di navigazione!
-                // Impedisce di tornare al Login premendo "Indietro"
+                // 2. Resetta lo stack di navigazione
                 if (response.data.user_type === 'medico') {
                     navigation.reset({
                         index: 0,
@@ -110,14 +140,10 @@ export const useAccess = (navigation: any) => {
     // ==========================================
     const handleLogout = async () => {
         try {
-            // Svuota i dati memorizzati sul dispositivo
             await SecureStore.deleteItemAsync('userToken');
             await AsyncStorage.removeItem('user_type');
             await AsyncStorage.removeItem('user_id');
             
-            // Resetta lo stack di navigazione tornando alla pagina iniziale
-            // NOTA: Se la tua pagina iniziale in App.tsx si chiama 'Login' (e non 'Index'), 
-            // cambia 'Index' in 'Login' qui sotto.
             navigation.reset({
                 index: 0,
                 routes: [{ name: 'Index' }], 
@@ -129,6 +155,7 @@ export const useAccess = (navigation: any) => {
     };
 
     return {
+        checkSession,
         handleRegister,
         handleLogin,
         handleLogout,

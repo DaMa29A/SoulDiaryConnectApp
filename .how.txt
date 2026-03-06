@@ -49,3 +49,12 @@ ollama list
 # To start server:
 python manage.py runserver
 python manage.py runserver 0.0.0.0:8000
+
+# Ngrok
+ngrok config add-authtoken Tuo_token            (vedi Config.ts per token)
+ngrok http 8000
+
+# Generate apk
+eas login
+eas build:configure
+eas build -p android --profile preview
